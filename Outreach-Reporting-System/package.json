@@ -4,13 +4,15 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build", 
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
+    "@amcharts/amcharts4": "^4.1.6",
+    "@amcharts/amcharts4-geodata": "^4.1.1",
     "@angular/animations": "^7.2.1",
     "@angular/common": "^7.2.1",
     "@angular/compiler": "^7.2.1",
@@ -34,11 +36,14 @@
     "ng2-charts": "^1.6.0",
     "ngx-bootstrap": "^3.1.4",
     "ngx-perfect-scrollbar": "^7.2.0",
+    "primeicons": "^1.0.0",
+    "primeng": "^7.0.5",
     "rxjs": "^6.3.3",
     "simple-line-icons": "^2.4.1",
     "ts-helpers": "^1.1.2",
     "tsickle": "^0.34.0",
     "tslib": "^1.9.0",
+    "xlsx": "^0.14.1",
     "zone.js": "^0.8.28"
   },
   "devDependencies": {
