@@ -52,4 +52,17 @@ export class FileuploadService {
           );
       }
 
+      saveEnrollments(body: any): Observable<any> {
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        let bodyString = JSON.stringify(body);
+        return this.http.post<any>(this.baseUrl+'Enrollment', body, { headers: headers })
+          .pipe(
+            tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+            catchError(error => {
+              const message = `Retrieval error: ${error}`;
+              console.error(message);
+              return of({ product: null, error: message });
+            })
+          );
+      }
 }

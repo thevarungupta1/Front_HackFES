@@ -13,6 +13,12 @@ class Event {
     name: string;
     description: string;
     date?: Date;
+    baseLocation: string;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    pincode: string;
     beneficiary: string;
     councilName: string;
     project: string;
@@ -37,7 +43,13 @@ class Location {
 }
 
 class Enrollment{
+eventId: string;
+associateId: number;
+volunteerHours: number;
+travelHours: number;
+status: string;
+iiepCategory: string;
 
 }
 
-export { Associate, Event, Location };
+export { Associate, Event, Enrollment };
