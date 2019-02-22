@@ -9,14 +9,21 @@ import { FileUploadRoutingModule } from './fileupload-routing.module';
 
 import { FileUploadModule as fileup } from 'primeng/fileupload';
 
+import {ToastModule} from 'primeng/toast';
+import { MessageService } from 'primeng/components/common/messageservice';
+
 @NgModule({
   imports: [
     CommonModule,
     FileUploadRoutingModule,
-    fileup
+    fileup,
+    ToastModule
   ],
   declarations: [
     FileUploadComponent
+  ],
+  providers: [
+    MessageService
   ]
 })
 export class FileUploadModule { }
