@@ -41,6 +41,7 @@ export class FileuploadService {
     saveEvents(body: any): Observable<any> {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         let bodyString = JSON.stringify(body);
+        console.log(bodyString);
         return this.http.post<any>(this.baseUrl+'Event', body, { headers: headers })
           .pipe(
             tap(data => console.log('createProduct: ' + JSON.stringify(data))),

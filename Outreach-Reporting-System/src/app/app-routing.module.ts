@@ -6,14 +6,16 @@ import { DefaultLayoutComponent } from './containers';
 
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './views/login/login.component';
+import { LoginComponent } from './views/auth/login.component';
 import { RegisterComponent } from './views/register/register.component';
+import { AuthGuard } from './views/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
+    canActivate:[AuthGuard]
   },
   {
     path: '404',
@@ -49,29 +51,39 @@ export const routes: Routes = [
     data: {
       title: 'Home'
     },
+    canActivate:[AuthGuard],
     children: [
       {
         path: 'reports',
-        loadChildren: './views/reports/reports.module#ReportsModule'
+        loadChildren: './views/reports/reports.module#ReportsModule',
+        canActivate:[AuthGuard]
       },
       {
         path: 'users',
-        loadChildren: './views/users/users.module#UsersModule'
+        loadChildren: './views/users/users.module#UsersModule',
+        canActivate:[AuthGuard]
       },
       {
         path: 'settings',
-        loadChildren: './views/settings/settings.module#SettingsModule'
+        loadChildren: './views/settings/settings.module#SettingsModule',
+        canActivate:[AuthGuard]
       },
       {
         path: 'dashboard',
-        loadChildren: './views/dashboard/dashboard.module#DashboardModule'
+        loadChildren: './views/dashboard/dashboard.module#DashboardModule',
+        canActivate:[AuthGuard]
       },
       {
         path: 'fileupload',
-        loadChildren: './views/fileupload/fileupload.module#FileUploadModule'
+        loadChildren: './views/fileupload/fileupload.module#FileUploadModule',
+        canActivate:[AuthGuard]
       }
     ]
   },
+  // {
+  //   path: '**',
+  //   loadChildren: './views/error/errors.module#ErrorsModule'
+  // }
   { path: '**', component: P404Component }
 ];
 
