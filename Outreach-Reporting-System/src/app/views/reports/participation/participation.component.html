@@ -1,241 +1,508 @@
-<div class="container-fluid">
-<div class="row">
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-primary shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Head Count</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{headCount}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-success shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Unique Volunteers</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{uniqueVolunteers}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+<!-- container start -->
+<div class="container-fluid animated fadeIn px-3">
+      <!-- row start -->
+      <div class="row">
+        <!-- column start -->
+        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+          <div class="info-box bg-primary hover-expand-effect">
+            <div class="icon">
+              <i class="material-icons">wc</i>
+            </div>
+            <div class="content">
+              <div class="text">Head Count</div>
+              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalAssociates}}</div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-info shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Volunteering Hours</div>
-            <div class="row no-gutters align-items-center">
-              <div class="col-auto">
-                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{totalVolunteeringHours}}</div>
+        <!-- column end -->
+          <!-- column start -->
+          <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+              <div class="info-box bg-primary hover-expand-effect">
+                  <div class="icon">
+                    <i class="material-icons">person</i>
+                  </div>
+                  <div class="content">
+                    <div class="text">Unique Volunteers</div>
+                    <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalVolunteers}}</div>
+                  </div>
+                </div>
+            </div>
+            <!-- column end -->
+              <!-- column start -->
+        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+            <div class="info-box bg-primary hover-expand-effect">
+                <div class="icon">
+                  <i class="material-icons">av_timer</i>
+                </div>
+                <div class="content">
+                  <div class="text">Total Volunteering Hours</div>
+                  <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalVolunteeringHours}}</div>
+                </div>
               </div>
-              <div class="col">
-                <div class="progress progress-sm mr-2">
-                  <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <!-- column end -->
+           
+          <!-- column start -->
+        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+            <div class="info-box bg-primary hover-expand-effect">
+                <div class="icon">
+                  <i class="material-icons">av_timer</i>
+                </div>
+                <div class="content">
+                  <div class="text">Coverage</div>
+                  <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{coverage}}</div>
+                </div>
+              </div>
+          </div>
+          <!-- column end -->
+          <!-- column start -->
+          <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+              <div class="info-box bg-success hover-expand-effect">
+                  <div class="icon">
+                    <i class="material-icons">av_timer</i>
+                  </div>
+                  <div class="content">
+                    <div class="text">Avg. Frequency Per Volunteer</div>
+                    <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{averageFreqVolunteer}}</div>
+                  </div>
+                </div>
+            </div>
+          <!-- column end -->
+            <!-- column start -->
+            <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+                <div class="info-box bg-success hover-expand-effect">
+                    <div class="icon">
+                      <i class="material-icons">av_timer</i>
+                    </div>
+                    <div class="content">
+                      <div class="text">Avg. Hours Per Associate</div>
+                      <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourAssociate}}</div>
+                    </div>
+                  </div>
+              </div>
+              <!-- column end -->
+               
+         <!-- column start -->
+         <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+            <div class="info-box bg-success hover-expand-effect">
+                <div class="icon">
+                  <i class="material-icons">av_timer</i>
+                </div>
+                <div class="content">
+                  <div class="text">Avg. Hours Per Volunteer</div>
+                  <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteer}}</div>
+                </div>
+              </div>
+          </div>
+          <!-- column end -->
+            <!-- column start -->
+            <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+                <div class="info-box bg-success hover-expand-effect">
+                    <div class="icon">
+                      <i class="material-icons">av_timer</i>
+                    </div>
+                    <div class="content">
+                      <div class="text">Total no of Events</div>
+                      <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalEvents}}</div>
+                    </div>
+                  </div>
+              </div>
+          <!-- column end -->
+          <!-- column start -->
+          <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+              <div class="info-box bg-warning hover-expand-effect">
+                  <div class="icon">
+                    <i class="material-icons">av_timer</i>
+                  </div>
+                  <div class="content">
+                    <div class="text">Avg. Hours  PerEvent Weekday</div>
+                    <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekday}}</div>
+                  </div>
+                </div>
+            </div>
+          <!-- column end -->
+           
+ <!-- column start -->
+ <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+    <div class="info-box bg-warning hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours  PerEvent Weekend</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekend}}</div>
+        </div>
+      </div>
+  </div>
+  <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+        <div class="info-box bg-warning hover-expand-effect">
+            <div class="icon">
+              <i class="material-icons">av_timer</i>
+            </div>
+            <div class="content">
+              <div class="text">Avg. Volunteers Per Event</div>
+              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgVolunteersEvent}}</div>
+            </div>
+          </div>
+      </div>
+<!-- column end -->
+  <!-- column start -->
+  <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-warning hover-expand-effect">
+          <div class="icon">
+            <i class="material-icons">av_timer</i>
+          </div>
+          <div class="content">
+            <div class="text">Avg. Hours Volunteered Per Event</div>
+            <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteerEvent}}</div>
+          </div>
+        </div>
+    </div>
+<!-- column end -->
+        </div>
+        <!-- row end -->
+</div>
+
+<!-- container start -->
+<div class="container-fluid animated fadeIn px-0">
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card" #card1>
+        <div class="card-header bg-primary">
+          pie Chart
+          <div class="card-header-actions">
+
+              <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+              <div class="dropdown">
+                  <button class="dropbtn"><i class="icon-list"></i></button>
+                  <div class="dropdown-content">
+                    <span (click)="designationChart('pyrmid')">Pyramid Chart</span>
+                    <span (click)="designationChart('doughnut')">Pie Chart 3D</span>
+                    <span (click)="designationChart()">Pie chart</span>
+                    <span (click)="showDesignationData = true">Show Data</span>
+                  </div>
+                </div>
+            </div>
+        </div>
+      
+        <div class="card-body" style="min-height: 550px">
+          <div class="chart-wrapper">
+            <div id="chartdiv" style="width: 100%; height: 500px"></div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+  
+  </div>
+<!-- row end -->
+<!-- row start -->
+  <div class="row">
+<!-- column start -->
+    <div class="col-md-6 p-2">
+      <div class="card">
+        <div class="card-header">
+          pie Chart
+          <div class="card-header-actions">
+            <a href="http://www.chartjs.org">
+              <small class="text-muted">docs</small>
+            </a>
+          </div>
+        </div>
+        <div class="card-body" style="height: 550px">
+          <div class="chart-wrapper">
+            <div id="chartdiv1" style="width: 100%; height: 500px"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+<!-- column end -->
+<!-- column start -->
+    <div class="col-md-6 p-2">
+      <div class="card">
+        <div class="card-header">
+          pie Chart
+          <div class="card-header-actions">
+            <a href="http://www.chartjs.org">
+              <small class="text-muted">docs</small>
+            </a>
+          </div>
+        </div>
+        <div class="card-body" style="width: 100%; height: 550px">
+          <div class="chart-wrapper">
+            <p-table #dt [columns]="cols" [value]="designationWiseVolunteers" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="caption">
+                <div class="ui-helper-clearfix">
+                  <button type="button" icon="fa fa-file-o" iconPos="left" label="All Data" (click)="dt.exportCSV()" style="float:left">All Data</button>
+                  <button type="button" icon="fa fa-file" iconPos="left" label="Selection Only" (click)="dt.exportCSV({selectionOnly:true})"
+                    style="float:right">Selection Only</button>
+                </div>
+              </ng-template>
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th *ngFor="let col of columns">
+                    {{col.header}}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  <td>
+                    {{ rowData.designation }}
+                  </td>
+                  <td>
+                    {{ rowData.volunteers }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>      
+    </div>
+<!-- column end -->
+  </div>
+<!-- row end -->
+<!-- row start -->
+  <div class="row">
+<!-- column start -->
+    <div class="col-md-6 p-2">
+      <div class="card">
+        <div class="card-header">
+          pie Chart
+          <div class="card-header-actions">
+            <a href="http://www.chartjs.org">
+              <small class="text-muted">docs</small>
+            </a>
+          </div>
+        </div>
+        <div class="card-body" style="height: 550px">
+          <div class="chart-wrapper">
+            <div id="chartdiv5" style="width: 100%; height: 500px"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+<!-- column end -->
+<!-- column start -->
+    <div class="col-md-6 p-2">
+      <div class="card">
+        <div class="card-header">
+          pie Chart
+          <div class="card-header-actions">
+            <a href="http://www.chartjs.org">
+              <small class="text-muted">docs</small>
+            </a>
+          </div>
+        </div>
+        <div class="card-body" style="width: 100%; height: 550px">
+          <div class="chart-wrapper">
+            <p-table #dt [columns]="cols" [value]="designationWiseVolunteers" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="caption">
+                <div class="ui-helper-clearfix">
+                  <button type="button" icon="fa fa-file-o" iconPos="left" label="All Data" (click)="dt.exportCSV()" style="float:left">All Data</button>
+                  <button type="button" icon="fa fa-file" iconPos="left" label="Selection Only" (click)="dt.exportCSV({selectionOnly:true})"
+                    style="float:right">Selection Only</button>
+                </div>
+              </ng-template>
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th *ngFor="let col of columns">
+                    {{col.header}}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                  <td>
+                    {{ rowData.designation }}
+                  </td>
+                  <td>
+                    {{ rowData.volunteers }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- column end -->
+  </div>
+<!-- row end -->
+<!-- row start -->
+<div class="row">
+    <!-- column start -->
+        <div class="col-md-6 p-2">
+          <div class="card">
+            <div class="card-header">
+              pie Chart
+              <div class="card-header-actions">
+                <a href="http://www.chartjs.org">
+                  <small class="text-muted">docs</small>
+                </a>
+              </div>
+            </div>
+            <div class="card-body" style="height: 550px">
+              <div class="chart-wrapper">
+                <div id="chartdiv3" style="width: 100%; height: 500px"></div>
+              </div>
+    
+            </div>
+          </div>
+        </div>
+    <!-- column end -->
+    <!-- column start -->
+        <div class="col-md-6 p-2">
+          <div class="card">
+            <div class="card-header">
+              pie Chart
+              <div class="card-header-actions">
+                <a href="http://www.chartjs.org">
+                  <small class="text-muted">docs</small>
+                </a>
+              </div>
+            </div>
+            <div class="card-body" style="width: 100%; height: 550px">
+              <div class="chart-wrapper">
+                <p-table #dt [columns]="cols" [value]="designationWiseVolunteers" [paginator]="true" [rows]="10">
+                  <ng-template pTemplate="caption">
+                    <div class="ui-helper-clearfix">
+                      <button type="button" icon="fa fa-file-o" iconPos="left" label="All Data" (click)="dt.exportCSV()" style="float:left">All Data</button>
+                      <button type="button" icon="fa fa-file" iconPos="left" label="Selection Only" (click)="dt.exportCSV({selectionOnly:true})"
+                        style="float:right">Selection Only</button>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th *ngFor="let col of columns">
+                        {{col.header}}
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr>
+                      <td>
+                        {{ rowData.designation }}
+                      </td>
+                      <td>
+                        {{ rowData.volunteers }}
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+    <!-- column end -->
+      </div>
+    <!-- row end -->
+    <!-- row start -->
+  <div class="row">
+      <!-- column start -->
+          <div class="col-md-6 p-2">
+            <div class="card">
+              <div class="card-header">
+                pie Chart
+                <div class="card-header-actions">
+                  <a href="http://www.chartjs.org">
+                    <small class="text-muted">docs</small>
+                  </a>
+                </div>
+              </div>
+              <div class="card-body" style="height: 550px">
+                <div class="chart-wrapper">
+                  <div id="chartdiv4" style="width: 100%; height: 500px"></div>
+                </div>
+      
+              </div>
+            </div>
+          </div>
+      <!-- column end -->
+      <!-- column start -->
+          <div class="col-md-6 p-2">
+            <div class="card">
+              <div class="card-header">
+                pie Chart
+                <div class="card-header-actions">
+                  <a href="http://www.chartjs.org">
+                    <small class="text-muted">docs</small>
+                  </a>
+                </div>
+              </div>
+              <div class="card-body" style="width: 100%; height: 550px">
+                <div class="chart-wrapper">
+                  <p-table #dt [columns]="cols" [value]="designationWiseVolunteers" [paginator]="true" [rows]="10">
+                    <ng-template pTemplate="caption">
+                      <div class="ui-helper-clearfix">
+                        <button type="button" icon="fa fa-file-o" iconPos="left" label="All Data" (click)="dt.exportCSV()" style="float:left">All Data</button>
+                        <button type="button" icon="fa fa-file" iconPos="left" label="Selection Only" (click)="dt.exportCSV({selectionOnly:true})"
+                          style="float:right">Selection Only</button>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                      <tr>
+                        <th *ngFor="let col of columns">
+                          {{col.header}}
+                        </th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                      <tr>
+                        <td>
+                          {{ rowData.designation }}
+                        </td>
+                        <td>
+                          {{ rowData.volunteers }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-auto">
-            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-          </div>
+      <!-- column end -->
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pending Requests Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-warning shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Coverage</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{coverage}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-comments fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      <!-- row end -->
 </div>
-
-<div class="row">
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-primary shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Avg. Frequency Per Volunteer</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{averageFreqVolunteer}}</div>
+<!-- container end -->
+<p-dialog header="Title" [modal]="true" [(visible)]="showDesignationData" [style]="{width: '70%', height: '80%'}">
+    <div *ngIf="showDesignationData">
+        <!-- <ng-template pTemplate="caption">
+          <div class="ui-helper-clearfix">
+           <button type="button" icon="fa fa-file-o" iconPos="left" label="All Data" (click)="dt.exportCSV({selectionOnly:true})" style="float:left">All Data</button>
+            <button type="button" class="btn btn-primary fas fa-file-export" iconPos="left" (click)="dt.exportCSV()"
+              style="float:right">Export CSV</button>
           </div>
-          <div class="col-auto">
-            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
+        </ng-template> -->
+       
+      <p-table #dt [value]="allVolunteers" [paginator]="true" [rows]="10">
+          <ng-template pTemplate="header">
+              <tr>
+                  <th>Id</th>
+                  <th>Name</th>
+                  <th>Designation</th>
+                  <th>Location</th>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-volunteer>
+              <tr>
+                  <td>{{volunteer.id}}</td>
+                  <td>{{volunteer.name}}</td>
+                  <td>{{volunteer.designation}}</td>
+                  <td>{{volunteer.baseLocation}}</td>
+              </tr>
+          </ng-template>
+      </p-table>
+
     </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-success shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Avg. Hours Per Associate</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{avgHourAssociate}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-info shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Avg. Hours Per Volunteer </div>
-            <div class="row no-gutters align-items-center">
-              <div class="col-auto">
-                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{avgHourVolunteer}}</div>
-              </div>
-              <div class="col">
-                <div class="progress progress-sm mr-2">
-                  <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pending Requests Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-warning shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total no of Events</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{totalEvents}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-comments fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-primary shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">avgHoursPerEventWeekday</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{avgHoursPerEventWeekday}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-success shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">avgHoursPerEventWeekend</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{avgHoursPerEventWeekend}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings (Monthly) Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-info shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">avgVolunteersEvent</div>
-            <div class="row no-gutters align-items-center">
-              <div class="col-auto">
-                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{avgVolunteersEvent}}</div>
-              </div>
-              <div class="col">
-                <div class="progress progress-sm mr-2">
-                  <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pending Requests Card Example -->
-  <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-warning shadow h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">avgHourVolunteerEvent</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{avgHourVolunteerEvent}}</div>
-          </div>
-          <div class="col-auto">
-            <i class="fas fa-comments fa-2x text-gray-300"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
+</p-dialog>
