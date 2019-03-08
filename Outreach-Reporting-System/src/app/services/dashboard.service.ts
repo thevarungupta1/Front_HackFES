@@ -4,6 +4,10 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
 
+import { Associate } from '../models/associate.model';
+import { Enrollment } from '../models/enrollment.model';
+import { Event } from '../models/event.model';
+
 @Injectable({
     providedIn: 'root'
   })
@@ -11,25 +15,68 @@ export class DashboardService {
     baseUrl: string = 'https://localhost:44313/api/';
 
     constructor(private http: HttpClient) { }
-        
-    getValues() : Observable<any> {
-        return this.http.get<any>(this.baseUrl+'Values')
-      .pipe(
-        tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-                    const message = `Retrieval error: ${error}`;
-                    console.error(message);
-                    return of({ product: null, error: message });
-                  })
-      ); 
+     
+    getAllAssociates(): Observable<any> {
+      return this.http.get<any>(this.baseUrl + 'Associate')
+        .pipe(
+          tap(data => console.log(JSON.stringify(data))),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
+    }
+  
+    getAllEvents(): Observable<Event[]> {
+      return this.http.get<any>(this.baseUrl + 'Event')
+        .pipe(
+          tap(data => console.log(JSON.stringify(data))),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
+    }
+  
+    getAllEnrollments(): Observable<any> {
+      return this.http.get<any>(this.baseUrl + 'Enrollment/GetEnrolledAssociates')
+        .pipe(
+          tap(data => {
+            let test = data;
+            console.log(JSON.stringify(data))
+          }),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
     }
 
-    post(): Observable<any> {
-      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-      let data = '1234';
-      return this.http.post<any>(this.baseUrl+'Values', data, { headers: headers })
+    getTopVolunteers(count: number): Observable<any> {
+      return this.http.get<any>(this.baseUrl + `Enrollment/GetTopFrequentVolunteers?count=${count}`)
         .pipe(
-          tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+          tap(data => {
+            let test = data;
+            console.log(JSON.stringify(data))
+          }),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
+    }
+
+    getYearlyVolunteers(count: number): Observable<any> {
+      return this.http.get<any>(this.baseUrl + `Enrollment/GetYearlyVolunteersCount?years=${count}`)
+        .pipe(
+          tap(data => {
+            let test = data;
+            console.log(JSON.stringify(data))
+          }),
           catchError(error => {
             const message = `Retrieval error: ${error}`;
             console.error(message);
