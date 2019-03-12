@@ -11,13 +11,18 @@ import { FileUploadModule as fileup } from 'primeng/fileupload';
 
 import {ToastModule} from 'primeng/toast';
 import { MessageService } from 'primeng/components/common/messageservice';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   imports: [
     CommonModule,
     FileUploadRoutingModule,
     fileup,
-    ToastModule
+    ToastModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RadioButtonModule
   ],
   declarations: [
     FileUploadComponent

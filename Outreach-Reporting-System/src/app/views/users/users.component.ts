@@ -8,12 +8,15 @@ import { Associate } from '../../models/associate.model';
 import { Event } from '../../models/event.model';
 import { Enrollment } from '../../models/enrollment.model';
 import { UserService } from '../../services/user.service';
+import { UserRoles } from '../../models/roles.model';
 
 //import { MessageService } from 'primeng/components/common/messageservice';
 import { ToastService } from '../shared/toastmessages';
 import { saveAs } from 'file-saver';
 
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { array } from '@amcharts/amcharts4/core';
+import { UserModel } from 'src/app/models/user.model';
 
 @Component({
   templateUrl: 'users.component.html',
@@ -41,6 +44,7 @@ export class UsersComponent implements OnInit {
   allAssociates: Array<Associate>;
   allEvents: Array<Event>;
   enrollments: Array<Enrollment>;
+  roles: Array<UserRoles>;
   showSuccessToast() {
     this.messageService.success('Success', 'Saved successfully');
     this.messageService.info('Information', 'please select');
@@ -48,38 +52,19 @@ export class UsersComponent implements OnInit {
     this.messageService.error('Error', 'Error occurred');
   }
 
-  userForm = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
-    associateId: ['', Validators.required],
-    email: ['', Validators.required]
-  });
-
-  public themeColors(): void {
-    Array.from(this._document.querySelectorAll('.theme-color')).forEach((el: HTMLElement) => {
-      const background = getStyle('background-color', el);
-      const table = this._document.createElement('table');
-      table.innerHTML = `
-        <table class="w-100">
-          <tr>
-            <td class="text-muted">HEX:</td>
-            <td class="font-weight-bold">${rgbToHex(background)}</td>
-          </tr>
-          <tr>
-            <td class="text-muted">RGB:</td>
-            <td class="font-weight-bold">${background}</td>
-          </tr>
-        </table>
-      `;
-      el.parentNode.appendChild(table);
-    });
-  }
+  userForm: FormGroup;
 
   ngOnInit(): void {
-    this.themeColors();
-   
+    this.userForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      associateId: ['', Validators.required],
+      email: ['', Validators.required],
+      roleId: ['', Validators.required]
+    });
+    this.getRoles();
   }
-
+  get fc() { return this.userForm.controls; }
   clearSelectedFiles() {
     console.log("clear button clicked");
   }
@@ -123,7 +108,7 @@ export class UsersComponent implements OnInit {
   }
   uploadedFiles: any[] = [];
   onUpload(event) {
-    for(let file of event.files) {
+    for (let file of event.files) {
       let fileReader = new FileReader();
       fileReader.onload = (e) => {
         this.arrayBuffer = fileReader.result;
@@ -148,7 +133,7 @@ export class UsersComponent implements OnInit {
       fileReader.readAsArrayBuffer(file);
     }
 
-}
+  }
   saveExcelDataToDb() {
     if (this.allAssociates.length > 0) {
       this.userService.saveAssociates(this.allAssociates)
@@ -257,8 +242,8 @@ export class UsersComponent implements OnInit {
 
   createEnrollmentModelFromExcel(rowNumber, rowData) {
     let enrollment = new Enrollment();
-    enrollment.eventId = rowData["Event ID"];
-    enrollment.associateId = rowData["Employee ID"];
+    enrollment.eventID = rowData["Event ID"];
+    enrollment.associateID = rowData["Employee ID"];
     enrollment.volunteerHours = rowData["Volunteer Hours"];
     enrollment.travelHours = rowData["Travel Hours"];
     enrollment.status = rowData["Status"];
@@ -267,11 +252,39 @@ export class UsersComponent implements OnInit {
   }
 
 
-  downloadExcelTemplate(){
-    this.userService.downloadExcelTemplate().subscribe(excel =>
-    {
-let file: any = new Blob([excel], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-saveAs(file,'test.xlsx');   
-})
+  //   downloadExcelTemplate(){
+  //     this.userService.downloadExcelTemplate().subscribe(excel =>
+  //     {
+  // let file: any = new Blob([excel], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+  // saveAs(file,'test.xlsx');   
+  // })
+  //   }
+
+  onUserSave() {
+    let formData: UserModel = new UserModel();
+    formData.firstName = this.userForm.get('firstName').value;
+    formData.lastName = this.userForm.get('lastName').value;
+    formData.email = this.userForm.get('email').value;
+    formData.associateId = this.userForm.get('associateId').value;
+    formData.roleID = this.userForm.get('roleId').value;
+    let postData: UserModel[] = [];
+    postData.push(formData);
+    this.userService.saveUser(postData)
+      .subscribe(data => {
+        console.log(data)
+        this.showSuccessToast();
+      });
+  }
+
+  onFormClear() {
+    this.userForm.reset();
+    console.log('clear button clicked');
+  }
+  getRoles() {
+    this.userService.getRoles()
+      .subscribe(data => {
+        console.log(data)
+        this.roles = data;
+      });
   }
 }

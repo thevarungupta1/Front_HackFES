@@ -2,14 +2,15 @@ import { Associate } from './associate.model';
 import { Event } from './event.model';
 
 export class Enrollment{
-    eventId: string;
-    associateId: number;
+    eventID: string;
+    associateID: number;
+    eventDate: string;
     volunteerHours: number;
     travelHours: number;
     status: string;
     iiepCategory: string;
     createdBy: string;
     
-    associate: Associate;
-    event: Event;
+    associates: Associate;
+    events: Event;
     }

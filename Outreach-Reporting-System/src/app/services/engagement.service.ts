@@ -7,7 +7,7 @@ import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class ParticipationService {
+export class EngagementService {
   baseUrl: string = 'https://localhost:44313/api/';
 
   constructor(private http: HttpClient) { }
@@ -36,23 +36,8 @@ export class ParticipationService {
       );
   }
 
-  getEnrollments(): Observable<any> {
+  getAllEnrollments(): Observable<any> {
     return this.http.get<any>(this.baseUrl + 'Enrollment')
-      .pipe(
-        tap(data => {
-          let test = data;
-          console.log(JSON.stringify(data))
-        }),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
-  getUniqueVolunteers(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Enrollment/GetEnrolledUniqueAssociates')
       .pipe(
         tap(data => {
           let test = data;

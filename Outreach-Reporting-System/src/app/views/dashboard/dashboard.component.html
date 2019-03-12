@@ -6,12 +6,12 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Total Associates</h5>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Associates</h5>
                   <span class="h2 font-weight-bold mb-0">{{totalAssociates}}</span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                    <i class="fa fa-arrow-up"></i>
+                  <div class="" style="font-size: 3em; min-height: 64px;">
+                    <i class="fa fa-id-badge"></i>
                   </div>
                 </div>
               </div>
@@ -28,12 +28,12 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Total Volunteers</h5>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Volunteers</h5>
                   <span class="h2 font-weight-bold mb-0">{{totalVolunteers}}</span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                    <i class="ni ni-active-40"></i>
+                  <div class=""  style="font-size: 3em; min-height: 64px;">
+                    <i class="fa fa-users"></i>
                   </div>
                 </div>
               </div>
@@ -50,12 +50,12 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Total Events</h5>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Events</h5>
                   <span class="h2 font-weight-bold mb-0">{{totalEvents}}</span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                    <i class="ni ni-active-40"></i>
+                  <div class=""  style="font-size: 3em; min-height: 64px;">
+                    <i class="fa fa-calendar-check-o"></i>
                   </div>
                 </div>
               </div>
@@ -72,12 +72,13 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Total Volunteering Hours</h5>
-                  <span class="h2 font-weight-bold mb-0">350,897</span>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Volunteering</h5>
+                  <span class="h2 font-weight-bold mb-0">{{totalVolunteerHours}}</span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                    <i class="ni ni-active-40"></i>
+                  <div style="font-size: 3em; min-height: 64px;">
+                    <!--class="icon icon-shape bg-gradient-red text-white rounded-circle shadow"-->
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
                   </div>
                 </div>
               </div>
@@ -93,7 +94,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-sm-5">
-          <h4 class="card-title mb-0">New Volunteers</h4>
+          <h4 class="card-title mb-0">Volunteers Trend</h4>
           <!-- <div class="small text-muted">November 2017</div> -->
         </div><!--/.col-->
         <div class="col-sm-7 d-none d-md-block">
@@ -115,19 +116,20 @@
         [chartType]="mainChartType"></canvas>
       </div> -->
       <div class="chart-wrapper">
-          <div id="columnChart" style="width: 100%; min-height: 550px;"></div>
+          <div id="volunteersGraph" style="width: 100%; min-height: 550px;"></div>
         </div>
     </div>
     <div class="card-footer">
       <div class="row text-center">
-        <div class="col-sm-12 col-md mb-sm-2 mb-0">
-          <div class="text-muted">Visits</div>
-          <strong>29.703 Users (40%)</strong>
-          <div class="progress progress-xs mt-2">
-            <div class="progress-bar bg-success" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="col-xs-12 col-sm-6 col-lg mb-sm-2 mb-0" *ngFor="let data of topData">
+          <div class="text-muted">{{data.key}}</div>
+          <strong>
+            {{data.count}} Volunteers ({{data.percent.toFixed(2)}}%)</strong>
+          <div class="progress progress-xs mt-2" style="background-color:white;">
+            <div class="progress-bar bg-success" role="progressbar" [style.width]="data.percent + '%'" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
-        <div class="col-sm-12 col-md mb-sm-2 mb-0">
+        <!--<div class="col-sm-12 col-md mb-sm-2 mb-0">
           <div class="text-muted">Unique</div>
           <strong>24.093 Users (20%)</strong>
           <div class="progress progress-xs mt-2">
@@ -154,124 +156,26 @@
           <div class="progress progress-xs mt-2">
             <div class="progress-bar" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
   <!--/.card-->
-  <div class="row">
-    <div class="col-sm-6 col-lg-3">
-      <div class="brand-card">
-        <div class="brand-card-header bg-facebook">
-          <i class="fa fa-facebook"></i>
-          <div class="chart-wrapper">
-            <canvas baseChart class="chart"
-            [datasets]="brandBoxChartData1"
-            [labels]="brandBoxChartLabels"
-            [options]="brandBoxChartOptions"
-            [colors]="brandBoxChartColours"
-            [legend]="brandBoxChartLegend"
-            [chartType]="brandBoxChartType"></canvas>
-          </div>
-        </div>
-        <div class="brand-card-body">
-          <div>
-            <div class="text-value">89k</div>
-            <div class="text-uppercase text-muted small">friends</div>
-          </div>
-          <div>
-            <div class="text-value">459</div>
-            <div class="text-uppercase text-muted small">feeds</div>
-          </div>
-        </div>
-      </div>
-    </div><!--/.col-->
-    <div class="col-sm-6 col-lg-3">
-      <div class="brand-card">
-        <div class="brand-card-header bg-twitter">
-          <i class="fa fa-twitter"></i>
-          <div class="chart-wrapper">
-            <canvas baseChart class="chart"
-            [datasets]="brandBoxChartData2"
-            [labels]="brandBoxChartLabels"
-            [options]="brandBoxChartOptions"
-            [colors]="brandBoxChartColours"
-            [legend]="brandBoxChartLegend"
-            [chartType]="brandBoxChartType"></canvas>
-          </div>
-        </div>
-        <div class="brand-card-body">
-          <div>
-            <div class="text-value">973k</div>
-            <div class="text-uppercase text-muted small">followers</div>
-          </div>
-          <div>
-            <div class="text-value">1.792</div>
-            <div class="text-uppercase text-muted small">tweets</div>
-          </div>
-        </div>
-      </div>
-    </div><!--/.col-->
-    <div class="col-sm-6 col-lg-3">
-      <div class="brand-card">
-        <div class="brand-card-header bg-linkedin">
-          <i class="fa fa-linkedin"></i>
-          <div class="chart-wrapper">
-            <canvas baseChart class="chart"
-            [datasets]="brandBoxChartData3"
-            [labels]="brandBoxChartLabels"
-            [options]="brandBoxChartOptions"
-            [colors]="brandBoxChartColours"
-            [legend]="brandBoxChartLegend"
-            [chartType]="brandBoxChartType"></canvas>
-          </div>
-        </div>
-        <div class="brand-card-body">
-          <div>
-            <div class="text-value">500+</div>
-            <div class="text-uppercase text-muted small">contacts</div>
-          </div>
-          <div>
-            <div class="text-value">292</div>
-            <div class="text-uppercase text-muted small">feeds</div>
-          </div>
-        </div>
-      </div>
-    </div><!--/.col-->
-    <div class="col-sm-6 col-lg-3">
-      <div class="brand-card">
-        <div class="brand-card-header bg-google-plus">
-          <i class="fa fa-google-plus"></i>
-          <div class="chart-wrapper">
-            <canvas baseChart class="chart"
-            [datasets]="brandBoxChartData4"
-            [labels]="brandBoxChartLabels"
-            [options]="brandBoxChartOptions"
-            [colors]="brandBoxChartColours"
-            [legend]="brandBoxChartLegend"
-            [chartType]="brandBoxChartType"></canvas>
-          </div>
-        </div>
-        <div class="brand-card-body">
-          <div>
-            <div class="text-value">894</div>
-            <div class="text-uppercase text-muted small">followers</div>
-          </div>
-          <div>
-            <div class="text-value">92</div>
-            <div class="text-uppercase text-muted small">circles</div>
-          </div>
-        </div>
-      </div>
-    </div><!--/.col-->
-  </div><!--/.row-->
+ <!--/.row-->
   <div class="row">
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          Traffic &amp; Sales
+          New Vs Recurring Volunteers
         </div>
         <div class="card-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="chart-wrapper">
+                <div id="doubleLineChart" style="width: 100%; min-height: 550px;"></div>
+              </div>
+            </div>
+          </div>
           <div class="row">
             <div class="col-sm-6">
               <div class="row">
@@ -294,111 +198,115 @@
               <div class="chart-wrapper">
                 <div id="barChart" style="width: 100%; min-height: 550px;"></div>
               </div>
+              <div class="chart-wrapper">
+                <div id="chartdiv1" style="width: 100%; min-height: 550px;"></div>
+              </div>
               <!-- <div class="progress-group mb-4" *ngFor="let data of yearlyData">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    {{data.year}} - {{data.newVolunteer}} - {{data.recurVolunteer}}
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div> -->
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        {{data.year
+            }} - {{data.newVolunteer}} - {{data.recurVolunteer}}
+            </span>
+</div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div> -->
               <!-- <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Tuesday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 56%" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 94%" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Wednesday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Thursday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 91%" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Friday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 22%" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 73%" aria-valuenow="73" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Saturday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 53%" aria-valuenow="53" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-4">
-                <div class="progress-group-prepend">
-                  <span class="progress-group-text">
-                    Sunday
-                  </span>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 9%" aria-valuenow="9" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 69%" aria-valuenow="69" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div> -->
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Tuesday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 56%" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 94%" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-group mb-4">
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Wednesday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-group mb-4">
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Thursday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 91%" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-group mb-4">
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Friday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 22%" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 73%" aria-valuenow="73" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-group mb-4">
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Saturday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 53%" aria-valuenow="53" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-group mb-4">
+    <div class="progress-group-prepend">
+      <span class="progress-group-text">
+        Sunday
+      </span>
+    </div>
+    <div class="progress-group-bars">
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 9%" aria-valuenow="9" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="progress progress-xs">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 69%" aria-valuenow="69" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div> -->
             </div><!--/.col-->
             <div class="col-sm-6">
               <div class="row">
@@ -418,81 +326,8 @@
                 </div><!--/.col-->
               </div><!--/.row-->
               <hr class="mt-0">
-              <div class="progress-group">
-                <div class="progress-group-header">
-                  <i class="icon-user progress-group-icon"></i>
-                  <div>Male</div>
-                  <div class="ml-auto font-weight-bold">43%</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group mb-5">
-                <div class="progress-group-header">
-                  <i class="icon-user-female progress-group-icon"></i>
-                  <div>Female</div>
-                  <div class="ml-auto font-weight-bold">37%</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group">
-                <div class="progress-group-header align-items-end">
-                  <i class="icon-globe progress-group-icon"></i>
-                  <div>Organic Search</div>
-                  <div class="ml-auto font-weight-bold mr-2">191.235</div>
-                  <div class="text-muted small">(56%)</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 56%" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group">
-                <div class="progress-group-header align-items-end">
-                  <i class="icon-social-facebook progress-group-icon"></i>
-                  <div>Facebook</div>
-                  <div class="ml-auto font-weight-bold mr-2">51.223</div>
-                  <div class="text-muted small">(15%)</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group">
-                <div class="progress-group-header align-items-end">
-                  <i class="icon-social-twitter progress-group-icon"></i>
-                  <div>Twitter</div>
-                  <div class="ml-auto font-weight-bold mr-2">37.564</div>
-                  <div class="text-muted small">(11%)</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 11%" aria-valuenow="11" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="progress-group">
-                <div class="progress-group-header align-items-end">
-                  <i class="icon-social-linkedin progress-group-icon"></i>
-                  <div>LinkedIn</div>
-                  <div class="ml-auto font-weight-bold mr-2">27.319</div>
-                  <div class="text-muted small">(8%)</div>
-                </div>
-                <div class="progress-group-bars">
-                  <div class="progress progress-xs">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 8%" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
+             <div class="chart-wrapper">
+                <div id="columnLineMix" style="width: 100%; min-height: 550px;"></div>
               </div>
             </div><!--/.col-->
           </div><!--/.row-->

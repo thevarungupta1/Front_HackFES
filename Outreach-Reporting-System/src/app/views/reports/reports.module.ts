@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
-import { ParticipationComponent } from './participation.component';
+import { ParticipationComponent } from './participation/participation.component';
 
-import { GenericComponent } from './generic.component';
+import { GenericComponent } from './generic/generic.component';
 
 // Tabs Component
 import { TabsModule } from 'ngx-bootstrap/tabs';
@@ -21,15 +21,15 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 // Pagination Component
 import { PaginationModule } from 'ngx-bootstrap/pagination';
-import { RetentionComponent } from './retention.component';
+import { RetentionComponent } from './retention/retention.component';
 
 // Popover Component
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { EngagementComponent } from './engagement.component';
+import { EngagementComponent } from './engagement/engagement.component';
 
 // Progress Component
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
-import { AcquisitionComponent } from './acquisition.component';
+import { AcquisitionComponent } from './acquisition/acquisition.component';
 
 // Tooltip Component
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
@@ -37,6 +37,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 // Components Routing
 import { ReportsRoutingModule } from './reports-routing.module';
+import {TableModule} from 'primeng/table';
+import {DialogModule} from 'primeng/dialog';
 
 @NgModule({
   imports: [
@@ -50,7 +52,9 @@ import { ReportsRoutingModule } from './reports-routing.module';
     PaginationModule.forRoot(),
     PopoverModule.forRoot(),
     ProgressbarModule.forRoot(),
-    TooltipModule.forRoot()
+    TooltipModule.forRoot(),
+    TableModule,
+    DialogModule
   ],
   declarations: [
     ParticipationComponent,

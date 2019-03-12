@@ -1,13 +1,21 @@
 import { Component, OnDestroy, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { navItems } from './../../_nav';
+import { OnInit } from '@angular/core';
 
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './default-layout.component.html'
 })
-export class DefaultLayoutComponent implements OnDestroy {
+export class DefaultLayoutComponent implements OnInit, OnDestroy {
+
+  currentYear: number;
+
+  ngOnInit(){
+    this.currentYear = new Date().getFullYear();
+  }
+
   public navItems = navItems;
   public sidebarMinimized = true;
   private changes: MutationObserver;

@@ -23,24 +23,25 @@ am4core.useTheme(am4themes_animated);
 export class ParticipationComponent implements OnInit {
 
   private chart: am4charts.XYChart;
+  public innerWidth: any;
 
-  showDesignationData:boolean = false;
+  showDesignationData: boolean = false;
   allAssociates: Associate[] = [];
   allEvents: Event[] = [];
   allEnrollments: Enrollment[] = [];
-  allVolunteers: Associate[] = [];
-allUniqueVolunteers: Associate[]=[];
+  allVolunteers: any[] = [];
+  allUniqueVolunteers: Associate[] = [];
 
-totalVolunteerHours: number;
-totalTravelHours: number;
-totalVolunteeringHours: number;
+  totalVolunteerHours: number;
+  totalTravelHours: number;
+  totalVolunteeringHours: number;
 
   totalAssociates: number;
   totalVolunteers: number;
   uniqueVolunteers: number;
-  
-  coverage: number;
-  averageFreqVolunteer: number;
+
+  coverage: string;
+  averageFreqVolunteer: string;
   avgHourAssociate: number;
   avgHourVolunteer: number;
   totalEvents: number;
@@ -48,7 +49,7 @@ totalVolunteeringHours: number;
   avgHoursPerEventWeekend: number;
   avgVolunteersEvent: number;
   avgHourVolunteerEvent: number;
-  
+
   designationWiseAssociates: any[];
   designationWiseVolunteers: any[];
 
@@ -60,45 +61,23 @@ totalVolunteeringHours: number;
 
   countryWiseAssociates: any[];
   countryWiseVolunteers: any[];
-  
-  cols: any[];
-  constructor(private zone: NgZone, private participationService: ParticipationService) { }
+
+  isVolunteersVsAssociates: boolean = false;
+  combinedResult: any[];
+  constructor(private zone: NgZone, private participationService: ParticipationService) {
+    this.getScreenSize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  getScreenSize(event?) {
+    this.innerWidth = window.innerWidth;
+  }
 
   ngOnInit(): void {
     this.getAllAssociates();
     //this.getAllEnrollments();
     this.innerWidth = window.innerWidth;
 
-    this.cols = [
-      { field: 'designation', header: 'Designation' },
-      { field: 'volunteers', header: 'Volunteers' }
-    ];
-    
-  //   this.items = [
-  //     {
-  //         label: 'File',
-  //         items: [{
-  //                 label: 'New', 
-  //                 icon: 'pi pi-fw pi-plus',
-  //                 items: [
-  //                     {label: 'Project'},
-  //                     {label: 'Other'},
-  //                 ]
-  //             },
-  //             {label: 'Open'},
-  //             {label: 'Quit'}
-  //         ]
-  //     },
-  //     {
-  //         label: 'Edit',
-  //         icon: 'pi pi-fw pi-pencil',
-  //         items: [
-  //             {label: 'Delete', icon: 'pi pi-fw pi-trash'},
-  //             {label: 'Refresh', icon: 'pi pi-fw pi-refresh'}
-  //         ]
-  //     }
-  // ];
-  
   }
 
   ngAfterViewInit() {
@@ -126,421 +105,401 @@ totalVolunteeringHours: number;
   }
 
   getAllAssociates() {
-    this.participationService.getAllAssociates().subscribe(data => 
-      {
-        this.allAssociates = data; 
-        this.allUniqueVolunteers = data.filter(function(item, pos){
-          return data.indexOf(item)== pos; 
-        });
-        this.getAllEvents();
-      });
+    this.participationService.getAllAssociates().subscribe(data => {
+      this.allAssociates = data;
+      this.totalAssociates = data.length;
+      this.getAllEvents();
+    });
   }
   getAllEvents() {
     this.participationService.getAllEvents().subscribe(data => {
       this.allEvents = data;
-      this.getAllVolunteers();      
+      this.getEnrollments();
     });
   }
-  getAllVolunteers() {
-    this.participationService.getAllVolunteers().subscribe(data => 
-      {
-        this.allVolunteers = data;        
-        this.metricCalculate();
-        this.getChartData();
-      });
+  getEnrollments() {
+    this.participationService.getEnrollments().subscribe(data => {
+      this.allEnrollments = data;
+
+      this.getVolunteers();
+    });
   }
-          
-  getChartData(){
+
+  getVolunteers() {
+    this.participationService.getUniqueVolunteers().subscribe(data => {
+      this.allUniqueVolunteers = data;
+      //this.allUniqueVolunteers = data.filter(function (item, pos) {
+      //  return data.indexOf(item) == pos;
+      //});
+
+      this.metricCalculate();
+      this.getAllChartData();
+    });
+  }
+  
+  joinRecords(){
+    this.allVolunteers =[];
+  this.allEnrollments.map((enrollment)=>{
+    let associate = this.allAssociates.find((en)=> enrollment.associateID === en.id);
+    //let event = this.allEvents.find((ev)=> enrollment.eventID === ev.id);
+    if(associate)
+    this.allVolunteers.push(Object.assign(enrollment, associate));
+     //Object.assign(a,obj2);
+    //return a;
+   });
+   console.log('combinedResult');
+   console.log(this.allVolunteers);
+    this.metricCalculate();
+      this.getAllChartData();
+  }
+
+  getAllChartData(){
+    console.log('test1');
     this.getDesignationWiseAssociates();
     this.getDesignationWiseVolunteers();
     this.getBUWiseAssociates();
     this.getBUWiseVolunteers();
     this.getBaseLocationWiseAssociates();
     this.getBaseLocationWiseVolunteers();
-    this.getCountryWiseAssociates();
-    this.getCountryWiseVolunteers();
+   // this.getCountryWiseAssociates();
+    //this.getCountryWiseVolunteers();
     this.showCharts();
   }
 
-  showCharts(){
-    this.designationChart();
+  showCharts() {
+    this.pieChart('DesignationWiseReport');
+    //this.stacked3dChart();
+    this.layeredColumnChart("DesignationWiseVolunteersVsAssociates");
+    this.layeredColumnChart("BuWiseVolunteersVsAssociates");
+    this.layeredColumnChart("LocationWiseVolunteersVsAssociates");
+    this.columnChart3d('BuWiseReport');
+    this.doughnut('LocationWiseReport');
   }
-  getDesignationWiseAssociates(){
+  getDesignationWiseAssociates() {
     this.designationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.designation];
     });
   }
-  getDesignationWiseVolunteers(){
-    this.designationWiseVolunteers = this.groupBy(this.allVolunteers, function (item) {
+  getDesignationWiseVolunteers() {
+    this.designationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.designation];
     });
   }
-  getBUWiseAssociates(){
+  getBUWiseAssociates() {
     this.buWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.businessUnit];
     });
   }
-  getBUWiseVolunteers(){
-    this.buWiseVolunteers = this.groupBy(this.allVolunteers, function (item) {
+  getBUWiseVolunteers() {
+    this.buWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.businessUnit];
     });
   }
-  getBaseLocationWiseAssociates(){
+  getBaseLocationWiseAssociates() {
     this.locationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.baseLocation];
     });
   }
-  getBaseLocationWiseVolunteers(){
-    this.locationWiseVolunteers = this.groupBy(this.allVolunteers, function (item) {
+  getBaseLocationWiseVolunteers() {
+    this.locationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.baseLocation];
     });
   }
-  getCountryWiseAssociates(){
-    this.countryWiseAssociates = this.groupBy(this.allAssociates, function (item) {
-      return [item.country];
-    });
-  }
-  getCountryWiseVolunteers(){
-    this.countryWiseVolunteers = this.groupBy(this.allVolunteers, function (item) {
-      return [item.country];
-    });
-  }
+  //getCountryWiseAssociates() {
+  //  this.countryWiseAssociates = this.groupBy(this.allAssociates, function (item) {
+  //    return [item.country];
+  //  });
+  //}
+  //getCountryWiseVolunteers() {
+  //  this.countryWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
+  //    return [item.country];
+  //  });
+  //}
 
   metricCalculate() {
-    
-    // let eventGroup = this.groupBy(this.allEnrollments, function (item) {
-    //   return [item.eventID];
-    // });
-    // let associateGroup = [];
-    // associateGroup = this.groupBy(this.allEnrollments, function (item) {
-    //   return [item.associateID];
-    // });
-    // let result = [];
-    // result = this.groupBy(this.allEnrollments, function (item) {
-    //   return [item.associates.designation];
-    // });
-    // this.designationWiseAssociates = [];
-    // result.forEach(associates => {
-    //   this.designationWiseAssociates.push({ designation: associates[0].associates.designation, associates: associates.length });
-    // });
-    // let result1 = [];
-
-    // result1 = this.groupBy(this.allAssociates, function (item) {
-    //   return [item.designation];
-    // });
-    // this.designationWiseVolunteers = [];
-    // result1.forEach(associates => {
-    //   this.designationWiseVolunteers.push({ designation: associates[0].designation, volunteers: associates.length });
-    // });
-
-    // result1 = this.groupBy(this.allEnrollments, function (item) {
-    //   return [item.associates.businessUnit];
-    // });
-    // this.buWiseVolunteers = [];
-    // result1.forEach(associates => {
-    //   this.buWiseVolunteers.push({ businessUnit: associates[0].associates.businessUnit, volunteers: associates.length });
-    // });
-
-    // result1 = this.groupBy(this.allEnrollments, function (item) {
-    //   return [item.associates.baseLocation];
-    // });
-    // this.locationWiseVolunteers = [];
-    // result1.forEach(associates => {
-    //   this.locationWiseVolunteers.push({ baseLocation: associates[0].associates.baseLocation, volunteers: associates.length });
-    // });
-    // gruped.forEach(x=>
-    // {
-    //   let totalVolunteers = x.reduce(this.getSum);
-    //   result.push({'eventID':x[0].eventID, 'volunteerHours': totalVolunteers});
-    // });
 
     this.totalAssociates = this.allAssociates.length;
-    this.totalVolunteers = this.allVolunteers.length;
-    this.allUniqueVolunteers = this.allVolunteers.filter((v,i) => this.allVolunteers.indexOf(v) === i);
-this.uniqueVolunteers = this.allUniqueVolunteers.length;
+    this.totalVolunteers = this.allEnrollments.length;
+    this.uniqueVolunteers = this.allUniqueVolunteers.length;
 
     let total: number = 0;
     let total1: number = 0;
     let totalVolunteers: number = 0;
-this.totalTravelHours = 0;
-this.totalVolunteerHours = 0;
-console.log('this.allEvents');
-console.log(this.allEvents);
-let weekdayHours = 0;
-let weekendHours = 0;
-let weekdayCount = 0;
-let weekendCount = 0;
-      this.allEvents.forEach(event => {
+    this.totalTravelHours = 0;
+    this.totalVolunteerHours = 0;
+    let weekdayHours = 0;
+    let weekendHours = 0;
+    let weekdayCount = 0;
+    let weekendCount = 0;
+    this.allEvents.forEach(event => {
 
-        this.totalTravelHours = this.totalTravelHours + event.totalTravelHours;
-        this.totalVolunteerHours = this.totalVolunteerHours + event.totalVolunteerHours;
-        total = total + event.totalTravelHours + event.totalVolunteerHours;
-        total1 = 0;
-        let d = new Date(event.date);
-        let n = d.getDay();
-        if (n == 0 || n == 6) {
-          total1 = this.totalTravelHours + event.totalTravelHours;
-          weekendHours = weekendHours + total1;
-          weekendCount++;
-        } else {
-          total1 = this.totalTravelHours + event.totalTravelHours;
-          weekdayHours = weekdayHours + total1;
-          weekdayCount++;
-        }       
-      });
-      this.totalVolunteeringHours = total;
+      this.totalTravelHours = this.totalTravelHours + event.totalTravelHours;
+      this.totalVolunteerHours = this.totalVolunteerHours + event.totalVolunteerHours;
+      total = total + event.totalTravelHours + event.totalVolunteerHours;
+      total1 = 0;
+      let d = new Date(event.date);
+      let n = d.getDay();
+      if (n == 0 || n == 6) {
+        total1 = this.totalTravelHours + event.totalTravelHours;
+        weekendHours = weekendHours + total1;
+        weekendCount++;
+      } else {
+        total1 = this.totalTravelHours + event.totalTravelHours;
+        weekdayHours = weekdayHours + total1;
+        weekdayCount++;
+      }
+    });
+    this.totalVolunteeringHours = total;
 
-      this.coverage = this.uniqueVolunteers / this.totalAssociates;
-      
-    this.averageFreqVolunteer = this.uniqueVolunteers / this.totalVolunteers;
-    
+    console.log('this.uniqueVolunteers');
+    console.log(this.uniqueVolunteers);
+    console.log(this.totalAssociates);
+
+   let cover =  this.uniqueVolunteers / this.totalAssociates;
+    this.coverage = cover.toFixed(2);
+      let avgFreq = this.uniqueVolunteers / this.totalVolunteers;
+    this.averageFreqVolunteer = avgFreq.toFixed(2);
 
     this.avgHourAssociate = Math.floor(this.totalVolunteeringHours / this.totalAssociates);
     this.avgHourVolunteer = Math.floor(this.totalVolunteeringHours / this.uniqueVolunteers);
     this.totalEvents = this.allEvents.length;
- 
+
     let avgVolunteeredHours = 0;
-       
+
     this.avgHoursPerEventWeekday = weekdayHours / weekdayCount;
     this.avgHoursPerEventWeekend = weekendHours / weekendCount;
 
     this.avgVolunteersEvent = this.totalVolunteers / this.totalEvents;
 
-    this.avgHourVolunteerEvent = Math.floor(avgVolunteeredHours / this.totalEvents);    
+    this.avgHourVolunteerEvent = Math.floor(avgVolunteeredHours / this.totalEvents);
   }
 
-  public innerWidth: any;
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.innerWidth = window.innerWidth;
-    //console.log(this.innerWidth);
-  }
 
-  getUniqueVolunteers() {
-
-  }
-  
   getSum(total, arr) {
     let prev: number = isNaN(total.volunteerHours) ? 0 : total.volunteerHours;
     let cur: number = isNaN(arr.volunteerHours) ? 0 : arr.volunteerHours;
     return prev + cur;
   }
-  designationChart(type?: string){
-    this.zone.runOutsideAngular(() => {
-      let chart;
-      if(type == 'pyrmid')
-       chart = am4core.create("chartdiv", am4charts.SlicedChart);
-       else if(type == 'doughnut')
-       chart = am4core.create("chartdiv", am4charts.PieChart3D);
-       else
-       chart = am4core.create("chartdiv", am4charts.PieChart);
 
-      //enable responsive
-      chart.responsive.enabled = true;
+  getDesignationWiseAssociatesData(): any {
+    let data = [];
+    this.designationWiseAssociates.forEach(associates =>
+      data.push({ designation: associates[0].designation, associates: associates.length }));
+    return data;
+  }
+  getDesignationWiseVolunteersData(): any {
+    let data = [];
+    this.designationWiseVolunteers.forEach(volunteers =>
+      data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }));
+      console.log(data);
+    return data;
+  }
+  getDesignationWiseVolunteerVsAssociate(): any {
+    let data = [];
+    this.designationWiseVolunteers.forEach(volunteers => {
+      let associates = this.allAssociates.filter(f => f.designation == volunteers[0].designation);
+      data.push({ designation: volunteers[0].designation, volunteers: volunteers.length, associates: associates.length })
+    });  
+    console.log(data);
+    return data;
+  }
+  getBUWiseAssociatesData(): any {
+    let data = [];
+    this.buWiseAssociates.forEach(associates =>
+      data.push({ businessUnit: associates[0].businessUnit, associates: associates.length }));
+    return data;
+  }
+  getBUWiseVolunteersData(): any {
+    let data = [];
+    this.buWiseVolunteers.forEach(volunteers =>
+      data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers.length }));
+    return data;
+  }
+  getBuWiseVolunteerVsAssociate(): any {
+    let data = [];
+    this.buWiseVolunteers.forEach(volunteers => {
+      let associates = this.allAssociates.filter(f => f.businessUnit == volunteers[0].businessUnit);
+      data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers.length, associates: associates.length })
+    });
+    console.log(data);
+    return data;
+  }
+  getLocationWiseAssociatesData(): any {
+    let data = [];
+    this.locationWiseAssociates.forEach(associates =>
+      data.push({ baseLocation: associates[0].baseLocation, associates: associates.length }));
+    return data;
+  }
+  getLocationWiseVolunteersData(): any {
+    let data = [];
+    this.locationWiseVolunteers.forEach(volunteers =>
+      data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers.length }));
+    return data;
+  }
+  getLocationWiseVolunteerVsAssociate(): any {
+    let data = [];
+    this.locationWiseVolunteers.forEach(volunteers => {
+      let associates = this.allAssociates.filter(f => f.baseLocation == volunteers[0].baseLocation);
+      data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers.length, associates: associates.length })
+    });
+    console.log(data);
+    return data;
+  }
+
+  getChartData(chartType: string): any {
+    console.log('test4');
+    console.log(this.designationWiseVolunteers);
+    if (chartType == 'DesignationWiseReport') {
+      return this.getDesignationWiseVolunteersData();
+    }
       
-      //data source
-      let data = [];
-      this.designationWiseVolunteers.forEach(volunteers =>
-        data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }))
-      chart.data = data;
+    else if (chartType == 'BuWiseReport')
+      return this.getBUWiseVolunteersData();
+    else if (chartType == 'LocationWiseReport')
+      return this.getLocationWiseVolunteersData();
+    else return null;
+  }
+
+  pieChart(chartContainer: string) {
+    this.zone.runOutsideAngular(() => {
+      let chart = am4core.create(chartContainer, am4charts.PieChart);
 
       // Enable export
       chart.exporting.menu = new am4core.ExportMenu();
-      chart.exporting.filePrefix = 'test';
+      chart.exporting.filePrefix = chartContainer;
 
-      //legend
-      chart.legend = new am4charts.Legend();
-      chart.legend.position = "right";
+      //enable responsive
+      chart.responsive.enabled = true;
+      chart.responsive.useDefault = false
+      chart.responsive.enabled = true;
 
-      // Add and configure Series
-      let pieSeries;
-      if(type == 'pyrmid')
-     {
-      pieSeries = chart.series.push(new am4charts.PyramidSeries());
-      pieSeries.alignLabels = true;
-      pieSeries.valueIs = "height";
-     }
-      else if(type == 'doughnut')
-      pieSeries = chart.series.push(new am4charts.PieSeries3D());
-      else
-      pieSeries = chart.series.push(new am4charts.PieSeries());     
-
-      pieSeries.dataFields.value = "volunteers";
-      pieSeries.dataFields.category = "designation";
-
-      //remove label
-      // pieSeries.ticks.template.disabled = true;
-      // pieSeries.alignLabels = false;
-      // pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
-      // pieSeries.labels.template.radius = am4core.percent(-40);
-      // pieSeries.labels.template.fill = am4core.color("white");
-      //chart.dataSource.url = "pie_chart_data.json";
-    });
-  }
-  pieChart(type?) {
-    this.zone.runOutsideAngular(() => {
-      let chart = am4core.create("chartdiv", am4charts.PieChart);
-      
-
-      let data = [];
-      this.designationWiseVolunteers.forEach(volunteers =>
-        data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }))
-      chart.data = data;
-      // Enable export
-chart.exporting.menu = new am4core.ExportMenu();
-
-//enable responsive
-chart.responsive.enabled = true;
-chart.responsive.useDefault = false
-chart.responsive.enabled = true;
-
-chart.responsive.rules.push({
-  relevant: function(target) {
-    if (target.pixelWidth <= 400) { return true; }    
-    return false;
-  },
-  state: function(target, stateId) {
-    if (target instanceof am4charts.Chart) {
-      var state = target.states.create(stateId);
-      state.properties.paddingTop = 5;
-      state.properties.paddingRight = 15;
-      state.properties.paddingBottom = 5;
-      state.properties.paddingLeft = 0;
-      return state;
-    }
-    return null;
-  }
-});
-
-    //legend
-      chart.exporting.filePrefix = 'designation wise report';
-      chart.legend = new am4charts.Legend();
-      chart.legend.position = "right";
+      chart.responsive.rules.push({
+        relevant: function (target) {
+          if (target.pixelWidth <= 400) { return true; }
+          return false;
+        },
+        state: function (target, stateId) {
+          if (target instanceof am4charts.Chart) {
+            var state = target.states.create(stateId);
+            state.properties.paddingTop = 5;
+            state.properties.paddingRight = 15;
+            state.properties.paddingBottom = 5;
+            state.properties.paddingLeft = 0;
+            return state;
+          }
+          return null;
+        }
+      });
 
       // Add and configure Series
       let pieSeries = chart.series.push(new am4charts.PieSeries());
-      pieSeries.dataFields.value = "volunteers";
-      pieSeries.dataFields.category = "designation";
 
-      //remove label
-      //pieSeries.ticks.template.disabled = true;
-      //pieSeries.alignLabels = false;
-      //pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
-      //pieSeries.labels.template.radius = am4core.percent(-40);
-      //pieSeries.labels.template.fill = am4core.color("white");
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        //remove label
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        pieSeries.labels.template.fill = am4core.color("white");
+      }
       //chart.dataSource.url = "pie_chart_data.json";
+
+      //data source
+      chart.data = this.getChartData(chartContainer);
+
+
+      let category: string;
+      let titleText: string;
+      let valueY: string;
+      let seriesName: string;
+      if (chartContainer == 'DesignationWiseReport') {
+        category = "designation";
+      }
+      else if (chartContainer == 'BuWiseReport') {
+        category = "businessUnit";
+      }
+      else if (chartContainer == 'LocationWiseReport') {
+        category = "baseLocation";
+      }
+
+      pieSeries.dataFields.value = "volunteers";
+      pieSeries.dataFields.category = category;
     });
   }
 
-  pieChart1() {
-    this.zone.runOutsideAngular(() => {
-      let chart = am4core.create("chartdiv7", am4charts.PieChart3D);
-      chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+  columnChart(chartContainer: string) {
+    // Create chart instance
+    let chart = am4core.create(chartContainer, am4charts.XYChart);
 
-      chart.legend = new am4charts.Legend();
+    //data source
+    chart.data = this.getChartData(chartContainer);
 
-      chart.data = this.buWiseVolunteers;
-// Enable export
-chart.exporting.menu = new am4core.ExportMenu();
-
-chart.responsive.useDefault = false
-chart.responsive.enabled = true;
-
-chart.responsive.rules.push({
-  relevant: function(target) {
-    if (target.pixelWidth <= 400) {
-      return true;
+    let category: string;
+    let titleText: string;
+    let valueY: string;
+    let seriesName: string;
+    if (chartContainer == 'DesignationWiseReport') {
+      category = "designation";
+      titleText = "Designation";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
     }
-    
-    return false;
-  },
-  state: function(target, stateId) {
-    if (target instanceof am4charts.Chart) {
-      var state = target.states.create(stateId);
-      state.properties.paddingTop = 5;
-      state.properties.paddingRight = 15;
-      state.properties.paddingBottom = 5;
-      state.properties.paddingLeft = 0;
-      return state;
+    else if (chartContainer == 'BuWiseReport') {
+      category = "businessUnit";
+      titleText = "Business Unit";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
     }
-    return null;
-  }
-});
+    else if (chartContainer == 'LocationWiseReport') {
+      category = "baseLocation";
+      titleText = "Base Location";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
+    }
 
-      let series = chart.series.push(new am4charts.PieSeries3D());
-      series.dataFields.value = "volunteers";
-      series.dataFields.category = "businessUnit";
+    // Create axes
+
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = category;
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 30;
+
+    categoryAxis.renderer.labels.template.adapter.add("dy", function (dy, target) {
+      if (target.dataItem && target.dataItem.index && 2 == 2) {
+        return dy + 25;
+      }
+      return dy;
     });
-  }
-  doughnut() {
-    let chart = am4core.create("chartdiv3", am4charts.PieChart);
 
-    // Set inner radius
-    chart.innerRadius = am4core.percent(50);
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
-    
-    // Add and configure Series
+    // Create series
+    let series = chart.series.push(new am4charts.ColumnSeries());
+  
     // Enable export
-chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = chartContainer;
 
-chart.responsive.useDefault = false
-chart.responsive.enabled = true;
-
-chart.responsive.rules.push({
-  relevant: function(target) {
-    if (target.pixelWidth <= 400) {
-      return true;
-    }
-    
-    return false;
-  },
-  state: function(target, stateId) {
-    if (target instanceof am4charts.Chart) {
-      var state = target.states.create(stateId);
-      state.properties.paddingTop = 5;
-      state.properties.paddingRight = 15;
-      state.properties.paddingBottom = 5;
-      state.properties.paddingLeft = 0;
-      return state;
-    }
-    return null;
-  }
-});
-chart.data = this.locationWiseVolunteers;
-
-    let pieSeries = chart.series.push(new am4charts.PieSeries());
-    pieSeries.dataFields.value = "volunteers";
-    pieSeries.dataFields.category = "baseLocation";
-    pieSeries.slices.template.stroke = am4core.color("#fff");
-    pieSeries.slices.template.strokeWidth = 2;
-    pieSeries.slices.template.strokeOpacity = 1;
-
-    // This creates initial animation
-    pieSeries.hiddenState.properties.opacity = 1;
-    pieSeries.hiddenState.properties.endAngle = -90;
-    pieSeries.hiddenState.properties.startAngle = -90;
-
-  }
-
-  pyramid() {
-    let chart = am4core.create("chartdiv4", am4charts.SlicedChart);
-    chart.paddingBottom = 30;
-
-    // let data = this.designationWiseVolunteers.sort(function (a, b) {
-    //   return a.volunteers - b.volunteers
-    // })
+    //enable responsive
+    chart.responsive.enabled = true;
     chart.responsive.useDefault = false
     chart.responsive.enabled = true;
-    
+
     chart.responsive.rules.push({
-      relevant: function(target) {
-        if (target.pixelWidth <= 400) {
-          return true;
-        }
-        
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) { return true; }
         return false;
       },
-      state: function(target, stateId) {
+      state: function (target, stateId) {
         if (target instanceof am4charts.Chart) {
           var state = target.states.create(stateId);
           state.properties.paddingTop = 5;
@@ -552,15 +511,640 @@ chart.data = this.locationWiseVolunteers;
         return null;
       }
     });
-    //chart.data = data;
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        // //remove label
+        // series.ticks.template.disabled = true;
+        // series.alignLabels = false;
+        // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        // series.labels.template.radius = am4core.percent(-40);
+        // series.labels.template.fill = am4core.color("white");
+      }
 
+    series.dataFields.valueY = "volunteers";
+    series.dataFields.categoryX = category;
+    series.name = seriesName;
+    series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series.columns.template.fillOpacity = .8;
+
+    let columnTemplate = series.columns.template;
+    columnTemplate.strokeWidth = 2;
+    columnTemplate.strokeOpacity = 1;
+
+    // This creates initial animation
+    series.hiddenState.properties.opacity = 1;
+  }
+
+  columnChart3d(chartContainer: string) {
+    // Create chart instance
+    let chart = am4core.create(chartContainer, am4charts.XYChart3D);
+
+    //data source
+    chart.data = this.getChartData(chartContainer);
+
+    let category: string;
+    let titleText: string;
+    let valueY: string;
+    let seriesName: string;
+    if (chartContainer == 'DesignationWiseReport') {
+      category = "designation";
+      titleText = "Designation";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
+    }
+    else if (chartContainer == 'BuWiseReport') {
+      category = "businessUnit";
+      titleText = "Business Unit";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
+    }
+    else if (chartContainer == 'LocationWiseReport') {
+      category = "baseLocation";
+      titleText = "Base Location";
+      valueY = "volunteers";
+      seriesName = "Volunteers";
+    }
+
+    // Create axes
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = category;
+    categoryAxis.renderer.labels.template.rotation = 270;
+    categoryAxis.renderer.labels.template.hideOversized = false;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.labels.template.horizontalCenter = "right";
+    categoryAxis.renderer.labels.template.verticalCenter = "middle";
+    categoryAxis.tooltip.label.rotation = 270;
+    categoryAxis.tooltip.label.horizontalCenter = "right";
+    categoryAxis.tooltip.label.verticalCenter = "middle";
+
+
+
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.title.text = titleText;
+    valueAxis.title.fontWeight = "bold";
+
+    // Create series
+    let series = chart.series.push(new am4charts.ColumnSeries3D());
+
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = chartContainer;
+
+    //enable responsive
+    chart.responsive.enabled = true;
+    chart.responsive.useDefault = false
+    chart.responsive.enabled = true;
+
+    chart.responsive.rules.push({
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) { return true; }
+        return false;
+      },
+      state: function (target, stateId) {
+        if (target instanceof am4charts.Chart) {
+          var state = target.states.create(stateId);
+          state.properties.paddingTop = 5;
+          state.properties.paddingRight = 15;
+          state.properties.paddingBottom = 5;
+          state.properties.paddingLeft = 0;
+          return state;
+        }
+        return null;
+      }
+    });
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        // //remove label
+        // series.ticks.template.disabled = true;
+        // series.alignLabels = false;
+        // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        // series.labels.template.radius = am4core.percent(-40);
+        // series.labels.template.fill = am4core.color("white");
+      }
+
+    series.dataFields.valueY = valueY;
+    series.dataFields.categoryX = category;
+    series.name = seriesName;
+    series.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series.columns.template.fillOpacity = .8;
+
+    let columnTemplate = series.columns.template;
+    columnTemplate.strokeWidth = 2;
+    columnTemplate.strokeOpacity = 1;
+    columnTemplate.stroke = am4core.color("#FFFFFF");
+
+    columnTemplate.adapter.add("fill", (fill, target) => {
+      return chart.colors.getIndex(target.dataItem.index);
+    })
+
+    columnTemplate.adapter.add("stroke", (stroke, target) => {
+      return chart.colors.getIndex(target.dataItem.index);
+    })
+
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.lineX.strokeOpacity = 0;
+    chart.cursor.lineY.strokeOpacity = 0;
+
+  }
+
+  doughnut(chartContainer: string) {
+    let chart = am4core.create(chartContainer, am4charts.PieChart);
+
+    // Set inner radius
+    chart.innerRadius = am4core.percent(50);
+
+     //data source
+    chart.data = this.getChartData(chartContainer);
+
+    let pieSeries = chart.series.push(new am4charts.PieSeries());
+
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = chartContainer;
+
+    //enable responsive
+    chart.responsive.enabled = true;
+    chart.responsive.useDefault = false
+    chart.responsive.enabled = true;
+
+    chart.responsive.rules.push({
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) { return true; }
+        return false;
+      },
+      state: function (target, stateId) {
+        if (target instanceof am4charts.Chart) {
+          var state = target.states.create(stateId);
+          state.properties.paddingTop = 5;
+          state.properties.paddingRight = 15;
+          state.properties.paddingBottom = 5;
+          state.properties.paddingLeft = 0;
+          return state;
+        }
+        return null;
+      }
+    });
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        // //remove label
+        // series.ticks.template.disabled = true;
+        // series.alignLabels = false;
+        // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        // series.labels.template.radius = am4core.percent(-40);
+        // series.labels.template.fill = am4core.color("white");
+      }
+    let category: string;
+    if (chartContainer == 'DesignationWiseReport') {
+      category = "designation";
+    }
+    else if (chartContainer == 'BuWiseReport') {
+      category = "businessUnit";
+    }
+    else if (chartContainer == 'LocationWiseReport') {
+      category = "baseLocation";
+    }
+
+    pieSeries.dataFields.value = "volunteers";
+    pieSeries.dataFields.category = category;
+    pieSeries.slices.template.stroke = am4core.color("#fff");
+    pieSeries.slices.template.strokeWidth = 2;
+    pieSeries.slices.template.strokeOpacity = 1;
+
+    // This creates initial animation
+    pieSeries.hiddenState.properties.opacity = 1;
+    pieSeries.hiddenState.properties.endAngle = -90;
+    pieSeries.hiddenState.properties.startAngle = -90;
+
+  }
+
+  pyramid(chartContainer: string) {
+    let chart = am4core.create(chartContainer, am4charts.SlicedChart);
+    chart.paddingBottom = 30;
+
+     //data source
+     chart.data = this.getChartData(chartContainer);
+    
     let series = chart.series.push(new am4charts.PyramidSeries());
+
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = chartContainer;
+
+    //enable responsive
+    chart.responsive.enabled = true;
+    chart.responsive.useDefault = false
+    chart.responsive.enabled = true;
+
+    chart.responsive.rules.push({
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) { return true; }
+        return false;
+      },
+      state: function (target, stateId) {
+        if (target instanceof am4charts.Chart) {
+          var state = target.states.create(stateId);
+          state.properties.paddingTop = 5;
+          state.properties.paddingRight = 15;
+          state.properties.paddingBottom = 5;
+          state.properties.paddingLeft = 0;
+          return state;
+        }
+        return null;
+      }
+    });
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        // //remove label
+        // series.ticks.template.disabled = true;
+        // series.alignLabels = false;
+        // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        // series.labels.template.radius = am4core.percent(-40);
+        // series.labels.template.fill = am4core.color("white");
+      }
+
+    let category: string;
+    if (chartContainer == 'DesignationWiseReport') {
+      category = "designation";
+    }
+    else if (chartContainer == 'BuWiseReport') {
+      category = "businessUnit";
+    }
+    else if (chartContainer == 'LocationWiseReport') {
+      category = "baseLocation";
+    }
+
     series.dataFields.value = "volunteers";
-    series.dataFields.category = "designation";
+    series.dataFields.category = category;
     series.alignLabels = true;
     series.valueIs = "height";
 
   }
+
+  barChart(htmlElement: string) {
+    // Create chart instance
+    let chart = am4core.create(htmlElement, am4charts.XYChart3D);
+
+
+    // Add data
+    chart.data = [{
+      "year": 2005,
+      "income": 23.5,
+      "color": chart.colors.next()
+    }, {
+      "year": 2006,
+      "income": 26.2,
+      "color": chart.colors.next()
+    }, {
+      "year": 2007,
+      "income": 30.1,
+      "color": chart.colors.next()
+    }, {
+      "year": 2008,
+      "income": 29.5,
+      "color": chart.colors.next()
+    }, {
+      "year": 2009,
+      "income": 24.6,
+      "color": chart.colors.next()
+    }];
+
+    // Create axes
+    let categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "year";
+    categoryAxis.numberFormatter.numberFormat = "#";
+    categoryAxis.renderer.inversed = true;
+
+    let valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+
+    // Create series
+    let series = chart.series.push(new am4charts.ColumnSeries3D());
+    series.dataFields.valueX = "income";
+    series.dataFields.categoryY = "year";
+    series.name = "Income";
+    series.columns.template.propertyFields.fill = "color";
+    series.columns.template.tooltipText = "{valueX}";
+    series.columns.template.column3D.stroke = am4core.color("#fff");
+    series.columns.template.column3D.strokeOpacity = 0.2;
+
+  }
+
+  stackedChart(htmlElement: string) {
+
+    let chart = am4core.create(htmlElement, am4charts.XYChart);
+    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+    chart.data = [
+      {
+        category: "One",
+        value1: 1,
+        value2: 5,
+        value3: 3
+      },
+      {
+        category: "Two",
+        value1: 2,
+        value2: 5,
+        value3: 3
+      },
+      {
+        category: "Three",
+        value1: 3,
+        value2: 5,
+        value3: 4
+      },
+      {
+        category: "Four",
+        value1: 4,
+        value2: 5,
+        value3: 6
+      },
+      {
+        category: "Five",
+        value1: 3,
+        value2: 5,
+        value3: 4
+      },
+      {
+        category: "Six",
+        value1: 2,
+        value2: 13,
+        value3: 1
+      }
+    ];
+
+    chart.colors.step = 2;
+    chart.padding(30, 30, 10, 30);
+    chart.legend = new am4charts.Legend();
+
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "category";
+    categoryAxis.renderer.grid.template.location = 0;
+
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.max = 100;
+    valueAxis.strictMinMax = true;
+    valueAxis.calculateTotals = true;
+    valueAxis.renderer.minWidth = 50;
+
+
+    let series1 = chart.series.push(new am4charts.ColumnSeries());
+    series1.columns.template.width = am4core.percent(80);
+    series1.columns.template.tooltipText =
+      "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+    series1.name = "Series 1";
+    series1.dataFields.categoryX = "category";
+    series1.dataFields.valueY = "value1";
+    series1.dataFields.valueYShow = "totalPercent";
+    series1.dataItems.template.locations.categoryX = 0.5;
+    series1.stacked = true;
+    series1.tooltip.pointerOrientation = "vertical";
+
+    let bullet1 = series1.bullets.push(new am4charts.LabelBullet());
+    bullet1.interactionsEnabled = false;
+    bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+    bullet1.label.fill = am4core.color("#ffffff");
+    bullet1.locationY = 0.5;
+
+    let series2 = chart.series.push(new am4charts.ColumnSeries());
+    series2.columns.template.width = am4core.percent(80);
+    series2.columns.template.tooltipText =
+      "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+    series2.name = "Series 2";
+    series2.dataFields.categoryX = "category";
+    series2.dataFields.valueY = "value2";
+    series2.dataFields.valueYShow = "totalPercent";
+    series2.dataItems.template.locations.categoryX = 0.5;
+    series2.stacked = true;
+    series2.tooltip.pointerOrientation = "vertical";
+
+    let bullet2 = series2.bullets.push(new am4charts.LabelBullet());
+    bullet2.interactionsEnabled = false;
+    bullet2.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+    bullet2.locationY = 0.5;
+    bullet2.label.fill = am4core.color("#ffffff");
+
+    let series3 = chart.series.push(new am4charts.ColumnSeries());
+    series3.columns.template.width = am4core.percent(80);
+    series3.columns.template.tooltipText =
+      "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+    series3.name = "Series 3";
+    series3.dataFields.categoryX = "category";
+    series3.dataFields.valueY = "value3";
+    series3.dataFields.valueYShow = "totalPercent";
+    series3.dataItems.template.locations.categoryX = 0.5;
+    series3.stacked = true;
+    series3.tooltip.pointerOrientation = "vertical";
+
+    let bullet3 = series3.bullets.push(new am4charts.LabelBullet());
+    bullet3.interactionsEnabled = false;
+    bullet3.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+    bullet3.locationY = 0.5;
+    bullet3.label.fill = am4core.color("#ffffff");
+
+    chart.scrollbarX = new am4core.Scrollbar();
+
+  }
+
+  designationChart(type?: string) {
+    this.zone.runOutsideAngular(() => {
+      let chart;
+      if (type == 'pyrmid')
+        chart = am4core.create("chartdiv", am4charts.SlicedChart);
+      else if (type == 'doughnut')
+        chart = am4core.create("chartdiv", am4charts.PieChart3D);
+      else
+        chart = am4core.create("chartdiv", am4charts.PieChart);
+
+
+      // Enable export
+      chart.exporting.menu = new am4core.ExportMenu();
+      chart.exporting.filePrefix = 'Designation wise particiption report';
+
+      //enable responsive
+      chart.responsive.enabled = true;
+      chart.responsive.useDefault = false
+      chart.responsive.enabled = true;
+
+      chart.responsive.rules.push({
+        relevant: function (target) {
+          if (target.pixelWidth <= 400) { return true; }
+          return false;
+        },
+        state: function (target, stateId) {
+          if (target instanceof am4charts.Chart) {
+            var state = target.states.create(stateId);
+            state.properties.paddingTop = 5;
+            state.properties.paddingRight = 15;
+            state.properties.paddingBottom = 5;
+            state.properties.paddingLeft = 0;
+            return state;
+          }
+          return null;
+        }
+      });
+
+      // Add and configure Series
+      let pieSeries;
+      if (type == 'pyrmid') {
+        pieSeries = chart.series.push(new am4charts.PyramidSeries());
+        pieSeries.alignLabels = true;
+        pieSeries.valueIs = "height";
+      }
+      else if (type == 'doughnut')
+        pieSeries = chart.series.push(new am4charts.PieSeries3D());
+      else
+        pieSeries = chart.series.push(new am4charts.PieSeries());
+
+      if (this.innerWidth >= 1200) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+      }
+      else if (this.innerWidth < 900) {
+        //legend
+        chart.legend = new am4charts.Legend();
+        if (this.innerWidth <= 600)
+          chart.legend.position = "bottom";
+        //remove label
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        pieSeries.labels.template.fill = am4core.color("white");
+      }
+      //chart.dataSource.url = "pie_chart_data.json";
+
+      //data source
+      let data = [];
+      this.designationWiseVolunteers.forEach(volunteers =>
+        data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }))
+      chart.data = data;
+      pieSeries.dataFields.value = "volunteers";
+      pieSeries.dataFields.category = "designation";
+    });
+  }
+
+  pieChart2(type?) {
+    this.zone.runOutsideAngular(() => {
+      let chart = am4core.create("chartdiv", am4charts.PieChart);
+
+
+      let data = [];
+      this.designationWiseVolunteers.forEach(volunteers =>
+        data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }))
+      chart.data = data;
+      // Enable export
+      chart.exporting.menu = new am4core.ExportMenu();
+
+      //enable responsive
+      chart.responsive.enabled = true;
+      chart.responsive.useDefault = false
+      chart.responsive.enabled = true;
+
+      chart.responsive.rules.push({
+        relevant: function (target) {
+          if (target.pixelWidth <= 400) { return true; }
+          return false;
+        },
+        state: function (target, stateId) {
+          if (target instanceof am4charts.Chart) {
+            var state = target.states.create(stateId);
+            state.properties.paddingTop = 5;
+            state.properties.paddingRight = 15;
+            state.properties.paddingBottom = 5;
+            state.properties.paddingLeft = 0;
+            return state;
+          }
+          return null;
+        }
+      });
+
+      //legend
+      chart.exporting.filePrefix = 'designation wise report';
+      chart.legend = new am4charts.Legend();
+      chart.legend.position = "right";
+
+      // Add and configure Series
+      let pieSeries = chart.series.push(new am4charts.PieSeries());
+      pieSeries.dataFields.value = "volunteers";
+      pieSeries.dataFields.category = "designation";
+    });
+  }
+
+  pieChart1() {
+    this.zone.runOutsideAngular(() => {
+      let chart = am4core.create("chartdiv7", am4charts.PieChart3D);
+      chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+      chart.legend = new am4charts.Legend();
+
+      chart.data = this.buWiseVolunteers;
+      // Enable export
+      chart.exporting.menu = new am4core.ExportMenu();
+
+      chart.responsive.useDefault = false
+      chart.responsive.enabled = true;
+
+      chart.responsive.rules.push({
+        relevant: function (target) {
+          if (target.pixelWidth <= 400) {
+            return true;
+          }
+
+          return false;
+        },
+        state: function (target, stateId) {
+          if (target instanceof am4charts.Chart) {
+            var state = target.states.create(stateId);
+            state.properties.paddingTop = 5;
+            state.properties.paddingRight = 15;
+            state.properties.paddingBottom = 5;
+            state.properties.paddingLeft = 0;
+            return state;
+          }
+          return null;
+        }
+      });
+
+      let series = chart.series.push(new am4charts.PieSeries3D());
+      series.dataFields.value = "volunteers";
+      series.dataFields.category = "businessUnit";
+    });
+  }
+
   xyChart() {
     this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
@@ -606,28 +1190,28 @@ chart.data = this.locationWiseVolunteers;
     chart.paddingLeft = 150;
 
     chart.responsive.useDefault = false
-chart.responsive.enabled = true;
+    chart.responsive.enabled = true;
 
-chart.responsive.rules.push({
-  relevant: function(target) {
-    if (target.pixelWidth <= 400) {
-      return true;
-    }
-    
-    return false;
-  },
-  state: function(target, stateId) {
-    if (target instanceof am4charts.Chart) {
-      var state = target.states.create(stateId);
-      state.properties.paddingTop = 5;
-      state.properties.paddingRight = 15;
-      state.properties.paddingBottom = 5;
-      state.properties.paddingLeft = 0;
-      return state;
-    }
-    return null;
-  }
-});
+    chart.responsive.rules.push({
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) {
+          return true;
+        }
+
+        return false;
+      },
+      state: function (target, stateId) {
+        if (target instanceof am4charts.Chart) {
+          var state = target.states.create(stateId);
+          state.properties.paddingTop = 5;
+          state.properties.paddingRight = 15;
+          state.properties.paddingBottom = 5;
+          state.properties.paddingLeft = 0;
+          return state;
+        }
+        return null;
+      }
+    });
 
     chart.data = [{
       "name": "Associates",
@@ -919,74 +1503,179 @@ chart.responsive.rules.push({
   stacked3dChart() {
 
     // Create chart instance
-    let chart = am4core.create("chartdiv9", am4charts.XYChart3D);
+    let chart = am4core.create("DesignationWiseVolunteersVsAssociates", am4charts.XYChart3D);
 
     // Add data
-    chart.data = [{
-      "country": "USA",
-      "year2017": 3.5,
-      "year2018": 4.2
-    }, {
-      "country": "UK",
-      "year2017": 1.7,
-      "year2018": 3.1
-    }, {
-      "country": "Canada",
-      "year2017": 2.8,
-      "year2018": 2.9
-    }, {
-      "country": "Japan",
-      "year2017": 2.6,
-      "year2018": 2.3
-    }, {
-      "country": "France",
-      "year2017": 1.4,
-      "year2018": 2.1
-    }, {
-      "country": "Brazil",
-      "year2017": 2.6,
-      "year2018": 4.9
-    }, {
-      "country": "Russia",
-      "year2017": 6.4,
-      "year2018": 7.2
-    }, {
-      "country": "India",
-      "year2017": 8,
-      "year2018": 7.1
-    }, {
-      "country": "China",
-      "year2017": 9.9,
-      "year2018": 10.1
-    }];
+    chart.data = this.getDesignationWiseVolunteerVsAssociate();
+
+    //  [{
+    //  "country": "USA",
+    //  "year2017": 3.5,
+    //  "year2018": 4.2
+    //}, {
+    //  "country": "UK",
+    //  "year2017": 1.7,
+    //  "year2018": 3.1
+    //}, {
+    //  "country": "Canada",
+    //  "year2017": 2.8,
+    //  "year2018": 2.9
+    //}, {
+    //  "country": "Japan",
+    //  "year2017": 2.6,
+    //  "year2018": 2.3
+    //}, {
+    //  "country": "France",
+    //  "year2017": 1.4,
+    //  "year2018": 2.1
+    //}, {
+    //  "country": "Brazil",
+    //  "year2017": 2.6,
+    //  "year2018": 4.9
+    //}, {
+    //  "country": "Russia",
+    //  "year2017": 6.4,
+    //  "year2018": 7.2
+    //}, {
+    //  "country": "India",
+    //  "year2017": 8,
+    //  "year2018": 7.1
+    //}, {
+    //  "country": "China",
+    //  "year2017": 9.9,
+    //  "year2018": 10.1
+    //}];
 
     // Create axes
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "country";
+    categoryAxis.dataFields.category = "designation";
     categoryAxis.renderer.grid.template.location = 0;
     categoryAxis.renderer.minGridDistance = 30;
 
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.title.text = "GDP growth rate";
+    valueAxis.title.text = "Designation wise comparison";
     valueAxis.renderer.labels.template.adapter.add("text", function (text) {
       return text + "%";
     });
 
     // Create series
     let series = chart.series.push(new am4charts.ColumnSeries3D());
-    series.dataFields.valueY = "year2017";
-    series.dataFields.categoryX = "country";
-    series.name = "Year 2017";
+    series.dataFields.valueY = "volunteers";
+    series.dataFields.categoryX = "designation";
+    series.name = "Volunteers";
     series.clustered = false;
-    series.columns.template.tooltipText = "GDP grow in {category} (2017): [bold]{valueY}[/]";
+    series.columns.template.tooltipText = "Volunteers in {category}: [bold]{valueY}[/]";
     series.columns.template.fillOpacity = 0.9;
 
     let series2 = chart.series.push(new am4charts.ColumnSeries3D());
-    series2.dataFields.valueY = "year2018";
-    series2.dataFields.categoryX = "country";
-    series2.name = "Year 2018";
+    series2.dataFields.valueY = "associates";
+    series2.dataFields.categoryX = "designation";
+    series2.name = "Associates";
     series2.clustered = false;
-    series2.columns.template.tooltipText = "GDP grow in {category} (2017): [bold]{valueY}[/]";
+    series2.columns.template.tooltipText = "Associates in {category}: [bold]{valueY}[/]";
+
+  }
+
+  layeredColumnChart(chartContainer: string) {
+
+    // Create chart instance
+    let chart = am4core.create(chartContainer, am4charts.XYChart);
+
+    // Add percent sign to all numbers
+   // chart.numberFormatter.numberFormat = "#.3'%'";
+
+    let category: string;
+    let titleText: string;
+    if (chartContainer == "DesignationWiseVolunteersVsAssociates") {
+      category = "designation";
+      titleText = "Designation wise rate";
+    } else if (chartContainer == "BuWiseVolunteersVsAssociates") {
+      category = "businessUnit";
+      titleText = "Business Unit wise rate";
+    } else if (chartContainer == "LocationWiseVolunteersVsAssociates") {
+      category = "baseLocation";
+      titleText = "Base Location wise rate";
+    }
+    // Add data
+    if (chartContainer == "DesignationWiseVolunteersVsAssociates")
+      chart.data = this.getDesignationWiseVolunteerVsAssociate();
+    else if (chartContainer == "BuWiseVolunteersVsAssociates")
+      chart.data = this.getBuWiseVolunteerVsAssociate();
+    else if (chartContainer == "LocationWiseVolunteersVsAssociates")
+      chart.data = this.getLocationWiseVolunteerVsAssociate();
+
+    // Create axes
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = category;
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 30;
+
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.title.text = titleText;
+    //valueAxis.title.fontWeight = 800;
+
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = chartContainer;
+
+    //enable responsive
+    chart.responsive.enabled = true;
+    chart.responsive.useDefault = false
+    chart.responsive.enabled = true;
+
+    chart.responsive.rules.push({
+      relevant: function (target) {
+        if (target.pixelWidth <= 400) { return true; }
+        return false;
+      },
+      state: function (target, stateId) {
+        if (target instanceof am4charts.Chart) {
+          var state = target.states.create(stateId);
+          state.properties.paddingTop = 5;
+          state.properties.paddingRight = 15;
+          state.properties.paddingBottom = 5;
+          state.properties.paddingLeft = 0;
+          return state;
+        }
+        return null;
+      }
+    });
+    if (this.innerWidth >= 1200) {
+      //legend
+      chart.legend = new am4charts.Legend();
+      chart.legend.position = "right";
+    }
+    else if (this.innerWidth < 900) {
+      //legend
+      chart.legend = new am4charts.Legend();
+      if (this.innerWidth <= 600)
+        chart.legend.position = "bottom";
+      // //remove label
+      // series.ticks.template.disabled = true;
+      // series.alignLabels = false;
+      // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+      // series.labels.template.radius = am4core.percent(-40);
+      // series.labels.template.fill = am4core.color("white");
+    }
+
+
+    // Create series
+    let series = chart.series.push(new am4charts.ColumnSeries());
+    series.dataFields.valueY = "associates";
+    series.dataFields.categoryX = category;
+    series.clustered = false;
+    series.tooltipText = "Associates in {categoryX}: [bold]{valueY}[/]";
+
+    let series2 = chart.series.push(new am4charts.ColumnSeries());
+    series2.dataFields.valueY = "volunteers";
+    series2.dataFields.categoryX = category;
+    series2.clustered = false;
+    series2.columns.template.width = am4core.percent(50);
+    series2.tooltipText = "Volunteers in {categoryX}: [bold]{valueY}[/]";
+
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.lineX.disabled = true;
+    chart.cursor.lineY.disabled = true;
 
   }
 

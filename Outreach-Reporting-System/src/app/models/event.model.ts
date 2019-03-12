@@ -1,9 +1,9 @@
 
 export class Event {
-    id: number;
+    id: string;
     name: string;
     description: string;
-    date?: Date;
+    date: string;
     totalVolunteers: number;
     totalVolunteerHours: number;
     totalTravelHours: number;

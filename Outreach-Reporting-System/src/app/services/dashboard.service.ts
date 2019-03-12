@@ -83,6 +83,66 @@ export class DashboardService {
             return of({ product: null, error: message });
           })
         );
+  }
+
+  getYearlyBuVolunteers(count: number): Observable<any> {
+    return this.http.get<any>(this.baseUrl + `Enrollment/GetYearlyBuWiseVolunteersCount?years=${count}`)
+      .pipe(
+        tap(data => {
+          let test = data;
+          console.log(JSON.stringify(data))
+        }),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
+
+    GetAllNewVolunteers(): Observable<any> {
+      return this.http.get<any>(this.baseUrl + 'Enrollment/GetAllNewVolunteers')
+        .pipe(
+          tap(data => {
+            let test = data;
+            console.log(JSON.stringify(data))
+          }),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
     }
+
+    GetDateWiseVolunteers(): Observable<any> {
+      return this.http.get<any>(this.baseUrl + 'Enrollment/GetDateWiseVolunteersCount')
+        .pipe(
+          tap(data => {
+            console.log('GetDateWiseVolunteersCount')
+            console.log(JSON.stringify(data))
+          }),
+          catchError(error => {
+            const message = `Retrieval error: ${error}`;
+            console.error(message);
+            return of({ product: null, error: message });
+          })
+        );
+  }
+
+  GetTopData(): Observable<any> {
+    return this.http.get<any>(this.baseUrl + 'Enrollment/GetTopVolunteerData')
+      .pipe(
+        tap(data => {
+        console.log('GetTopVolunteerData')
+          console.log(JSON.stringify(data))
+        }),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
 
 }

@@ -26,6 +26,7 @@ export class ErrorsHandler implements ErrorHandler {
         console.log('No Internet Connection');
         //return notificationService.notify('No Internet Connection');
       }
+      console.log('http error occurred');
       // Http Error
       // Send the error to the server
       errorsService.log(error).subscribe();
@@ -37,11 +38,12 @@ export class ErrorsHandler implements ErrorHandler {
       // Send the error to the server and then
       // redirect the user to the page with all the info
       console.log('error occured');
-      errorsService
-          .log(error)
-          .subscribe(errorWithContextInfo => {
-            router.navigate(['/error'], { queryParams: errorWithContextInfo });
-          });
+      console.log(error);
+      // errorsService
+      //     .log(error)
+      //     .subscribe(errorWithContextInfo => {
+      //       router.navigate(['/error'], { queryParams: errorWithContextInfo });
+      //     });
     }
   }
 }

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { ParticipationComponent } from './participation.component';
-import { GenericComponent } from './generic.component';
-import { EngagementComponent } from './engagement.component';
-import {RetentionComponent} from './retention.component';
-import {AcquisitionComponent} from './acquisition.component';
+import { ParticipationComponent } from './participation/participation.component';
+import { GenericComponent } from './generic/generic.component';
+import { EngagementComponent } from './engagement/engagement.component';
+import {RetentionComponent} from './retention/retention.component';
+import {AcquisitionComponent} from './acquisition/acquisition.component';
 
 const routes: Routes = [
   {
