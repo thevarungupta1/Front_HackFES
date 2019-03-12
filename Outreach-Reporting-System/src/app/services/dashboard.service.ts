@@ -7,17 +7,17 @@ import { HttpHeaders } from '@angular/common/http';
 import { Associate } from '../models/associate.model';
 import { Enrollment } from '../models/enrollment.model';
 import { Event } from '../models/event.model';
+import { config } from './../config';
 
 @Injectable({
     providedIn: 'root'
   })
 export class DashboardService {
-    baseUrl: string = 'https://localhost:44313/api/';
 
     constructor(private http: HttpClient) { }
      
     getAllAssociates(): Observable<any> {
-      return this.http.get<any>(this.baseUrl + 'Associate')
+      return this.http.get<any>(`${config.apiUrl}/Associate`)
         .pipe(
           tap(data => console.log(JSON.stringify(data))),
           catchError(error => {
@@ -29,7 +29,7 @@ export class DashboardService {
     }
   
     getAllEvents(): Observable<Event[]> {
-      return this.http.get<any>(this.baseUrl + 'Event')
+      return this.http.get<any>(`${config.apiUrl}/Event`)
         .pipe(
           tap(data => console.log(JSON.stringify(data))),
           catchError(error => {
@@ -41,7 +41,7 @@ export class DashboardService {
     }
   
     getAllEnrollments(): Observable<any> {
-      return this.http.get<any>(this.baseUrl + 'Enrollment/GetEnrolledAssociates')
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetEnrolledAssociates`)
         .pipe(
           tap(data => {
             let test = data;
@@ -56,7 +56,7 @@ export class DashboardService {
     }
 
     getTopVolunteers(count: number): Observable<any> {
-      return this.http.get<any>(this.baseUrl + `Enrollment/GetTopFrequentVolunteers?count=${count}`)
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetTopFrequentVolunteers?count=${count}`)
         .pipe(
           tap(data => {
             let test = data;
@@ -71,7 +71,7 @@ export class DashboardService {
     }
 
     getYearlyVolunteers(count: number): Observable<any> {
-      return this.http.get<any>(this.baseUrl + `Enrollment/GetYearlyVolunteersCount?years=${count}`)
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetYearlyVolunteersCount?years=${count}`)
         .pipe(
           tap(data => {
             let test = data;
@@ -86,7 +86,7 @@ export class DashboardService {
   }
 
   getYearlyBuVolunteers(count: number): Observable<any> {
-    return this.http.get<any>(this.baseUrl + `Enrollment/GetYearlyBuWiseVolunteersCount?years=${count}`)
+    return this.http.get<any>(`${config.apiUrl}/Enrollment/GetYearlyBuWiseVolunteersCount?years=${count}`)
       .pipe(
         tap(data => {
           let test = data;
@@ -101,7 +101,7 @@ export class DashboardService {
   }
 
     GetAllNewVolunteers(): Observable<any> {
-      return this.http.get<any>(this.baseUrl + 'Enrollment/GetAllNewVolunteers')
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetAllNewVolunteers`)
         .pipe(
           tap(data => {
             let test = data;
@@ -116,7 +116,7 @@ export class DashboardService {
     }
 
     GetDateWiseVolunteers(): Observable<any> {
-      return this.http.get<any>(this.baseUrl + 'Enrollment/GetDateWiseVolunteersCount')
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetDateWiseVolunteersCount`)
         .pipe(
           tap(data => {
             console.log('GetDateWiseVolunteersCount')
@@ -131,7 +131,7 @@ export class DashboardService {
   }
 
   GetTopData(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Enrollment/GetTopVolunteerData')
+    return this.http.get<any>(`${config.apiUrl}/Enrollment/GetTopVolunteerData`)
       .pipe(
         tap(data => {
         console.log('GetTopVolunteerData')

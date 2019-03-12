@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 
 //import * as StackTraceParser from 'error-stack-parser';
 
-import { ErrorsService } from './errors.service';
+import { ErrorsService } from '../../services/errors.service';
 //import { NotificationService } from '../../services/notification/notification.service';
 
 @Injectable()

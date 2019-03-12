@@ -3,17 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
+import { config } from './../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngagementService {
-  baseUrl: string = 'https://localhost:44313/api/';
 
   constructor(private http: HttpClient) { }
 
   getAllAssociates(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Associate')
+    return this.http.get<any>(`${config.apiUrl}/Associate`)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
         catchError(error => {
@@ -25,7 +25,7 @@ export class EngagementService {
   }
 
   getAllEvents(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Event')
+    return this.http.get<any>(`${config.apiUrl}/Event`)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
         catchError(error => {
@@ -37,7 +37,7 @@ export class EngagementService {
   }
 
   getAllEnrollments(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Enrollment')
+    return this.http.get<any>(`${config.apiUrl}/Enrollment`)
       .pipe(
         tap(data => {
           let test = data;
@@ -54,7 +54,7 @@ export class EngagementService {
   saveAssociates(body: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
-    return this.http.post<any>(this.baseUrl + 'Associate', body, { headers: headers })
+    return this.http.post<any>(`${config.apiUrl}/Associate`, body, { headers: headers })
       .pipe(
         tap(data => console.log('createProduct: ' + JSON.stringify(data))),
         catchError(error => {
@@ -68,7 +68,7 @@ export class EngagementService {
   saveEvents(body: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
-    return this.http.post<any>(this.baseUrl + 'Event', body, { headers: headers })
+    return this.http.post<any>(`${config.apiUrl}/Event`, body, { headers: headers })
       .pipe(
         tap(data => console.log('createProduct: ' + JSON.stringify(data))),
         catchError(error => {
@@ -82,7 +82,7 @@ export class EngagementService {
   saveEnrollments(body: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
-    return this.http.post<any>(this.baseUrl + 'Enrollment', body, { headers: headers })
+    return this.http.post<any>(`${config.apiUrl}/Enrollment`, body, { headers: headers })
       .pipe(
         tap(data => console.log('createProduct: ' + JSON.stringify(data))),
         catchError(error => {

@@ -1,18 +1,37 @@
-<div class="animated fadeIn">
-  <div class="card">
-    <div class="card-header">
-      Bootstrap Progress
-      <div class="card-header-actions">
-        <a href="https://valor-software.com/ngx-bootstrap/#/progressbar" target="_blank">
-          <small className="text-muted">docs</small>
-        </a>
+<div class="container-fluid animated fadeIn px-0">
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          New Volunteers rate {{currentYear}}:
+          <!--<div class="card-header-actions">
+              <div class="dropdown">
+                  <button class="dropbtn"><i class="icon-list"></i></button>
+                  <div class="dropdown-content">
+                    <span (click)="pieChart('volunteersFreqChart')">Pie Chart</span>
+                    <span (click)="columnChart('volunteersFreqChart')">Column Chart</span>
+                    <span (click)="columnChart3d('volunteersFreqChart')">3D Column chart</span>
+                    <span (click)="doughnut('volunteersFreqChart')">Doughnut chart</span>
+                    <span (click)="pyramid('volunteersFreqChart')">Pyramid chart</span>
+                    <span (click)="showDesignationData = true">View Data</span>
+                  </div>
+                </div>
+            </div>-->
+        </div>
+
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="NewVolunteersChart" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
       </div>
     </div>
-    <div class="card-body">
-      <div class="row"><div class="col-xs-12">
-        <div id="chartdiv"></div>
-      </div>
-    </div>
-    </div>
+    <!-- column end -->
+
   </div>
+  <!-- row end -->
 </div>
+<!-- container end -->

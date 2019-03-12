@@ -41,11 +41,11 @@ import { AppRoutingModule } from './app-routing.module';
 // Import 3rd party components
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
-import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ErrorsModule } from './views/error/errors.module';
 import { MessageModule } from './views/messages/message.module';
-import { FormsModule,ReactiveFormsModule  }   from '@angular/forms';
+import { FormsModule,ReactiveFormsModule }   from '@angular/forms';
+import { HttpModule } from '@angular/http';
 @NgModule({
   imports: [
     BrowserModule,
@@ -58,13 +58,13 @@ import { FormsModule,ReactiveFormsModule  }   from '@angular/forms';
     PerfectScrollbarModule,
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
-    ChartsModule,
     HttpClientModule,
     BrowserAnimationsModule,
     ErrorsModule,
     MessageModule,
     FormsModule,
-    ReactiveFormsModule 
+    ReactiveFormsModule,
+    HttpModule
   ],
   declarations: [
     AppComponent,

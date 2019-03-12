@@ -2,7 +2,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { Observable, throwError, BehaviorSubject, of } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 
@@ -11,7 +11,7 @@ import { catchError, filter, take, switchMap } from 'rxjs/operators';
 // import 'rxjs/add/operator/delay';
 // import 'rxjs/add/operator/retry';
 
-import { ErrorsService } from './errors.service';
+import { ErrorsService } from '../../services/errors.service';
 import { User } from '../auth/user';
 
 @Injectable()
@@ -50,6 +50,8 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
   }
 
   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+    //remove current token
+    this.authService.removeTokens();
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);

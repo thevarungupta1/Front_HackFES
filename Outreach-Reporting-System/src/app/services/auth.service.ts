@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 
-import { User } from './user';
-import { MessageService } from '../messages/message.service';
+import { User } from '../views/auth/user';
+import { MessageService } from '../views/messages/message.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/internal/operators/tap';
 import { mapTo } from 'rxjs/internal/operators/mapTo';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { Tokens } from '../../models/tokens';
-import { config } from './../../config';
+import { Tokens } from '../models/tokens';
+import { config } from '../config';
 import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -23,10 +23,6 @@ export class AuthService {
 
     currentUser: User;
   redirectUrl: string;
-
-  // isLoggedIn(): boolean {
-  //   return !!this.currentUser;
-  // }  
 
   login(user: User): Observable<boolean> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -100,7 +96,7 @@ export class AuthService {
     localStorage.setItem(this.REFRESH_TOKEN, tokens.refreshToken);
   }
 
-  private removeTokens() {
+  removeTokens() {
     localStorage.removeItem(this.JWT_TOKEN);
     localStorage.removeItem(this.REFRESH_TOKEN);
   }

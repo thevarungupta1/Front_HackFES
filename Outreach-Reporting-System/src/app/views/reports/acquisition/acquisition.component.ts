@@ -1,120 +1,125 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, NgZone, OnInit} from '@angular/core';
+
+import { AcquisitionService } from 'src/app/services/acquisition.service';
 
 import * as am4core from "@amcharts/amcharts4/core";
-import * as am4maps from "@amcharts/amcharts4/maps";
-import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
-
-// // Importing themes
-// import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-// import am4themes_dark from "@amcharts/amcharts4/themes/dark";
-
-// // Importing translations
-// import am4lang_lt_LT from "@amcharts/amcharts4/lang/lt_LT";
-
-// // Importing geodata (map data)
-// import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
+import * as am4charts from "@amcharts/amcharts4/charts";
+import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+am4core.useTheme(am4themes_animated);
 
 @Component({
   templateUrl: 'acquisition.component.html'
 })
-export class AcquisitionComponent implements OnDestroy {
+export class AcquisitionComponent implements OnInit {
 
-  ngAfterViewInit(){
-    // let map = am4core.create("chartdiv", am4maps.MapChart);
-    // map.geodata = am4geodata_worldLow;
 
-    // map.geodataSource.url = "/path/to/myCustomMap.json";
-    // map.projection = new am4maps.projections.Miller();
+  constructor(private zone: NgZone, private acquisitionService: AcquisitionService) { }
+  month = [];
+  monthlyNewVolunteers = [];
+  currentYear: number = new Date().getFullYear();
+  ngOnInit(): void {
+   
+    this.month[0] = "January";
+    this.month[1] = "February";
+    this.month[2] = "March";
+    this.month[3] = "April";
+    this.month[4] = "May";
+    this.month[5] = "June";
+    this.month[6] = "July";
+    this.month[7] = "August";
+    this.month[8] = "September";
+    this.month[9] = "October";
+    this.month[10] = "November";
+    this.month[11] = "December";
 
-    var chart = am4core.create("chartdiv", am4maps.MapChart);
-
-// Set map definition
-chart.geodata = am4geodata_worldLow;
-
-// Set projection
-chart.projection = new am4maps.projections.Miller();
-
-// Create map polygon series
-var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-
-// Make map load polygon (like country names) data from GeoJSON
-polygonSeries.useGeodata = true;
-
-// Configure series
-var polygonTemplate = polygonSeries.mapPolygons.template;
-polygonTemplate.tooltipText = "{name}";
-polygonTemplate.fill = am4core.color("#74B266");
-
-// Create hover state and set alternative fill color
-var hs = polygonTemplate.states.create("hover");
-hs.properties.fill = am4core.color("#367B25");
-
+    this.getAllNewVolunteers();
   }
-  max: number = 200;
-  showWarning: boolean;
-  dynamic: number;
-  type: string;
+  
+  getAllNewVolunteers() {
+    this.acquisitionService.GetAllNewVolunteers().subscribe(data => {
 
-  stacked: any[] = [];
+      console.log('GetAllNewVolunteers');
+      console.log(data);
 
-  timer: any = null;
-  buttonCaption: string = 'Start';
+      let currentYearData = data.filter(f => new Date(f.eventDate).getFullYear() == this.currentYear);
 
-  constructor() {
-    this.random();
-    this.randomStacked();
-  }
+      var i;
+      let monthData=[];
+      for (i = 0; i < 12; i++) {
+        monthData = currentYearData.filter(f => new Date(f.eventDate).getMonth() == i);
+        this.monthlyNewVolunteers.push({ month: this.month[i], volunteers: monthData.length });
+      }
+      this.monthlyNewVolunteersChart();
+      //this.allNewVolunteers = groupedData;
+      //console.log('GetAllNewVolunteers');
+      //console.log(groupedData);
 
-  ngOnDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-    // console.log(`onDestroy`, this.timer);
-  }
-
-  random(): void {
-    const value = Math.floor(Math.random() * 100 + 1);
-    let type: string;
-
-    if (value < 25) {
-      type = 'success';
-    } else if (value < 50) {
-      type = 'info';
-    } else if (value < 75) {
-      type = 'warning';
-    } else {
-      type = 'danger';
-    }
-
-    this.showWarning = type === 'danger' || type === 'warning';
-    this.dynamic = value;
-    this.type = type;
+      ////this.lineGraph();
+      //this.getDateWiseVolunteers();
+    });
 
   }
 
-  randomStacked(): void {
-    const types = ['success', 'info', 'warning', 'danger'];
-
-    this.stacked = [];
-    const n = Math.floor(Math.random() * 4 + 1);
-    for (let i = 0; i < n; i++) {
-      const index = Math.floor(Math.random() * 4);
-      const value = Math.floor(Math.random() * 27 + 3);
-      this.stacked.push({
-        value,
-        type: types[index],
-        label: value + ' %'
-      });
-    }
+  groupBy(array, f) {
+    var groups = {};
+    array.forEach(function (o) {
+      var group = JSON.stringify(f(o));
+      groups[group] = groups[group] || [];
+      groups[group].push(o);
+    });
+    return Object.keys(groups).map(function (group) {
+      return groups[group];
+    })
   }
 
-  randomize(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    } else {
-      this.timer = setInterval(() => this.randomStacked(), 2000);
-    }
-    this.buttonCaption = this.timer ? 'Stop' : 'Start';
+  monthlyNewVolunteersChart() {
+
+    // Create chart instance
+    let chart = am4core.create("NewVolunteersChart", am4charts.XYChart3D);
+
+    // Add data
+    chart.data = this.monthlyNewVolunteers;
+
+    // Create axes
+    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "month";
+    categoryAxis.renderer.labels.template.rotation = 270;
+    categoryAxis.renderer.labels.template.hideOversized = false;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.labels.template.horizontalCenter = "right";
+    categoryAxis.renderer.labels.template.verticalCenter = "middle";
+    categoryAxis.tooltip.label.rotation = 270;
+    categoryAxis.tooltip.label.horizontalCenter = "right";
+    categoryAxis.tooltip.label.verticalCenter = "middle";
+
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.title.text = "New Volunteers";
+    valueAxis.title.fontWeight = "bold";
+
+    // Create series
+    let series = chart.series.push(new am4charts.ColumnSeries3D());
+    series.dataFields.valueY = "volunteers";
+    series.dataFields.categoryX = "month";
+    series.name = "New Volunteers";
+    series.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series.columns.template.fillOpacity = .8;
+
+    let columnTemplate = series.columns.template;
+    columnTemplate.strokeWidth = 2;
+    columnTemplate.strokeOpacity = 1;
+    columnTemplate.stroke = am4core.color("#FFFFFF");
+
+    columnTemplate.adapter.add("fill", (fill, target) => {
+      return chart.colors.getIndex(target.dataItem.index);
+    })
+
+    columnTemplate.adapter.add("stroke", (stroke, target) => {
+      return chart.colors.getIndex(target.dataItem.index);
+    })
+
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.lineX.strokeOpacity = 0;
+    chart.cursor.lineY.strokeOpacity = 0;
+
   }
 }

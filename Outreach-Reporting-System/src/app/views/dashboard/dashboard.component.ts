@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities';
-import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import { DashboardService } from "../../services/dashboard.service";
 import { Associate } from '../../models/associate.model';
 import { Enrollment } from '../../models/enrollment.model';
@@ -36,6 +34,9 @@ export class DashboardComponent implements OnInit {
   eventGridData: Event[];
   totalVolunteerHours: number;
   topData: any[];
+  allNewVolunteers = [];
+  dateWiseVolunteers = [];
+
   constructor(private zone: NgZone, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
@@ -171,23 +172,22 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-allNewVolunteers = [];
-dateWiseVolunteers = [];
-  getAllNewVolunteers() {
-    this.dashboardService.GetAllNewVolunteers().subscribe(data => {
+
+  //getAllNewVolunteers() {
+  //  this.dashboardService.GetAllNewVolunteers().subscribe(data => {
      
-      let groupedData = this.groupBy(data, function (item) {
-        return [item.eventDate];
-      });
-      this.allNewVolunteers= groupedData;
-      console.log('GetAllNewVolunteers');
-      console.log(groupedData);
+  //    let groupedData = this.groupBy(data, function (item) {
+  //      return [item.eventDate];
+  //    });
+  //    this.allNewVolunteers= groupedData;
+  //    console.log('GetAllNewVolunteers');
+  //    console.log(groupedData);
       
-      //this.lineGraph();
-      this.getDateWiseVolunteers();
-    });
+  //    //this.lineGraph();
+  //    this.getDateWiseVolunteers();
+  //  });
     
-  }
+  //}
 
   getTopData() {
     this.dashboardService.GetTopData().subscribe(data => {
@@ -724,7 +724,7 @@ chart.scrollbarX = new am4core.Scrollbar();
 
     // Add scrollbar
     chart.scrollbarX = new am4charts.XYChartScrollbar();
-    chart.scrollbarX.series.push(series);
+    //chart.scrollbarX.series.push(series);
 
     // Add cursor
     chart.cursor = new am4charts.XYCursor();

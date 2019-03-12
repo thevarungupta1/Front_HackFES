@@ -1,26 +1,35 @@
-import { Component } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { NgForm, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthService } from './auth.service';
+import { AuthService } from '../../services/auth.service';
 import { User } from './user';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: 'login.component.html'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   errorMessage: string;
   pageTitle = 'Log In';
+  loginForm: FormGroup;
 
   constructor(private authService: AuthService,
-              private router: Router) { }
+    private router: Router, private fb: FormBuilder) { }
+
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      associateId: ['', Validators.required],
+      email: ['', Validators.required]
+    });
+  }
 
   login(){//loginForm: NgForm) {
-    //if (loginForm && loginForm.valid) {
-      const userName = 'admin';//loginForm.form.value.userName;
-      const password = 'admin';//loginForm.form.value.password;
-      let user:User = { id:0, email: 'test@test.com', role: null };
+    if (this.loginForm.valid) {
+    let email = this.loginForm.get('email').value;
+    let associateId = this.loginForm.get('associateId').value;
+
+    let user: User = { id: associateId, email: email, role: null };
       //this.authService.login(user);
       this.authService.login(user)
       .subscribe(success => {
@@ -32,12 +41,11 @@ export class LoginComponent {
           }
         }
         else {
-          this.errorMessage = 'Please enter a valid email.';
+          this.errorMessage = 'Please enter a valid credentials.';
          }
-      });
-     
-   // } else {
-     // this.errorMessage = 'Please enter a user name and password.';
-    //}
+      });     
+    } else {
+      this.errorMessage = 'Please enter a id and email.';
+    }
   }
 }
