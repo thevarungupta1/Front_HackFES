@@ -16,12 +16,7 @@ export const navItems: NavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     icon: 'icon-speedometer'
-  },
-  {
-    name: 'File Upload',
-    url: '/fileupload',
-    icon: 'fa fa-cloud-upload'
-  },
+  },  
   {
     name: 'Reports',
     url: '/reports',
@@ -53,6 +48,11 @@ export const navItems: NavData[] = [
         icon: 'icon-chart'
       }
     ]
+  },
+  {
+    name: 'File Upload',
+    url: '/fileupload',
+    icon: 'fa fa-cloud-upload'
   },
   {
     name: 'Users',

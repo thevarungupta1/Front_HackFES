@@ -13,6 +13,8 @@ import { HostListener } from '@angular/core';
 import { Event } from '../../../models/event.model';
 import { Associate } from '../../../models/associate.model';
 import { Enrollment } from '../../../models/enrollment.model';
+import { ReportFilter } from 'src/app/models/reportFilter.model';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 //import {TieredMenuModule} from 'primeng/tieredmenu';
 
 am4core.useTheme(am4themes_animated);
@@ -64,7 +66,7 @@ export class ParticipationComponent implements OnInit {
 
   isVolunteersVsAssociates: boolean = false;
   combinedResult: any[];
-  constructor(private zone: NgZone, private participationService: ParticipationService) {
+  constructor(private zone: NgZone, private participationService: ParticipationService, private fb: FormBuilder) {
     this.getScreenSize();
   }
 
@@ -72,12 +74,53 @@ export class ParticipationComponent implements OnInit {
   getScreenSize(event?) {
     this.innerWidth = window.innerWidth;
   }
-
+  filterForm: FormGroup;
+  businessUnits: any[];
+  baseLocations: any[];
   ngOnInit(): void {
-    this.getAllAssociates();
-    //this.getAllEnrollments();
+    this.getBusinessUnits();
+    this.GetBaseLocations();
+    this.filterForm = this.fb.group({
+      businessUnit: [''],
+      baseLocation: [''],
+      fromDate: [''],
+      toDate: ['']
+    });
+    //this.getAllAssociates();
+    //this.getEnrollmentsByFilter();
     this.innerWidth = window.innerWidth;
 
+  }
+
+  getBusinessUnits() {
+    this.businessUnits = [];
+    this.participationService.getBusinessUnits().subscribe(data => {
+      if (data)
+        data.forEach(x => this.businessUnits.push({ label: x, value: x }));
+    });
+  }
+  GetBaseLocations() {
+    this.baseLocations = [];
+    this.participationService.GetBaseLocations().subscribe(data => {
+      if (data)
+        data.forEach(x => this.baseLocations.push({ label: x, value: x }));
+    });
+  }
+
+  getEnrollmentsByFilter() {
+    let formData: ReportFilter = new ReportFilter();
+    let businessUnit = this.filterForm.get('businessUnit').value;
+    if (businessUnit)
+      formData.businessUnits = businessUnit.join();
+    let baseLocation = this.filterForm.get('baseLocation').value;
+    if (baseLocation)
+      formData.baseLocations = baseLocation.join();
+    formData.fromDate = this.filterForm.get('fromDate').value;
+    formData.toDate = this.filterForm.get('toDate').value;
+    console.log('form data');
+    console.log(formData);
+    this.participationService.getEnrollmentsByFilter(formData).subscribe(data => {
+    });
   }
 
   ngAfterViewInit() {

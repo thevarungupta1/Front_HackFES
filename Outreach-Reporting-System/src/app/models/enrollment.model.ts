@@ -7,7 +7,9 @@ export class Enrollment{
     eventDate: string;
     volunteerHours: number;
     travelHours: number;
-    status: string;
+  status: string;
+  BusinessUnit: string;
+  BaseLocation: string;
     iiepCategory: string;
     createdBy: string;
     

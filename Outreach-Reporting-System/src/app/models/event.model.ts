@@ -19,7 +19,17 @@ export class Event {
     category: string;
     livesImpacted?: number;
     activityType?: number;
-    status: string;
+  status: string;
+  pointOfContacts: PocDetails[];
     createdBy: string;
     modifiedBy: string;
+}
+
+class PocDetails {
+  id: number;
+  associateId: number;
+  name: string;
+  contactNumber?: number;
+  createdBy?: number;
+  ModifiedBy: number;
 }

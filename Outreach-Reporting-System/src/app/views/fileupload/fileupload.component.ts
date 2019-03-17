@@ -13,6 +13,7 @@ import { FileuploadService } from '../../services/fileupload.service';
 //import { MessageService } from 'primeng/components/common/messageservice';
 import { ToastService } from '../shared/toastmessages';
 import{FormGroup,FormBuilder ,ReactiveFormsModule,FormControl } from '@angular/forms';
+import { isNaN } from '@amcharts/amcharts4/core';
 @Component({
   templateUrl: 'fileupload.component.html',
   providers: [ToastService]
@@ -156,22 +157,22 @@ export class FileUploadComponent implements OnInit {
         error.push('Invalid associate id');        
       }
       let name = rowData["Name"];
-      if(name == undefined || name.length > 20)
+      if(name == undefined)
       {
         error.push('Invalid associate name');        
       }
       let designation = rowData["Designation"];
-      if(designation == undefined || designation.length > 20)
+      if(designation == undefined)
       {
         error.push('Invalid designation');        
       }   
       let baseLocation = rowData["Location"];
-      if(baseLocation == undefined || baseLocation.length > 20)
+      if(baseLocation == undefined)
       {
         error.push('Invalid location');        
       }
       let businessUnit = rowData["BU"];
-      if(businessUnit == undefined || businessUnit.length > 20)
+      if(businessUnit == undefined)
       {
         error.push('Invalid business unit');        
       }  
@@ -205,7 +206,7 @@ export class FileUploadComponent implements OnInit {
         errors.push('Invalid event id');
       }
     let name = rowData["Event Name"];
-    if (name == undefined || name.length > 20)
+    if (name == undefined)
       {
         errors.push('Invalid event name');
       }
@@ -296,16 +297,58 @@ export class FileUploadComponent implements OnInit {
     event.livesImpacted = rowData["Lives Impacted"];
     event.activityType = rowData["Activity Type"];
     event.status = rowData["Status"];
+
+    let pocId = rowData["POC ID"];
+    let pocName = rowData["POC Name"];
+    let pocContact = rowData["POC Contact Number"];
+    let pocs = [];
+    if (pocId) {
+      console.log('pocId');
+      console.log(pocId);
+
+      let ids = [];
+      if (isNaN(pocId))
+        ids = pocId.split(';');
+      else ids.push(pocId);
+
+      let names = pocName.split(';');
+
+      let contacts = [];
+      if (isNaN(pocId))
+        contacts = pocContact.split(';');
+      else contacts.push(pocContact);
+
+      let id;
+      let name;
+      let contact;
+      let i;
+      for (i = 0; i < ids.length; i++) {     
+        id = ids[i];
+        
+        if (this.sixDigitRegex.test(id.toString())) {
+          if (i < names.length)
+            name = names[i];
+          else name = '';
+
+          if (i < contacts.length)
+            contact = contacts[i];
+          else contact = null;
+
+          pocs.push({ id: 0, associateId: id, name: name, contactNumber: contact, createdBy: 0, modifiedBy:0 });
+        }
+      }
+    }
+    event.pointOfContacts = pocs.length > 0 ? pocs : null;
     this.allEvents.push(event);
   }
 
   validateEnrollmentDataFromExcel(rowNumber, rowData) {
     let errors = [];
 
-    let eventId = rowData["Event ID"];
-    let associateId = rowData["Employee ID"];
-    if (eventId && associateId && this.sixDigitRegex.test(associateId.toString()) && associateId.toString().length == 6)
-      this.createEnrollmentModelFromExcel(rowNumber, rowData);
+    //let eventId = rowData["Event ID"];
+    //let associateId = rowData["Employee ID"];
+    //if (eventId && associateId && this.sixDigitRegex.test(associateId.toString()) && associateId.toString().length == 6)
+    //  this.createEnrollmentModelFromExcel(rowNumber, rowData);
 
     let eventID = rowData["Event ID"];
     if (eventID == undefined) {
@@ -345,6 +388,8 @@ export class FileUploadComponent implements OnInit {
     enrollment.volunteerHours = rowData["Volunteer Hours"];
     enrollment.travelHours = rowData["Travel Hours"];
     enrollment.status = rowData["Status"];
+    enrollment.BusinessUnit = rowData["Business Unit"];
+    enrollment.BaseLocation = rowData["Base Location"];
     enrollment.iiepCategory = rowData["IIEP Category"];
     enrollment.createdBy = 'senthil';
     this.enrollments.push(enrollment);

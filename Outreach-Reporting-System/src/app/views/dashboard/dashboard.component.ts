@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
   totalVolunteers: number;
   totalEvents: number;
   top10Volunteers: Associate[];
-  yearlyData: any[];
+  yearlyNewRepeatVolunteers: any[];
   eventGridData: Event[];
   totalVolunteerHours: number;
   topData: any[];
@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit {
       this.allEnrollments = data;
       this.totalVolunteers = data.length;
       this.totalVolunteerHours = 0;
-      this.allEnrollments.forEach(x => this.totalVolunteerHours = this.totalVolunteerHours + x.volunteerHours);
+      this.allEnrollments.forEach(x => this.totalVolunteerHours = this.totalVolunteerHours + parseInt(x.volunteerHours.toString()));
     });
   }
   getAllVolunteers() {
@@ -133,18 +133,14 @@ export class DashboardComponent implements OnInit {
       this.eventGridData = data;
     });    
   }
+
   getYearlyVolunteers() {
+    this.yearlyNewRepeatVolunteers = [];
     this.dashboardService.getYearlyVolunteers(5).subscribe(data => {
-      this.yearlyData = [];
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          // total = parseInt(data[key][0]) + parseInt(data[key][1]);
-          // newPercent = parseInt(data[key][0]) / total * 100
-          // recurPercent = parseInt(data[key][1]) / total * 100
-         // this.yearlyData.push({ year: key, newVolunteer: newPercent, recurVolunteer: recurPercent });
-         this.yearlyData.push({ year: key, newVolunteer: data[key][0], recurVolunteer: data[key][1] });
-        }
-      }
+      
+      this.yearlyNewRepeatVolunteers = data;
+      console.log('yearlyNewRepeatVolunteers');
+      console.log(data);
 //this.lineGraph();
       this.barChart();
       this.columnLineMix();
@@ -624,7 +620,7 @@ chart.scrollbarX = new am4core.Scrollbar();
     this.chart = am4core.create("barChart", am4charts.XYChart);
 
     // Add data
-    this.chart.data = this.yearlyData.reverse();
+    this.chart.data = this.yearlyNewRepeatVolunteers;
 
     // Create axes
     let categoryAxis = this.chart.yAxes.push(new am4charts.CategoryAxis());
@@ -639,8 +635,8 @@ chart.scrollbarX = new am4core.Scrollbar();
     valueAxis.renderer.opposite = true;
 
 
-    this.createSeries("newVolunteer", "New Volunteers");
-    this.createSeries("recurVolunteer", "Recurring Volunteers");
+    this.createSeries("newVolunteers", "New Volunteers");
+    this.createSeries("repeatedVolunteers", "Recurring Volunteers");
   }
 
   columnLineMix() {
@@ -652,7 +648,7 @@ chart.scrollbarX = new am4core.Scrollbar();
     chart.exporting.menu = new am4core.ExportMenu();
 
     // Data for both series
-    let data = this.yearlyData;
+    let data = this.yearlyNewRepeatVolunteers;
 
     /* Create axes */
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -665,7 +661,7 @@ chart.scrollbarX = new am4core.Scrollbar();
     /* Create series */
     let columnSeries = chart.series.push(new am4charts.ColumnSeries());
     columnSeries.name = "Recurring Volunteers";
-    columnSeries.dataFields.valueY = "recurVolunteer";
+    columnSeries.dataFields.valueY = "repeatedVolunteers";
     columnSeries.dataFields.categoryX = "year";
 
     columnSeries.columns.template.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
@@ -677,7 +673,7 @@ chart.scrollbarX = new am4core.Scrollbar();
 
     let lineSeries = chart.series.push(new am4charts.LineSeries());
     lineSeries.name = "New Volunteers";
-    lineSeries.dataFields.valueY = "newVolunteer";
+    lineSeries.dataFields.valueY = "newVolunteers";
     lineSeries.dataFields.categoryX = "year";
 
     lineSeries.stroke = am4core.color("#fdd400");
@@ -805,7 +801,7 @@ chart.scrollbarX = new am4core.Scrollbar();
     chart.numberFormatter.numberFormat = "#.3'%'";
 
     // Add data
-    chart.data = this.yearlyData.reverse();
+    chart.data = [];//this.yearlyData.reverse();
 
     // Create axes
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());

@@ -26,7 +26,7 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
 
     if (this.authService.getJwtToken()) {
       request = this.addToken(request, this.authService.getJwtToken());
@@ -56,7 +56,7 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
       let user:User = { id:0, email: 'test@test.com', role: null };
-      return this.authService.refreshToken(user).pipe(
+      return this.authService.refreshToken().pipe(
         switchMap((token: any) => {
           this.isRefreshing = false;
           this.refreshTokenSubject.next(token.jwt);

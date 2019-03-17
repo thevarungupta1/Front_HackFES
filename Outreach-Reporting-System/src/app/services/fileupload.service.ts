@@ -39,7 +39,10 @@ export class FileuploadService {
         );
     }
 
-    saveEvents(body: any): Observable<any> {
+  saveEvents(body: any): Observable<any> {
+    console.log('body');
+    console.log(body);
+
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         let bodyString = JSON.stringify(body);
         console.log(bodyString);

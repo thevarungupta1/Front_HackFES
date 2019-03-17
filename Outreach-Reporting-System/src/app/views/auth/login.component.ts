@@ -22,16 +22,17 @@ export class LoginComponent implements OnInit {
       associateId: ['', Validators.required],
       email: ['', Validators.required]
     });
+    this.authService.clearLocalStorage();
   }
 
-  login(){//loginForm: NgForm) {
+  login(){
     if (this.loginForm.valid) {
     let email = this.loginForm.get('email').value;
     let associateId = this.loginForm.get('associateId').value;
 
     let user: User = { id: associateId, email: email, role: null };
       //this.authService.login(user);
-      this.authService.login(user)
+      this.authService.login(associateId)
       .subscribe(success => {
         if (success) {
           if (this.authService.redirectUrl) {

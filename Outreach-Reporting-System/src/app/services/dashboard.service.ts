@@ -71,7 +71,7 @@ export class DashboardService {
     }
 
     getYearlyVolunteers(count: number): Observable<any> {
-      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetYearlyVolunteersCount?years=${count}`)
+      return this.http.get<any>(`${config.apiUrl}/Enrollment/GetDesignationWiseVolunteersByYear?years=${count}`)
         .pipe(
           tap(data => {
             let test = data;
