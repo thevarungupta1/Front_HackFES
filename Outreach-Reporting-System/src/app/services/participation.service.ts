@@ -37,10 +37,36 @@ export class ParticipationService {
       );
   }
 
+  GetFocusAreas(): Observable<any> {
+    return this.http.get<any[]>(`${config.apiUrl}/Event/GetAllFocusArea`)
+      .pipe(
+        tap(data => console.log(JSON.stringify(data))),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
+
   getEnrollmentsByFilter(body: ReportFilter): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
     return this.http.post<any[]>(`${config.apiUrl}/Enrollment/GetEnrollmentsByFilter`, body, { headers: headers })
+      .pipe(
+        tap(data => console.log('data: ' + JSON.stringify(data))),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
+
+  saveFilter(body: ReportFilter): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let bodyString = JSON.stringify(body);
+    return this.http.post<any>(`${config.apiUrl}/ReportFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
         catchError(error => {

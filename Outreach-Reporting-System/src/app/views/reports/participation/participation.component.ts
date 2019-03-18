@@ -27,6 +27,8 @@ export class ParticipationComponent implements OnInit {
   private chart: am4charts.XYChart;
   public innerWidth: any;
 
+  showFilter: boolean = true;
+  isLoading: boolean = false;
   showDesignationData: boolean = false;
   allAssociates: Associate[] = [];
   allEvents: Event[] = [];
@@ -38,9 +40,9 @@ export class ParticipationComponent implements OnInit {
   totalTravelHours: number;
   totalVolunteeringHours: number;
 
-  totalAssociates: number;
-  totalVolunteers: number;
-  uniqueVolunteers: number;
+  totalAssociatesCount: number;
+  totalVolunteersCount: number;
+  uniqueVolunteersCount: number;
 
   coverage: string;
   averageFreqVolunteer: string;
@@ -77,12 +79,15 @@ export class ParticipationComponent implements OnInit {
   filterForm: FormGroup;
   businessUnits: any[];
   baseLocations: any[];
+  focusAreas: any[];
   ngOnInit(): void {
     this.getBusinessUnits();
     this.GetBaseLocations();
+    this.GetFocusAreas();
     this.filterForm = this.fb.group({
       businessUnit: [''],
       baseLocation: [''],
+      focusArea: [''],
       fromDate: [''],
       toDate: ['']
     });
@@ -106,8 +111,19 @@ export class ParticipationComponent implements OnInit {
         data.forEach(x => this.baseLocations.push({ label: x, value: x }));
     });
   }
+  GetFocusAreas() {
+    this.focusAreas = [];
+    this.participationService.GetFocusAreas().subscribe(data => {
+      if (data)
+        data.forEach(x => this.focusAreas.push({ label: x, value: x }));
+    });
+  }
 
-  getEnrollmentsByFilter() {
+  reset() {
+    this.filterForm.reset();
+  }
+
+  onSaveFilter() {
     let formData: ReportFilter = new ReportFilter();
     let businessUnit = this.filterForm.get('businessUnit').value;
     if (businessUnit)
@@ -117,12 +133,52 @@ export class ParticipationComponent implements OnInit {
       formData.baseLocations = baseLocation.join();
     formData.fromDate = this.filterForm.get('fromDate').value;
     formData.toDate = this.filterForm.get('toDate').value;
-    console.log('form data');
-    console.log(formData);
-    this.participationService.getEnrollmentsByFilter(formData).subscribe(data => {
+    this.participationService.saveFilter(formData).subscribe(data => {
+      console.log('filter saved');
     });
   }
 
+  getEnrollmentsByFilter() {
+    this.isLoading = true;
+    let formData: ReportFilter = new ReportFilter();
+    let businessUnit = this.filterForm.get('businessUnit').value;
+    if (businessUnit)
+      formData.businessUnits = businessUnit.join();
+    let baseLocation = this.filterForm.get('baseLocation').value;
+    if (baseLocation)
+      formData.baseLocations = baseLocation.join();
+    let focusArea = this.filterForm.get('focusArea').value;
+    if (focusArea)
+      formData.focusAreas = focusArea.join();
+    formData.fromDate = this.filterForm.get('fromDate').value;
+    formData.toDate = this.filterForm.get('toDate').value;
+    console.log('form data');
+    console.log(formData);
+    this.participationService.getEnrollmentsByFilter(formData).subscribe(data => {
+      this.allEnrollments = data;
+      
+      this.getAssociates();
+      
+      this.showFilter = false;
+    });
+  }
+
+  getAssociates() {
+    this.participationService.getAllAssociates().subscribe(data => {
+     
+      this.allAssociates = data;
+      this.totalAssociatesCount = data.length;
+      this.metricCalculate();
+      this.getDesignationWiseAssociates();
+      this.getDesignationWiseVolunteers();
+      this.getBUWiseAssociates();
+      this.getBUWiseVolunteers();
+      this.getBaseLocationWiseAssociates();
+      this.getBaseLocationWiseVolunteers();
+      this.showCharts();
+      this.isLoading = false;
+    });
+  }
   ngAfterViewInit() {
     //this.pieChart();
   }
@@ -150,7 +206,7 @@ export class ParticipationComponent implements OnInit {
   getAllAssociates() {
     this.participationService.getAllAssociates().subscribe(data => {
       this.allAssociates = data;
-      this.totalAssociates = data.length;
+      this.totalAssociatesCount = data.length;
       this.getAllEvents();
     });
   }
@@ -258,12 +314,31 @@ export class ParticipationComponent implements OnInit {
   //    return [item.country];
   //  });
   //}
+  getUnique(arr, comp) {
+
+  const unique = arr
+    .map(e => e[comp])
+
+    // store the keys of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
+
+    // eliminate the dead keys & store unique objects
+    .filter(e => arr[e]).map(e => arr[e]);
+
+  return unique;
+  }
+
+  filterAssociatesFromEnrollments() {
+    this.allVolunteers = this.allEnrollments.map(m => m.associates)
+    this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+    this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
+  }
 
   metricCalculate() {
-
-    this.totalAssociates = this.allAssociates.length;
-    this.totalVolunteers = this.allEnrollments.length;
-    this.uniqueVolunteers = this.allUniqueVolunteers.length;
+    this.filterAssociatesFromEnrollments();
+    this.totalAssociatesCount = this.allAssociates.length;
+    this.totalVolunteersCount = this.allEnrollments.length;
+    this.uniqueVolunteersCount = this.allUniqueVolunteers.length;
 
     let total: number = 0;
     let total1: number = 0;
@@ -274,37 +349,35 @@ export class ParticipationComponent implements OnInit {
     let weekendHours = 0;
     let weekdayCount = 0;
     let weekendCount = 0;
-    this.allEvents.forEach(event => {
 
-      this.totalTravelHours = this.totalTravelHours + event.totalTravelHours;
-      this.totalVolunteerHours = this.totalVolunteerHours + event.totalVolunteerHours;
-      total = total + event.totalTravelHours + event.totalVolunteerHours;
+    this.allEnrollments.forEach(enrollment => {
+
+      this.totalTravelHours = this.totalTravelHours + enrollment.events.totalTravelHours;
+      this.totalVolunteerHours = this.totalVolunteerHours + enrollment.events.totalVolunteerHours;
+      total = total + enrollment.events.totalTravelHours + enrollment.events.totalVolunteerHours;
       total1 = 0;
-      let d = new Date(event.date);
+      let d = new Date(enrollment.eventDate);
       let n = d.getDay();
       if (n == 0 || n == 6) {
-        total1 = this.totalTravelHours + event.totalTravelHours;
+        total1 = this.totalTravelHours + enrollment.events.totalTravelHours;
         weekendHours = weekendHours + total1;
         weekendCount++;
       } else {
-        total1 = this.totalTravelHours + event.totalTravelHours;
+        total1 = this.totalTravelHours + enrollment.events.totalTravelHours;
         weekdayHours = weekdayHours + total1;
         weekdayCount++;
       }
     });
+
     this.totalVolunteeringHours = total;
-
-    console.log('this.uniqueVolunteers');
-    console.log(this.uniqueVolunteers);
-    console.log(this.totalAssociates);
-
-   let cover =  this.uniqueVolunteers / this.totalAssociates;
+    
+    let cover = this.uniqueVolunteersCount / this.totalAssociatesCount
     this.coverage = cover.toFixed(2);
-      let avgFreq = this.uniqueVolunteers / this.totalVolunteers;
+    let avgFreq = this.uniqueVolunteersCount / this.totalVolunteersCount;
     this.averageFreqVolunteer = avgFreq.toFixed(2);
 
-    this.avgHourAssociate = Math.floor(this.totalVolunteeringHours / this.totalAssociates);
-    this.avgHourVolunteer = Math.floor(this.totalVolunteeringHours / this.uniqueVolunteers);
+    this.avgHourAssociate = Math.floor(this.totalVolunteeringHours / this.totalAssociatesCount);
+    this.avgHourVolunteer = Math.floor(this.totalVolunteeringHours / this.uniqueVolunteersCount);
     this.totalEvents = this.allEvents.length;
 
     let avgVolunteeredHours = 0;
@@ -312,7 +385,7 @@ export class ParticipationComponent implements OnInit {
     this.avgHoursPerEventWeekday = weekdayHours / weekdayCount;
     this.avgHoursPerEventWeekend = weekendHours / weekendCount;
 
-    this.avgVolunteersEvent = this.totalVolunteers / this.totalEvents;
+    this.avgVolunteersEvent = this.totalVolunteersCount / this.totalEvents;
 
     this.avgHourVolunteerEvent = Math.floor(avgVolunteeredHours / this.totalEvents);
   }
@@ -390,7 +463,6 @@ export class ParticipationComponent implements OnInit {
   }
 
   getChartData(chartType: string): any {
-    console.log('test4');
     console.log(this.designationWiseVolunteers);
     if (chartType == 'DesignationWiseReport') {
       return this.getDesignationWiseVolunteersData();

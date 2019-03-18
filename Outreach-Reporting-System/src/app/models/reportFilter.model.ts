@@ -3,6 +3,7 @@ export class ReportFilter {
     name: string;
     businessUnits: string;
     baseLocations: string;
+  focusAreas: string;
     fromDate?: Date;
   toDate?: Date;
 }

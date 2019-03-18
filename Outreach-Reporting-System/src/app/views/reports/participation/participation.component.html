@@ -1,426 +1,445 @@
 <!-- container start -->
-<div class="container-fluid">
+<div class="container-fluid px-0">
+
   <!-- row start -->
   <div class="row">
     <!-- column start -->
-    <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12">
       <div class="animated fadeIn">
-        <div class="card">
-          <div class="card-header bg-primary">
-            Add application user
-          </div>
-          <div class="card-body">
-            <form [formGroup]="filterForm">
-              <div class="form-group">
-                <label for="businessUnit">Business Unit</label>
-                <p-multiSelect [options]="businessUnits" id="businessUnit" formControlName="businessUnit"></p-multiSelect>
-
+        <p-panel header="Apply filter" [toggleable]="true" [style]="{'margin-bottom':'20px'}">
+          <div>
+            <form [formGroup]="filterForm" class="form-inline">
+              <div class="form-group mr-3">
+                <label for="businessUnit" class="mr-1">Business Unit</label>
+                <div>
+                  <p-multiSelect [options]="businessUnits" id="businessUnit" formControlName="businessUnit"></p-multiSelect>
+                </div>
               </div>
-              <div class="form-group">
-                <label for="baseLocation">Base Location</label>
-                <p-multiSelect [options]="baseLocations" id="baseLocation" formControlName="baseLocation"></p-multiSelect>
-
+              <div class="form-group mr-3">
+                <label for="baseLocation" class="mr-1">Base Location</label>
+                <div>
+                  <p-multiSelect [options]="baseLocations" id="baseLocation" formControlName="baseLocation"></p-multiSelect>
+                </div>
               </div>
-              <div class="form-group">
-                <label for="fromDate">From Date</label>
+              <div class="form-group mr-3">
+                <label for="focusArea" class="mr-1">Focus Area</label>
+                <div>
+                  <p-multiSelect [options]="focusAreas" id="focusArea" formControlName="focusArea"></p-multiSelect>
+                </div>
+              </div>
+              <div class="form-group mr-3">
+                <label for="fromDate" class="mr-1">From Date</label>
                 <input class="form-control" id="fromDate" type="date" formControlName="fromDate" placeholder="date">
-                <span class="help-block">Please enter a valid date</span>
               </div>
-              <div class="form-group">
-                <label for="toDate">To Date</label>
+              <div class="form-group mr-3">
+                <label for="toDate" class="mr-1">To Date</label>
                 <input class="form-control" id="toDate" type="date" formControlName="toDate" placeholder="date">
-                <span class="help-block">Please enter a valid date</span>
               </div>
+
+
+
             </form>
           </div>
-          <div class="card-footer">
-            <button type="button" (click)="getEnrollmentsByFilter()" [disabled]="!filterForm.valid" class="btn btn-lg btn-primary">
-              <i class="fa fa-dot-circle-o"></i> Submit
-            </button>
-            <button type="reset" class="btn btn-lg btn-danger">
-              <i class="fa fa-ban"></i> Reset
-            </button>
+          <div class="d-flex justify-content-between">
+            <div class="mt-3">
+              <a (click)="onSaveFilter()">Save filter</a>
+            </div>
+            <div class="mt-3">
+              <a>Show saved filter</a>
+            </div>
+            <div class="mt-3">
+              <button type="button" (click)="getEnrollmentsByFilter()" [disabled]="!filterForm.valid" class="btn btn-sm btn-primary">
+                <i class="fa fa-dot-circle-o"></i> Apply
+              </button>
+              <button type="reset" class="btn btn-sm btn-danger" (click)="reset()">
+                <i class="fa fa-ban"></i> Reset
+              </button>
+            </div>
           </div>
-        </div>
+          <p-progressBar *ngIf="isLoading" mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+        </p-panel>
+
       </div>
     </div>
-    <!-- columne end -->
+    <!-- column end -->
   </div>
     </div>
 
 
     <!-- container start -->
-    <div class="container-fluid animated fadeIn px-3">
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-primary hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">wc</i>
-            </div>
-            <div class="content">
-              <div class="text">Head Count</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalAssociates}}</div>
-            </div>
-          </div>
+<div class="container-fluid animated fadeIn px-3" *ngIf="!showFilter">
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-primary hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">wc</i>
         </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-primary hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">person</i>
-            </div>
-            <div class="content">
-              <div class="text">Unique Volunteers</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{uniqueVolunteers}}</div>
-            </div>
-          </div>
+        <div class="content">
+          <div class="text">Head Count</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalAssociatesCount}}</div>
         </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-primary hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Total Volunteering Hours</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalVolunteeringHours}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-primary hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Coverage</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{coverage}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-success hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Frequency Per Volunteer</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{averageFreqVolunteer}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-success hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Hours Per Associate</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourAssociate}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-success hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Hours Per Volunteer</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteer}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-success hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Total no of Events</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalEvents}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-warning hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Hours  PerEvent Weekday</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekday}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-warning hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Hours  PerEvent Weekend</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekend}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-warning hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Volunteers Per Event</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgVolunteersEvent}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
-        <!-- column start -->
-        <div class="col-sm-6 col-md-4 col-lg-3 px-1">
-          <div class="info-box bg-warning hover-expand-effect">
-            <div class="icon">
-              <i class="material-icons">av_timer</i>
-            </div>
-            <div class="content">
-              <div class="text">Avg. Hours Volunteered Per Event</div>
-              <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteerEvent}}</div>
-            </div>
-          </div>
-        </div>
-        <!-- column end -->
       </div>
-      <!-- row end -->
     </div>
-    <!-- container start -->
-    <div class="container-fluid animated fadeIn px-0">
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header">
-              Designation Wise Report
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <div class="dropdown pull-right ">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
-                    <span (click)="showDesignationData = true">View Data</span>
-                  </div>
-                </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-primary hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">person</i>
+        </div>
+        <div class="content">
+          <div class="text">Unique Volunteers</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{uniqueVolunteersCount}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-primary hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Total Volunteering Hours</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalVolunteeringHours}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-primary hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Coverage</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{coverage}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-success hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Frequency Per Volunteer</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{averageFreqVolunteer}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-success hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours Per Associate</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourAssociate}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-success hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours Per Volunteer</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteer}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-success hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Total no of Events</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{totalEvents}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-warning hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours  PerEvent Weekday</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekday}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-warning hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours  PerEvent Weekend</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHoursPerEventWeekend}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-warning hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Volunteers Per Event</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgVolunteersEvent}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-sm-6 col-md-4 col-lg-3 px-1">
+      <div class="info-box bg-warning hover-expand-effect">
+        <div class="icon">
+          <i class="material-icons">av_timer</i>
+        </div>
+        <div class="content">
+          <div class="text">Avg. Hours Volunteered Per Event</div>
+          <div class="number count-to" data-from="0" data-to="1225" data-speed="1000" data-fresh-interval="20">{{avgHourVolunteerEvent}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+  </div>
+  <!-- row end -->
+  <!--</div>-->
+  <!-- container start -->
+  <!--<div class="container-fluid animated fadeIn px-0" >
+    <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header">
+          Designation Wise Report
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <div class="dropdown pull-right ">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
+                <span (click)="showDesignationData = true">View Data</span>
               </div>
-            </div>
-
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="DesignationWiseReport" style="width: 100%; min-height: 550px;"></div>
-              </div>
-
             </div>
           </div>
         </div>
-        <!-- column end -->
 
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="DesignationWiseReport" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
       </div>
-      <!-- row end -->
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header">
-              Designation Wise Volunteers Vs Associates
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <!--<div class="dropdown pull-right ">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
-                    <span (click)="showDesignationData = true">View Data</span>
-                  </div>
-                </div>-->
-              </div>
-            </div>
+    </div>
+    <!-- column end -->
 
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="DesignationWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header">
+          Designation Wise Volunteers Vs Associates
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <!--<div class="dropdown pull-right ">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
+                <span (click)="showDesignationData = true">View Data</span>
               </div>
+            </div>-->
+          </div>
+        </div>
 
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="DesignationWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          Business Unit wise Report
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <div class="dropdown">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('BuWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
+                <span (click)="showBuData = true">View Data</span>
+              </div>
             </div>
           </div>
         </div>
-        <!-- column end -->
 
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="BuWiseReport" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
       </div>
-      <!-- row end -->
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header bg-primary">
-              Business Unit wise Report
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <div class="dropdown">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('BuWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
-                    <span (click)="showBuData = true">View Data</span>
-                  </div>
-                </div>
+    </div>
+    <!-- column end -->
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          Business Unit wise Volunteers Vs Associates
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <!--<div class="dropdown">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('BuWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
+                <span (click)="showBuData = true">View Data</span>
               </div>
-            </div>
+            </div>-->
+          </div>
+        </div>
 
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="BuWiseReport" style="width: 100%; min-height: 550px;"></div>
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="BuWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          Base Location wise Report
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <div class="dropdown">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('LocationWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('LocationWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('LocationWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('LocationWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('LocationWiseReport')">Pyramid chart</span>
+                <span (click)="showLocationData = true">View Data</span>
               </div>
-
             </div>
           </div>
         </div>
-        <!-- column end -->
+
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="LocationWiseReport" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
       </div>
-      <!-- row end -->
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header bg-primary">
-              Business Unit wise Volunteers Vs Associates
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <!--<div class="dropdown">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('BuWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
-                    <span (click)="showBuData = true">View Data</span>
-                  </div>
-                </div>-->
+    </div>
+    <!-- column end -->
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          Base Location wise Volunteers Vs Associates
+          <div class="card-header-actions">
+            <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
+            <!--<div class="dropdown">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('BuWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
+                <span (click)="showBuData = true">View Data</span>
               </div>
-            </div>
-
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="BuWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
-              </div>
-
-            </div>
+            </div>-->
           </div>
         </div>
-        <!-- column end -->
-      </div>
-      <!-- row end -->
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header bg-primary">
-              Base Location wise Report
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <div class="dropdown">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('LocationWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('LocationWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('LocationWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('LocationWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('LocationWiseReport')">Pyramid chart</span>
-                    <span (click)="showLocationData = true">View Data</span>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="LocationWiseReport" style="width: 100%; min-height: 550px;"></div>
-              </div>
-
-            </div>
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="LocationWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
           </div>
-        </div>
-        <!-- column end -->
-      </div>
-      <!-- row end -->
-      <!-- row start -->
-      <div class="row">
-        <!-- column start -->
-        <div class="col-md-12 p-2">
-          <div class="card">
-            <div class="card-header bg-primary">
-              Base Location wise Volunteers Vs Associates
-              <div class="card-header-actions">
-                <!-- <a class="nav-link p-0"><i class="icon-list"></i></a> -->
-                <!--<div class="dropdown">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('BuWiseReport')">Pie Chart</span>
-                    <span (click)="columnChart('BuWiseReport')">Column Chart</span>
-                    <span (click)="columnChart3d('BuWiseReport')">3D Column chart</span>
-                    <span (click)="doughnut('BuWiseReport')">Doughnut chart</span>
-                    <span (click)="pyramid('BuWiseReport')">Pyramid chart</span>
-                    <span (click)="showBuData = true">View Data</span>
-                  </div>
-                </div>-->
-              </div>
-            </div>
 
-            <div class="card-body">
-              <div class="chart-wrapper">
-                <div id="LocationWiseVolunteersVsAssociates" style="width: 100%; min-height: 550px;"></div>
-              </div>
-
-            </div>
-          </div>
         </div>
-        <!-- column end -->
       </div>
-      <!-- row end -->
-      <!-- container end -->
+    </div>
+    <!-- column end -->
+  </div>
+  <!-- row end -->
+  <!-- container end -->
+</div>
+
       <p-dialog header="Title" [modal]="true" [(visible)]="showDesignationData" [style]="{width: '70%', height: '80%'}">
         <div *ngIf="showDesignationData">
           <!-- <ng-template pTemplate="caption">
@@ -451,3 +470,4 @@
           </p-table>
         </div>
       </p-dialog>
+

@@ -39,9 +39,12 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ReportsRoutingModule } from './reports-routing.module';
 import {TableModule} from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
+import { PanelModule } from 'primeng/panel';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   imports: [
@@ -59,7 +62,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     TableModule,
     DialogModule,
     MultiSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PanelModule,
+    ProgressBarModule
   ],
   declarations: [
     ParticipationComponent,
