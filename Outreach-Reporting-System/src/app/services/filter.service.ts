@@ -9,7 +9,7 @@ import { ReportFilter } from '../models/reportFilter.model';
 @Injectable({
   providedIn: 'root'
 })
-export class EngagementService {
+export class FilterService {
 
   constructor(private http: HttpClient) { }
 
@@ -17,11 +17,10 @@ export class EngagementService {
   getBusinessUnits(): Observable<any> {
     return this.http.get<any[]>(`${config.apiUrl}/Enrollment/getBusinessUnits`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
         catchError(error => {
           const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
+          return of({ error: message });
         })
       );
   }
@@ -32,8 +31,8 @@ export class EngagementService {
         tap(data => console.log(JSON.stringify(data))),
         catchError(error => {
           const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
+          console.error();
+          return of({  error: message });
         })
       );
   }
@@ -53,7 +52,7 @@ export class EngagementService {
   getEnrollmentsByFilter(body: ReportFilter): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
-    return this.http.post<any[]>(`${config.apiUrl}/Enrollment/GetEnrollmentsByFilter`, body, { headers: headers })
+    return this.http.post<any[]>(`${config.apiUrl}/Enrollment/EnrollmentsByFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
         catchError(error => {
@@ -64,10 +63,11 @@ export class EngagementService {
       );
   }
 
-  getAllAssociates(): Observable<any> {
-    return this.http.get<any>(`${config.apiUrl}/Associate`)
+  getEnrollmentsByFilterId(filterId: number): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.get<any[]>(`${config.apiUrl}/Enrollment/EnrollmentsByFilterId?filterId=${filterId}`, { headers: headers })
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => console.log('data: ' + JSON.stringify(data))),
         catchError(error => {
           const message = `Retrieval error: ${error}`;
           console.error(message);
@@ -76,39 +76,12 @@ export class EngagementService {
       );
   }
 
-  getAllEvents(): Observable<any> {
-    return this.http.get<any>(`${config.apiUrl}/Event`)
-      .pipe(
-        tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
-  getAllEnrollments(): Observable<any> {
-    return this.http.get<any>(`${config.apiUrl}/Enrollment`)
-      .pipe(
-        tap(data => {
-          let test = data;
-          console.log(JSON.stringify(data))
-        }),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
-  saveAssociates(body: any): Observable<any> {
+  saveFilter(body: ReportFilter): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Associate`, body, { headers: headers })
+    return this.http.post<any[]>(`${config.apiUrl}/ReportFilter`, body, { headers: headers })
       .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        tap(data => console.log('data: ' + JSON.stringify(data))),
         catchError(error => {
           const message = `Retrieval error: ${error}`;
           console.error(message);
@@ -117,12 +90,11 @@ export class EngagementService {
       );
   }
 
-  saveEvents(body: any): Observable<any> {
+  getSavedFilters(): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Event`, body, { headers: headers })
+    return this.http.get<any[]>(`${config.apiUrl}/ReportFilter`, { headers: headers })
       .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        tap(data => console.log('data: ' + JSON.stringify(data))),
         catchError(error => {
           const message = `Retrieval error: ${error}`;
           console.error(message);
@@ -131,17 +103,4 @@ export class EngagementService {
       );
   }
 
-  saveEnrollments(body: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Enrollment`, body, { headers: headers })
-      .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
 }

@@ -40,26 +40,39 @@ export class DashboardComponent implements OnInit {
   constructor(private zone: NgZone, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    //    generate random values for mainChart
-    //for (let i = 0; i <= this.mainChartElements; i++) {
-    //  this.mainChartData1.push(this.random(50, 200));
-    //  this.mainChartData2.push(this.random(80, 100));
-    //  this.mainChartData3.push(65);
-    //}
-    this.getDateWiseVolunteers();
     this.getAllAssociates();
-    this.getAllEvents();
     this.getAllEnrollments();
-    this.getAllVolunteers();
-    this.getTopVolunteers();
-    this.getYearlyVolunteers();
-    this.getYearlyBuVolunteers();
-    //this.columnLineMix();
-    this.getYearlyBuVolunteers();
+    this.getDateWiseVolunteers();   
     this.getTopData();
+    this.getTopVolunteers();
+   // this.getYearlyVolunteers();
+    //this.getYearlyBuVolunteers();
+   
   }
 
+  getUnique(arr, comp) {
 
+    const unique = arr
+      .map(e => e[comp])
+      // store the keys of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+      // eliminate the dead keys & store unique objects
+      .filter(e => arr[e]).map(e => arr[e]);
+
+    return unique;
+  }
+
+  filterAssociatesFromEnrollments() {
+    this.allVolunteers = this.allEnrollments.map(m => m.associates);
+    this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+    this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
+    this.totalEvents = this.allEvents.length;
+    this.totalVolunteers = this.allUniqueVolunteers.length;
+    this.totalVolunteerHours = 0;
+    this.allEvents.forEach(x => {
+      this.totalVolunteerHours = this.totalVolunteerHours + x.totalVolunteerHours;
+  }); 
+  }
 
   ngOnDestroy() {
     this.zone.runOutsideAngular(() => {
@@ -88,28 +101,28 @@ export class DashboardComponent implements OnInit {
 
     });
   }
-  getAllEvents() {
-    this.dashboardService.getAllEvents().subscribe(data => {
-      this.allEvents = data;
-      this.totalEvents = data.length;
+  //getAllEvents() {
+  //  this.dashboardService.getAllEvents().subscribe(data => {
+  //    this.allEvents = data;
+  //    this.totalEvents = data.length;
 
-    });
-  }
+  //  });
+  //}
 
   getAllEnrollments() {
     this.dashboardService.getAllEnrollments().subscribe(data => {
+
       this.allEnrollments = data;
-      this.totalVolunteers = data.length;
-      this.totalVolunteerHours = 0;
-      this.allEnrollments.forEach(x => this.totalVolunteerHours = this.totalVolunteerHours + parseInt(x.volunteerHours.toString()));
+      this.filterAssociatesFromEnrollments();
+     
     });
   }
-  getAllVolunteers() {
-    console.log(this.allEnrollments);
-    this.allVolunteers = this.allEnrollments.map(e => e.associates);
-    console.log('allvolunters');
-    console.log(this.allVolunteers);
-  }
+  //getAllVolunteers() {
+  //  console.log(this.allEnrollments);
+  //  this.allVolunteers = this.allEnrollments.map(e => e.associates);
+  //  console.log('allvolunters');
+  //  console.log(this.allVolunteers);
+  //}
 
   getTopVolunteers() {
     this.topVolunteers = [];
@@ -134,28 +147,24 @@ export class DashboardComponent implements OnInit {
     });    
   }
 
-  getYearlyVolunteers() {
-    this.yearlyNewRepeatVolunteers = [];
-    this.dashboardService.getYearlyVolunteers(5).subscribe(data => {
+  //getYearlyVolunteers() {
+  //  this.yearlyNewRepeatVolunteers = [];
+  //  this.dashboardService.getYearlyVolunteers(5).subscribe(data => {
       
-      this.yearlyNewRepeatVolunteers = data;
-      console.log('yearlyNewRepeatVolunteers');
-      console.log(data);
-//this.lineGraph();
-      this.barChart();
-      this.columnLineMix();
-      //this.GetAllNewVolunteers();
-      //data.forEach(x=> {console.log(x.key);console.log(x.value);});
-    });
+  //    this.yearlyNewRepeatVolunteers = data;
+  //    //this.barChart();
+  //    //this.columnLineMix();
+  //    //this.stackedChart(data);
+  //  });
     
-  }
-  getYearlyBuVolunteers() {
+  //}
+  //getYearlyBuVolunteers() {
 
-    this.dashboardService.getYearlyBuVolunteers(5).subscribe(data => {
-      this.stackedChart(data);
-    });
+  //  this.dashboardService.getYearlyBuVolunteers(5).subscribe(data => {
+  //    this.stackedChart(data);
+  //  });
 
-  }
+  //}
   getDateWiseVolunteersCount() {
     this.topVolunteers = [];
     this.dashboardService.getTopVolunteers(5).subscribe(data => {
@@ -202,7 +211,9 @@ export class DashboardComponent implements OnInit {
       let chartData = [];
       for (var key in data) {
         if (data.hasOwnProperty(key)) {
-          this.dateWiseVolunteers.push({ date: key, new: data[key][0], recur: data[key][1] });
+          let date = new Date(key);
+           // date = date.setDate(date.getDate() + 1)
+          this.dateWiseVolunteers.push({ date: date, new: data[key][0], recur: data[key][1] });
         }
       }
       this.lineGraph(this.dateWiseVolunteers);
@@ -216,17 +227,7 @@ export class DashboardComponent implements OnInit {
   rangeAreaChart(){
     
 let chart = am4core.create("columnChart", am4charts.XYChart);
-chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
-
-// let data = [];
-// let open = 100;
-// let close = 250;
-
-// for (var i = 1; i < 120; i++) {
-//   open += Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 4);
-//   close = Math.round(open + Math.random() * 5 + i / 5 - (Math.random() < 0.5 ? 1 : -1) * Math.random() * 2);
-//   data.push({ date: new Date(2018, 0, i), open: open, close: close });
-// }
+    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
 
 chart.data = this.dateWiseVolunteers;
 
@@ -239,7 +240,7 @@ let series = chart.series.push(new am4charts.LineSeries());
 series.dataFields.dateX = "date";
 series.dataFields.openValueY = "new";
 series.dataFields.valueY = "recur";
-series.tooltipText = "new: {openValueY.value} recur: {valueY.value}";
+series.tooltipText = "new volunteers: {openValueY.value} repeat volunteers: {valueY.value}";
 series.sequencedInterpolation = true;
 series.fillOpacity = 0.3;
 series.defaultState.transitionDuration = 1000;
@@ -450,8 +451,8 @@ chart.scrollbarX = new am4core.Scrollbar();
     dateAxis.renderer.minGridDistance = 50;
 
     
-    this.createAxisAndSeries(chart, "new", "New", false, "circle");
-    this.createAxisAndSeries(chart, "recur", "Recur", true, "triangle");
+    this.createAxisAndSeries(chart, "new", "New Volunteers", false, "circle");
+    this.createAxisAndSeries(chart, "recur", "Repeated Volunteers", true, "triangle");
     //createAxisAndSeries("hits", "Hits", true, "rectangle");
 
     // Add legend
@@ -504,193 +505,193 @@ chart.scrollbarX = new am4core.Scrollbar();
   valueAxis.renderer.grid.template.disabled = true;
   }
 
-  stackedChart(data:any[]) {
+  //stackedChart(data:any[]) {
 
-    let chart = am4core.create("chartdiv1", am4charts.XYChart);
-    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
-    chart.data = data;
+  //  let chart = am4core.create("chartdiv1", am4charts.XYChart);
+  //  chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+  //  chart.data = data;
 
-    chart.colors.step = 2;
-    chart.padding(30, 30, 10, 30);
-    chart.legend = new am4charts.Legend();
+  //  chart.colors.step = 2;
+  //  chart.padding(30, 30, 10, 30);
+  //  chart.legend = new am4charts.Legend();
 
-    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "year";
-    categoryAxis.renderer.grid.template.location = 0;
+  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+  //  categoryAxis.dataFields.category = "year";
+  //  categoryAxis.renderer.grid.template.location = 0;
 
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.min = 0;
-    valueAxis.max = 100;
-    valueAxis.strictMinMax = true;
-    valueAxis.calculateTotals = true;
-    valueAxis.renderer.minWidth = 50;
+  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  //  valueAxis.min = 0;
+  //  valueAxis.max = 100;
+  //  valueAxis.strictMinMax = true;
+  //  valueAxis.calculateTotals = true;
+  //  valueAxis.renderer.minWidth = 50;
 
-    //enable responsive
-    chart.responsive.enabled = true;
-    chart.responsive.useDefault = false
-    chart.responsive.enabled = true;
+  //  //enable responsive
+  //  chart.responsive.enabled = true;
+  //  chart.responsive.useDefault = false
+  //  chart.responsive.enabled = true;
 
-    chart.responsive.rules.push({
-      relevant: function (target) {
-        if (target.pixelWidth <= 400) { return true; }
-        return false;
-      },
-      state: function (target, stateId) {
-        if (target instanceof am4charts.Chart) {
-          var state = target.states.create(stateId);
-          state.properties.paddingTop = 5;
-          state.properties.paddingRight = 15;
-          state.properties.paddingBottom = 5;
-          state.properties.paddingLeft = 0;
-          return state;
-        }
-        return null;
-      }
-    });
+  //  chart.responsive.rules.push({
+  //    relevant: function (target) {
+  //      if (target.pixelWidth <= 400) { return true; }
+  //      return false;
+  //    },
+  //    state: function (target, stateId) {
+  //      if (target instanceof am4charts.Chart) {
+  //        var state = target.states.create(stateId);
+  //        state.properties.paddingTop = 5;
+  //        state.properties.paddingRight = 15;
+  //        state.properties.paddingBottom = 5;
+  //        state.properties.paddingLeft = 0;
+  //        return state;
+  //      }
+  //      return null;
+  //    }
+  //  });
 
-    let firstObject = data[0];
-    let keys = Object.keys(firstObject);
-    let i = 0;
-    keys.forEach(key => {
-      if (i > 0) {
-        let series1 = chart.series.push(new am4charts.ColumnSeries());
-        series1.columns.template.width = am4core.percent(80);
-        series1.columns.template.tooltipText =
-          "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-        series1.name = key;
-        series1.dataFields.categoryX = "year";
-        series1.dataFields.valueY = key;
-        series1.dataFields.valueYShow = "totalPercent";
-        series1.dataItems.template.locations.categoryX = 0.5;
-        series1.stacked = true;
-        series1.tooltip.pointerOrientation = "vertical";
+  //  let firstObject = data[0];
+  //  let keys = Object.keys(firstObject);
+  //  let i = 0;
+  //  keys.forEach(key => {
+  //    if (i > 0) {
+  //      let series1 = chart.series.push(new am4charts.ColumnSeries());
+  //      series1.columns.template.width = am4core.percent(80);
+  //      series1.columns.template.tooltipText =
+  //        "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+  //      series1.name = key;
+  //      series1.dataFields.categoryX = "year";
+  //      series1.dataFields.valueY = key;
+  //      series1.dataFields.valueYShow = "totalPercent";
+  //      series1.dataItems.template.locations.categoryX = 0.5;
+  //      series1.stacked = true;
+  //      series1.tooltip.pointerOrientation = "vertical";
 
-        let bullet1 = series1.bullets.push(new am4charts.LabelBullet());
-        bullet1.interactionsEnabled = false;
-        bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-        bullet1.label.fill = am4core.color("#ffffff");
-        bullet1.locationY = 0.5;
-      }
-      i++;
-    });
+  //      let bullet1 = series1.bullets.push(new am4charts.LabelBullet());
+  //      bullet1.interactionsEnabled = false;
+  //      bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+  //      bullet1.label.fill = am4core.color("#ffffff");
+  //      bullet1.locationY = 0.5;
+  //    }
+  //    i++;
+  //  });
     
 
-    //let series2 = chart.series.push(new am4charts.ColumnSeries());
-    //series2.columns.template.width = am4core.percent(80);
-    //series2.columns.template.tooltipText =
-    //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-    //series2.name = "Series 2";
-    //series2.dataFields.categoryX = "category";
-    //series2.dataFields.valueY = "value2";
-    //series2.dataFields.valueYShow = "totalPercent";
-    //series2.dataItems.template.locations.categoryX = 0.5;
-    //series2.stacked = true;
-    //series2.tooltip.pointerOrientation = "vertical";
+  //  //let series2 = chart.series.push(new am4charts.ColumnSeries());
+  //  //series2.columns.template.width = am4core.percent(80);
+  //  //series2.columns.template.tooltipText =
+  //  //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+  //  //series2.name = "Series 2";
+  //  //series2.dataFields.categoryX = "category";
+  //  //series2.dataFields.valueY = "value2";
+  //  //series2.dataFields.valueYShow = "totalPercent";
+  //  //series2.dataItems.template.locations.categoryX = 0.5;
+  //  //series2.stacked = true;
+  //  //series2.tooltip.pointerOrientation = "vertical";
 
-    //let bullet2 = series2.bullets.push(new am4charts.LabelBullet());
-    //bullet2.interactionsEnabled = false;
-    //bullet2.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-    //bullet2.locationY = 0.5;
-    //bullet2.label.fill = am4core.color("#ffffff");
+  //  //let bullet2 = series2.bullets.push(new am4charts.LabelBullet());
+  //  //bullet2.interactionsEnabled = false;
+  //  //bullet2.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+  //  //bullet2.locationY = 0.5;
+  //  //bullet2.label.fill = am4core.color("#ffffff");
 
-    //let series3 = chart.series.push(new am4charts.ColumnSeries());
-    //series3.columns.template.width = am4core.percent(80);
-    //series3.columns.template.tooltipText =
-    //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-    //series3.name = "Series 3";
-    //series3.dataFields.categoryX = "category";
-    //series3.dataFields.valueY = "value3";
-    //series3.dataFields.valueYShow = "totalPercent";
-    //series3.dataItems.template.locations.categoryX = 0.5;
-    //series3.stacked = true;
-    //series3.tooltip.pointerOrientation = "vertical";
+  //  //let series3 = chart.series.push(new am4charts.ColumnSeries());
+  //  //series3.columns.template.width = am4core.percent(80);
+  //  //series3.columns.template.tooltipText =
+  //  //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+  //  //series3.name = "Series 3";
+  //  //series3.dataFields.categoryX = "category";
+  //  //series3.dataFields.valueY = "value3";
+  //  //series3.dataFields.valueYShow = "totalPercent";
+  //  //series3.dataItems.template.locations.categoryX = 0.5;
+  //  //series3.stacked = true;
+  //  //series3.tooltip.pointerOrientation = "vertical";
 
-    //let bullet3 = series3.bullets.push(new am4charts.LabelBullet());
-    //bullet3.interactionsEnabled = false;
-    //bullet3.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-    //bullet3.locationY = 0.5;
-    //bullet3.label.fill = am4core.color("#ffffff");
+  //  //let bullet3 = series3.bullets.push(new am4charts.LabelBullet());
+  //  //bullet3.interactionsEnabled = false;
+  //  //bullet3.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+  //  //bullet3.locationY = 0.5;
+  //  //bullet3.label.fill = am4core.color("#ffffff");
 
-    chart.scrollbarX = new am4core.Scrollbar();
+  //  chart.scrollbarX = new am4core.Scrollbar();
 
-  }
+  //}
 
-  barChart() {
-    // Create chart instance
-    this.chart = am4core.create("barChart", am4charts.XYChart);
+  //barChart() {
+  //  // Create chart instance
+  //  this.chart = am4core.create("barChart", am4charts.XYChart);
 
-    // Add data
-    this.chart.data = this.yearlyNewRepeatVolunteers;
+  //  // Add data
+  //  this.chart.data = this.yearlyNewRepeatVolunteers;
 
-    // Create axes
-    let categoryAxis = this.chart.yAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "year";
-    categoryAxis.numberFormatter.numberFormat = "#";
-    categoryAxis.renderer.inversed = true;
-    categoryAxis.renderer.grid.template.location = 0;
-    categoryAxis.renderer.cellStartLocation = 0.1;
-    categoryAxis.renderer.cellEndLocation = 0.9;
+  //  // Create axes
+  //  let categoryAxis = this.chart.yAxes.push(new am4charts.CategoryAxis());
+  //  categoryAxis.dataFields.category = "year";
+  //  categoryAxis.numberFormatter.numberFormat = "#";
+  //  categoryAxis.renderer.inversed = true;
+  //  categoryAxis.renderer.grid.template.location = 0;
+  //  categoryAxis.renderer.cellStartLocation = 0.1;
+  //  categoryAxis.renderer.cellEndLocation = 0.9;
 
-    let valueAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
-    valueAxis.renderer.opposite = true;
+  //  let valueAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
+  //  valueAxis.renderer.opposite = true;
 
 
-    this.createSeries("newVolunteers", "New Volunteers");
-    this.createSeries("repeatedVolunteers", "Recurring Volunteers");
-  }
+  //  this.createSeries("newVolunteers", "New Volunteers");
+  //  this.createSeries("repeatedVolunteers", "Recurring Volunteers");
+  //}
 
-  columnLineMix() {
+  //columnLineMix() {
 
-    // Create chart instance
-    let chart = am4core.create("columnLineMix", am4charts.XYChart);
+  //  // Create chart instance
+  //  let chart = am4core.create("columnLineMix", am4charts.XYChart);
 
-    // Export
-    chart.exporting.menu = new am4core.ExportMenu();
+  //  // Export
+  //  chart.exporting.menu = new am4core.ExportMenu();
 
-    // Data for both series
-    let data = this.yearlyNewRepeatVolunteers;
+  //  // Data for both series
+  //  let data = this.yearlyNewRepeatVolunteers;
 
-    /* Create axes */
-    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "year";
-    categoryAxis.renderer.minGridDistance = 30;
+  //  /* Create axes */
+  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+  //  categoryAxis.dataFields.category = "year";
+  //  categoryAxis.renderer.minGridDistance = 30;
 
-    /* Create value axis */
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  //  /* Create value axis */
+  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
-    /* Create series */
-    let columnSeries = chart.series.push(new am4charts.ColumnSeries());
-    columnSeries.name = "Recurring Volunteers";
-    columnSeries.dataFields.valueY = "repeatedVolunteers";
-    columnSeries.dataFields.categoryX = "year";
+  //  /* Create series */
+  //  let columnSeries = chart.series.push(new am4charts.ColumnSeries());
+  //  columnSeries.name = "Recurring Volunteers";
+  //  columnSeries.dataFields.valueY = "repeatedVolunteers";
+  //  columnSeries.dataFields.categoryX = "year";
 
-    columnSeries.columns.template.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
-    columnSeries.columns.template.propertyFields.fillOpacity = "fillOpacity";
-    columnSeries.columns.template.propertyFields.stroke = "stroke";
-    columnSeries.columns.template.propertyFields.strokeWidth = "strokeWidth";
-    columnSeries.columns.template.propertyFields.strokeDasharray = "columnDash";
-    columnSeries.tooltip.label.textAlign = "middle";
+  //  columnSeries.columns.template.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
+  //  columnSeries.columns.template.propertyFields.fillOpacity = "fillOpacity";
+  //  columnSeries.columns.template.propertyFields.stroke = "stroke";
+  //  columnSeries.columns.template.propertyFields.strokeWidth = "strokeWidth";
+  //  columnSeries.columns.template.propertyFields.strokeDasharray = "columnDash";
+  //  columnSeries.tooltip.label.textAlign = "middle";
 
-    let lineSeries = chart.series.push(new am4charts.LineSeries());
-    lineSeries.name = "New Volunteers";
-    lineSeries.dataFields.valueY = "newVolunteers";
-    lineSeries.dataFields.categoryX = "year";
+  //  let lineSeries = chart.series.push(new am4charts.LineSeries());
+  //  lineSeries.name = "New Volunteers";
+  //  lineSeries.dataFields.valueY = "newVolunteers";
+  //  lineSeries.dataFields.categoryX = "year";
 
-    lineSeries.stroke = am4core.color("#fdd400");
-    lineSeries.strokeWidth = 3;
-    lineSeries.propertyFields.strokeDasharray = "lineDash";
-    lineSeries.tooltip.label.textAlign = "middle";
+  //  lineSeries.stroke = am4core.color("#fdd400");
+  //  lineSeries.strokeWidth = 3;
+  //  lineSeries.propertyFields.strokeDasharray = "lineDash";
+  //  lineSeries.tooltip.label.textAlign = "middle";
 
-    let bullet = lineSeries.bullets.push(new am4charts.Bullet());
-    bullet.fill = am4core.color("#fdd400"); // tooltips grab fill from parent by default
-    bullet.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
-    let circle = bullet.createChild(am4core.Circle);
-    circle.radius = 4;
-    circle.fill = am4core.color("#fff");
-    circle.strokeWidth = 3;
+  //  let bullet = lineSeries.bullets.push(new am4charts.Bullet());
+  //  bullet.fill = am4core.color("#fdd400"); // tooltips grab fill from parent by default
+  //  bullet.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
+  //  let circle = bullet.createChild(am4core.Circle);
+  //  circle.radius = 4;
+  //  circle.fill = am4core.color("#fff");
+  //  circle.strokeWidth = 3;
 
-    chart.data = data;
-  }
+  //  chart.data = data;
+  //}
 
   lineGraph(chartData) {
 
@@ -792,46 +793,46 @@ chart.scrollbarX = new am4core.Scrollbar();
     categoryLabel.label.truncate = false;
   }
 
-  columnChart() {
+  //columnChart() {
 
-    // Create chart instance
-    let chart = am4core.create("columnChart", am4charts.XYChart);
+  //  // Create chart instance
+  //  let chart = am4core.create("columnChart", am4charts.XYChart);
 
-    // Add percent sign to all numbers
-    chart.numberFormatter.numberFormat = "#.3'%'";
+  //  // Add percent sign to all numbers
+  //  chart.numberFormatter.numberFormat = "#.3'%'";
 
-    // Add data
-    chart.data = [];//this.yearlyData.reverse();
+  //  // Add data
+  //  chart.data = [];//this.yearlyData.reverse();
 
-    // Create axes
-    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "year";
-    categoryAxis.renderer.grid.template.location = 0;
-    categoryAxis.renderer.minGridDistance = 30;
+  //  // Create axes
+  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+  //  categoryAxis.dataFields.category = "year";
+  //  categoryAxis.renderer.grid.template.location = 0;
+  //  categoryAxis.renderer.minGridDistance = 30;
 
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.title.text = "GDP growth rate";
-    //valueAxis.title.fontWeight = 800;
+  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  //  valueAxis.title.text = "GDP growth rate";
+  //  //valueAxis.title.fontWeight = 800;
 
-    // Create series
-    let series = chart.series.push(new am4charts.ColumnSeries());
-    series.dataFields.valueY = "newVolunteer";
-    series.dataFields.categoryX = "year";
-    series.clustered = false;
-    series.tooltipText = "GDP grow in {categoryX} (2004): [bold]{valueY}[/]";
+  //  // Create series
+  //  let series = chart.series.push(new am4charts.ColumnSeries());
+  //  series.dataFields.valueY = "newVolunteer";
+  //  series.dataFields.categoryX = "year";
+  //  series.clustered = false;
+  //  series.tooltipText = "GDP grow in {categoryX} (2004): [bold]{valueY}[/]";
 
-    let series2 = chart.series.push(new am4charts.ColumnSeries());
-    series2.dataFields.valueY = "recurVolunteer";
-    series2.dataFields.categoryX = "year";
-    series2.clustered = false;
-    series2.columns.template.width = am4core.percent(50);
-    series2.tooltipText = "GDP grow in {categoryX} (2005): [bold]{valueY}[/]";
+  //  let series2 = chart.series.push(new am4charts.ColumnSeries());
+  //  series2.dataFields.valueY = "recurVolunteer";
+  //  series2.dataFields.categoryX = "year";
+  //  series2.clustered = false;
+  //  series2.columns.template.width = am4core.percent(50);
+  //  series2.tooltipText = "GDP grow in {categoryX} (2005): [bold]{valueY}[/]";
 
-    chart.cursor = new am4charts.XYCursor();
-    chart.cursor.lineX.disabled = true;
-    chart.cursor.lineY.disabled = true;
+  //  chart.cursor = new am4charts.XYCursor();
+  //  chart.cursor.lineX.disabled = true;
+  //  chart.cursor.lineY.disabled = true;
 
-  }
+  //}
   //radioModel: string = 'Month';
 
   //// lineChart1

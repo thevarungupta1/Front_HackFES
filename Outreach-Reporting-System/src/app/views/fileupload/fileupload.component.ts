@@ -388,8 +388,8 @@ export class FileUploadComponent implements OnInit {
     enrollment.volunteerHours = rowData["Volunteer Hours"];
     enrollment.travelHours = rowData["Travel Hours"];
     enrollment.status = rowData["Status"];
-    enrollment.BusinessUnit = rowData["Business Unit"];
-    enrollment.BaseLocation = rowData["Base Location"];
+    enrollment.businessUnit = rowData["Business Unit"];
+    enrollment.baseLocation = rowData["Base Location"];
     enrollment.iiepCategory = rowData["IIEP Category"];
     enrollment.createdBy = 'senthil';
     this.enrollments.push(enrollment);

@@ -15,10 +15,10 @@
               <div class="form-group">
                 <label for="firstName">First Name</label>
                 <input type="text" formControlName="firstName" class="form-control form-control-lg" id="firstName" aria-describedby="emailHelp"
-                  placeholder="First name">
+                       placeholder="First name">
                 <!-- <div *ngIf="fc.firstName.errors" class="invalid-feedback">
-                              <div *ngIf="f.lastName.errors.required">Last Name is required</div>
-                          </div> -->
+                  <div *ngIf="f.lastName.errors.required">Last Name is required</div>
+              </div> -->
               </div>
               <div class="form-group">
                 <label for="lastName">Last Name</label>
@@ -35,10 +35,16 @@
               </div>
               <div class="form-group">
                 <label for="role">Select Role</label>
-                <select id="role" class="form-control form-control-lg" formControlName="roleId">
+                <select id="role" class="form-control form-control-lg" (change)="roleChanged($event)" formControlName="roleId">
                   <!--<option value="0">Select</option>-->
                   <option *ngFor="let role of roles" [value]="role.id">{{role.role}}</option>
                 </select>
+              </div>
+              <div class="form-group" *ngIf="showEvents">
+                <label for="event">Select Event</label>
+                <div>
+                  <p-multiSelect [options]="events" id="event" formControlName="event"></p-multiSelect>
+                </div>
               </div>
             </form>
           </div>

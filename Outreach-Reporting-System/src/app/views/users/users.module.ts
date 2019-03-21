@@ -16,6 +16,7 @@ import {ToastModule} from 'primeng/toast';
 import { MessageService } from 'primeng/components/common/messageservice';
 
 import { ReactiveFormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 // Angular
 
@@ -27,7 +28,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     FormsModule,
     fileup,
     ToastModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MultiSelectModule
   ],
   declarations: [
     UsersComponent

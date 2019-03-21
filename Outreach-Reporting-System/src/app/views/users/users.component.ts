@@ -20,22 +20,6 @@ import { UserModel } from 'src/app/models/user.model';
 
 @Component({
   templateUrl: 'users.component.html',
-  //   styles: [`
-  //   :host ::ng-deep button {
-  //       margin-right: .25em;
-  //   }
-
-  //   :host ::ng-deep .custom-toast .ui-toast-message {
-  //       color: #ffffff;
-  //       background: #FC466B;
-  //       background: -webkit-linear-gradient(to right, #3F5EFB, #FC466B);
-  //       background: linear-gradient(to right, #3F5EFB, #FC466B);
-  //   }
-
-  //   :host ::ng-deep .custom-toast .ui-toast-close-icon {
-  //       color: #ffffff;
-  //   }
-  // `],
   providers: [ToastService]
 })
 export class UsersComponent implements OnInit {
@@ -45,6 +29,8 @@ export class UsersComponent implements OnInit {
   allEvents: Array<Event>;
   enrollments: Array<Enrollment>;
   roles: Array<UserRoles>;
+  events: any[];
+  showEvents: boolean = false;
   showSuccessToast() {
     this.messageService.success('Success', 'Saved successfully');
     this.messageService.info('Information', 'please select');
@@ -60,9 +46,11 @@ export class UsersComponent implements OnInit {
       lastName: ['', Validators.required],
       associateId: ['', Validators.required],
       email: ['', Validators.required],
-      roleId: ['', Validators.required]
+      roleId: ['', Validators.required],
+      event: ['']
     });
     this.getRoles();
+    this.getEvents();
   }
   get fc() { return this.userForm.controls; }
   clearSelectedFiles() {
@@ -252,13 +240,13 @@ export class UsersComponent implements OnInit {
   }
 
 
-  //   downloadExcelTemplate(){
-  //     this.userService.downloadExcelTemplate().subscribe(excel =>
-  //     {
-  // let file: any = new Blob([excel], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-  // saveAs(file,'test.xlsx');   
-  // })
-  //   }
+     downloadExcelTemplate(){
+       this.userService.downloadExcelTemplate().subscribe(excel =>
+       {
+   //let file: any = new Blob([excel], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+   //saveAs(file,'test.xlsx');   
+   })
+     }
 
   onUserSave() {
     let formData: UserModel = new UserModel();
@@ -286,5 +274,23 @@ export class UsersComponent implements OnInit {
         console.log(data)
         this.roles = data;
       });
+  }
+
+  getEvents() {
+    this.events = [];
+    this.userService.getEvents()
+      .subscribe(data => {
+        console.log('events');
+        console.log(data);
+
+          if (data)
+            data.forEach(x => this.events.push({ label: x.id, value: x.id }));
+      });
+  }
+
+  roleChanged(data) {
+    if (data && data.target.value == 3)
+      this.showEvents = true;
+    else this.showEvents = false;
   }
 }

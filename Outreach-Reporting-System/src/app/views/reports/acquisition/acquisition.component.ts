@@ -51,8 +51,8 @@ export class AcquisitionComponent implements OnInit {
       }
       this.monthlyNewVolunteersChart();
       //this.allNewVolunteers = groupedData;
-      //console.log('GetAllNewVolunteers');
-      //console.log(groupedData);
+      console.log('monthlyNewVolunteersChart');
+      console.log(this.monthlyNewVolunteers);
 
       ////this.lineGraph();
       //this.getDateWiseVolunteers();

@@ -44,7 +44,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
 
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { FilterComponent } from '../shared/filter/filter.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from '../messages/message.service';
 
 @NgModule({
   imports: [
@@ -64,14 +66,17 @@ import { ReactiveFormsModule } from '@angular/forms';
     MultiSelectModule,
     ReactiveFormsModule,
     PanelModule,
-    ProgressBarModule
+    ProgressBarModule,
+    ToastModule
   ],
   declarations: [
     ParticipationComponent,
     GenericComponent,
     EngagementComponent,
     RetentionComponent,
-    AcquisitionComponent
-  ]
+    AcquisitionComponent,
+    FilterComponent
+  ],
+  providers: [MessageService]
 })
 export class ReportsModule { }

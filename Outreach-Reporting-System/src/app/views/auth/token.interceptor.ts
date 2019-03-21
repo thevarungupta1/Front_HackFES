@@ -3,6 +3,7 @@
  import { Observable, throwError, BehaviorSubject } from 'rxjs';
  import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
  @Injectable()
  export class TokenInterceptor implements HttpInterceptor {
@@ -10,7 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
    private isRefreshing = false;
    private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-   constructor(public authService: AuthService) { }
+   constructor(public authService: AuthService, private router: Router) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
 
@@ -20,7 +21,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
       return next.handle(request).pipe(catchError(error => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          return this.handle401Error(request, next);
+          return this.router.navigate(['/login']);//this.handle401Error(request, next);
         } else {
           return throwError(error);
         }

@@ -1,10 +1,12 @@
-<div class="container-fluid animated fadeIn px-0">
+<report-filter (filteredData)='onDataFiltered($event)'></report-filter>
+
+<div class="container-fluid animated fadeIn px-0" *ngIf="showReport">
   <!-- row start -->
   <div class="row">
     <!-- column start -->
     <div class="col-md-12 p-2">
       <div class="card">
-        <div class="card-header bg-primary">
+        <div class="card-header">
           Volunteers Frequency rate:
           <!--<div class="card-header-actions">
               <div class="dropdown">
@@ -20,19 +22,18 @@
                 </div>
             </div>-->
         </div>
-      
+
         <div class="card-body">
           <div class="chart-wrapper">
             <div id="volunteersFreqChart" style="width: 100%; min-height: 550px;"></div>
           </div>
-         
+
         </div>
       </div>
     </div>
     <!-- column end -->
-  
+
   </div>
-<!-- row end -->
+  <!-- row end -->
 </div>
 <!-- container end -->
-

@@ -36,6 +36,19 @@ export class UserService {
         })
       );
   }
+  getEvents(): Observable<any> {
+    return this.http.get<any>(`${config.apiUrl}/Event`)
+      .pipe(
+        tap(data => {
+          console.log(JSON.stringify(data))
+        }),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
 
     saveAssociates(body: any): Observable<any> {
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -80,22 +93,33 @@ export class UserService {
           );
       }
 
-      downloadExcelTemplate(): Observable<any>{
-          let templatePath = '../../assets/files/Associate Details.xlsx';
-          let options =new RequestOptions({responseType: ResponseContentType.Blob});
+  downloadExcelTemplate(): Observable<any>{
+    return this.http.get<any>(`${config.apiUrl}/Enrollment/ExcelExport`)
+      .pipe(
+        tap(data => {
+          console.log(JSON.stringify(data))
+        }),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+        //  let templatePath = '../../assets/files/Associate Details.xlsx';
+        //  let options =new RequestOptions({responseType: ResponseContentType.Blob});
 
-          return this.xmlHttp.get(templatePath, options)
-        //   .map(response => {
-        //        return <Blob>response.blob();
-        //   });
-          .pipe(
-            tap(data => <Blob>data.blob() ),
-            catchError(error => {
-                        const message = `Retrieval error: ${error}`;
-                        console.error(message);
-                        return of({ product: null, error: message });
-                      })
-          ); 
+        //  return this.xmlHttp.get(templatePath, options)
+        ////   .map(response => {
+        ////        return <Blob>response.blob();
+        ////   });
+        //  .pipe(
+        //    tap(data => <Blob>data.blob() ),
+        //    catchError(error => {
+        //                const message = `Retrieval error: ${error}`;
+        //                console.error(message);
+        //                return of({ product: null, error: message });
+        //              })
+        //  ); 
   }
 
   saveUser(body: any): Observable<any> {

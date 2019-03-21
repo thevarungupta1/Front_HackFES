@@ -10,13 +10,14 @@ import { TokenInterceptor } from './token.interceptor';
 @NgModule({
   imports: [
     SharedModule,
-    HttpClientModule,
-    RouterModule.forChild([
-      { path: 'login', component: LoginComponent }
-    ])
+    HttpClientModule
+    //,
+    //RouterModule.forChild([
+    //  { path: 'login', component: LoginComponent }
+    //])
   ],
   declarations: [
-    LoginComponent
+    //LoginComponent
   ],
   providers: [
     {

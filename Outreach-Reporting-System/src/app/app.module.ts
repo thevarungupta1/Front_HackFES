@@ -65,6 +65,7 @@ import { HttpModule } from '@angular/http';
     FormsModule,
     ReactiveFormsModule,
     HttpModule
+    
   ],
   declarations: [
     AppComponent,

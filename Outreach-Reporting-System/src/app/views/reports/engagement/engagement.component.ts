@@ -18,14 +18,14 @@ import { HostListener } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class EngagementComponent implements OnInit { 
-
+  showReport: boolean = false;
   allEnrollments: Enrollment[] = [];
   allVolunteers: any[] = [];
   allAssociates: Associate[] = [];
 volunteersFreq: any[];
 totalVolunteers: number;
 public innerWidth: any;
-
+ 
   constructor(private zone: NgZone, private engagementService: EngagementService) { }
 
 
@@ -34,23 +34,24 @@ public innerWidth: any;
     this.innerWidth = window.innerWidth;
   }
 
-  ngOnInit(){
-    this.getAllAssociates();
+  ngOnInit() {
+    this.innerWidth = window.innerWidth;
   }
 
-  getAllAssociates() {
-    this.engagementService.getAllAssociates().subscribe(data => {
-      this.allAssociates = data;
-      this.getAllEnrollments();
-    });
-  }
 
-  getAllEnrollments() {
-    this.engagementService.getAllEnrollments().subscribe(data => {
-      this.allEnrollments = data;
-      this.joinRecords();
-    });
-  }
+  //getAllAssociates() {
+  //  this.engagementService.getAllAssociates().subscribe(data => {
+  //    this.allAssociates = data;
+  //    this.getAllEnrollments();
+  //  });
+  //}
+
+  //getAllEnrollments() {
+  //  this.engagementService.getAllEnrollments().subscribe(data => {
+  //    this.allEnrollments = data;
+  //    this.joinRecords();
+  //  });
+  //}
   
   joinRecords(){
     this.allVolunteers =[];
@@ -76,11 +77,9 @@ public innerWidth: any;
   }
 
   groupVolunteers() {
-    let groupedData = this.groupBy(this.allVolunteers, function (item) {
+    let groupedData = this.groupBy(this.allEnrollments, function (item) {
       return [item.associateID];
     });
-    console.log('groupedData');
-console.log(groupedData);
 this.volunteersFreq = [];
 let oneTime = 0;
 let twoToFiveTimes = 0;
@@ -96,13 +95,13 @@ groupedData.forEach(v => {
 });
 let totalVolunteers = this.allEnrollments.length;
 this.volunteersFreq.push({'frequency':'One Time Volunteers', 'countinpercent': oneTime/totalVolunteers});
-this.volunteersFreq.push({'frequency':'Two To Five Volunteers', 'countinpercent': twoToFiveTimes/totalVolunteers});
+this.volunteersFreq.push({'frequency':'Two To Five Time Volunteers', 'countinpercent': twoToFiveTimes/totalVolunteers});
 this.volunteersFreq.push({'frequency':'Five Plus Time Volunteers', 'countinpercent': fivePlusTimes/totalVolunteers});
 
   }
 
   pieChart(chartcontainer: string) {
-    this.zone.runOutsideAngular(() => {
+    //this.zone.runOutsideAngular(() => {
       let chart = am4core.create(chartcontainer, am4charts.PieChart);
 
       // Enable export
@@ -159,137 +158,16 @@ this.volunteersFreq.push({'frequency':'Five Plus Time Volunteers', 'countinperce
 
       pieSeries.dataFields.value = "countinpercent";
       pieSeries.dataFields.category = "frequency";
-    });
+   // });
   }
 
-  ngAfterViewInit(){
-    let chart = am4core.create("chartdiv", am4charts.XYChart3D);
-    // Add data
-chart.data = [{
-  "country": "USA",
-  "visits": 4025,
-  "color": chart.colors.next()
-}, {
-  "country": "China",
-  "visits": 1882,
-  "color": chart.colors.next()
-}, {
-  "country": "Japan",
-  "visits": 1809,
-  "color": chart.colors.next()
-}, {
-  "country": "Germany",
-  "visits": 1322,
-  "color": chart.colors.next()
-}, {
-  "country": "UK",
-  "visits": 1122,
-  "color": chart.colors.next()
-}, {
-  "country": "France",
-  "visits": 1114,
-  "color": chart.colors.next()
-}, {
-  "country": "India",
-  "visits": 984,
-  "color": chart.colors.next()
-}, {
-  "country": "Spain",
-  "visits": 711,
-  "color": chart.colors.next()
-}, {
-  "country": "Netherlands",
-  "visits": 665,
-  "color": chart.colors.next()
-}, {
-  "country": "Russia",
-  "visits": 580,
-  "color": chart.colors.next()
-}, {
-  "country": "South Korea",
-  "visits": 443,
-  "color": chart.colors.next()
-}, {
-  "country": "Canada",
-  "visits": 441,
-  "color": chart.colors.next()
-}, {
-  "country": "Brazil",
-  "visits": 395,
-  "color": chart.colors.next()
-}, {
-  "country": "Italy",
-  "visits": 386,
-  "color": chart.colors.next()
-}, {
-  "country": "Australia",
-  "visits": 384,
-  "color": chart.colors.next()
-}, {
-  "country": "Taiwan",
-  "visits": 338,
-  "color": chart.colors.next()
-}, {
-  "country": "Poland",
-  "visits": 328,
-  "color": chart.colors.next()
-}];
-
-// Create axes
-let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-categoryAxis.dataFields.category = "country";
-categoryAxis.renderer.labels.template.rotation = 270;
-categoryAxis.renderer.labels.template.hideOversized = false;
-categoryAxis.renderer.minGridDistance = 20;
-categoryAxis.renderer.labels.template.horizontalCenter = "right";
-categoryAxis.renderer.labels.template.verticalCenter = "middle";
-categoryAxis.tooltip.label.rotation = 270;
-categoryAxis.tooltip.label.horizontalCenter = "right";
-categoryAxis.tooltip.label.verticalCenter = "middle";
-
-let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-valueAxis.title.text = "Countries";
-valueAxis.title.fontWeight = "bold";
-
-// Create series
-let series = chart.series.push(new am4charts.ColumnSeries3D());
-series.dataFields.valueY = "visits";
-series.dataFields.categoryX = "country";
-series.name = "Visits";
-series.tooltipText = "{categoryX}: [bold]{valueY}[/]";
-series.columns.template.fillOpacity = .8;
-series.columns.template.propertyFields.fill = "color";
-
-let columnTemplate = series.columns.template;
-columnTemplate.strokeWidth = 2;
-columnTemplate.strokeOpacity = 1;
-columnTemplate.stroke = am4core.color("#FFFFFF");
-
-chart.cursor = new am4charts.XYCursor();
-chart.cursor.lineX.strokeOpacity = 0;
-chart.cursor.lineY.strokeOpacity = 0;
-
-// Enable export
-chart.exporting.menu = new am4core.ExportMenu();
-  }
-
-  totalItems: number = 64;
-  currentPage: number   = 4;
-  smallnumPages: number = 0;
-
-  maxSize: number = 5;
-  bigTotalItems: number = 675;
-  bigCurrentPage: number = 1;
-  numPages: number = 0;
-
-  currentPager: number   = 4;
-
-  setPage(pageNo: number): void {
-    this.currentPage = pageNo;
-  }
-
-  pageChanged(event: any): void {
-    console.log('Page changed to: ' + event.page);
-    console.log('Number items per page: ' + event.itemsPerPage);
+  onDataFiltered(data) {
+    this.showReport = true;
+    setTimeout(() => {
+      this.allEnrollments = data;
+      this.groupVolunteers();
+      this.pieChart('volunteersFreqChart');
+    }, 1);
+     
   }
 }

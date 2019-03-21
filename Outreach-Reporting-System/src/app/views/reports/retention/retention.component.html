@@ -1,16 +1,71 @@
-<div class="animated fadeIn">
-  <div class="card">
-    <div class="card-header">
-      Bootstrap Popover
-      <div class="card-header-actions">
-        <a href="https://valor-software.com/ngx-bootstrap/#/popover" target="_blank">
-          <small className="text-muted">docs</small>
-        </a>
+<report-filter (filteredData)='onDataFiltered($event)'></report-filter>
+<!-- container start -->
+<div class="container-fluid px-0" *ngIf="showReport">
+
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header">
+          Days since last event for Business unit
+          <!--<div class="card-header-actions">
+            <div class="dropdown pull-right ">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
+                <span (click)="showDesignationData = true">View Data</span>
+              </div>
+            </div>
+          </div>-->
+        </div>
+
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="BuWiseReport" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
       </div>
     </div>
-    <div class="card-body">
-        <div id="chartdiv1" style="width: 100%; height: 500px"></div>
+    <!-- column end -->
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header">
+          Days since last event for Location
+          <!--<div class="card-header-actions">
+            <div class="dropdown pull-right ">
+              <button class="dropbtn"><i class="icon-list"></i></button>
+              <div class="dropdown-content">
+                <span (click)="pieChart('DesignationWiseReport')">Pie Chart</span>
+                <span (click)="columnChart('DesignationWiseReport')">Column Chart</span>
+                <span (click)="columnChart3d('DesignationWiseReport')">3D Column chart</span>
+                <span (click)="doughnut('DesignationWiseReport')">Doughnut chart</span>
+                <span (click)="pyramid('DesignationWiseReport')">Pyramid chart</span>
+                <span (click)="showDesignationData = true">View Data</span>
+              </div>
+            </div>
+          </div>-->
+        </div>
+
+        <div class="card-body">
+          <div class="chart-wrapper">
+            <div id="LocationWiseReport" style="width: 100%; min-height: 550px;"></div>
+          </div>
+
+        </div>
+      </div>
     </div>
+    <!-- column end -->
+
   </div>
-  
+  <!-- row end -->
+
 </div>
+<!--container end-->
+

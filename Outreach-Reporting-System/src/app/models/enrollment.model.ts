@@ -8,8 +8,8 @@ export class Enrollment{
     volunteerHours: number;
     travelHours: number;
   status: string;
-  BusinessUnit: string;
-  BaseLocation: string;
+  businessUnit: string;
+  baseLocation: string;
     iiepCategory: string;
     createdBy: string;
     
