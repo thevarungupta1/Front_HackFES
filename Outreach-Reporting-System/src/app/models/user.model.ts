@@ -2,7 +2,9 @@ export class UserModel{
   firstName: string;
   lastName: string;
   email: string;
+  contactNumber: string;
   associateId: number;
-  roleID: string;
+  roleID: number;
+  eventIds: string;
   createdBy: number;
     }

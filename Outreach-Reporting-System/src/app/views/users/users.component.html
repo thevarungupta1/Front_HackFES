@@ -69,26 +69,27 @@
           <div class="card-body">
             <form>
               <div class="form-group">
-                <label for="exampleFormControlFile1">Associates detail input</label>
+                <a style="color:deepskyblue;" (click)="downloadExcelTemplate()" ><i class="fa fa-download"></i> download excel template</a><br/>
+                <!--<label for="exampleFormControlFile1">Associates detail input</label>-->
                 <p-fileUpload name="demo[]" customUpload="true" (onSelect)="incomingfile($event)" (uploadHandler)="onUpload($event)" multiple="multiple"
-                  accept=".xlsx" maxFileSize="1000000">
+                              accept=".xlsx" maxFileSize="1000000">
                   <!-- <ng-template pTemplate="toolbar">
-                      <div>Please uploaded Associates or Event information or Event Summary files</div>
-                    </ng-template> -->
+        <div>Please uploaded Associates or Event information or Event Summary files</div>
+      </ng-template> -->
                   <ng-template pTemplate="content">
                     <ul *ngIf="uploadedFiles.length">
                       <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
                     </ul>
                   </ng-template>
                 </p-fileUpload>
-                <small id="emailHelp" class="form-text text-danger">Please choose/upload event summary file before event information file.</small>
+                <small id="emailHelp" class="form-text text-danger">Please download excel template and update all user details as given in template.</small>
               </div>
               <div>
 
               </div>
             </form>
             <p-toast [style]="{marginTop: '80px'}"></p-toast>
-            <button type="button" (click)="downloadExcelTemplate()" class="btn btn-primary">download excel</button>
+           
           </div>
         </div>
 

@@ -25,9 +25,8 @@ import { UserModel } from 'src/app/models/user.model';
 export class UsersComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private _document: any, private userService: UserService,
     private messageService: ToastService, private fb: FormBuilder) { }
-  allAssociates: Array<Associate>;
-  allEvents: Array<Event>;
-  enrollments: Array<Enrollment>;
+  userList: Array<UserModel>;
+  pocList: Array<UserModel>;
   roles: Array<UserRoles>;
   events: any[];
   showEvents: boolean = false;
@@ -63,37 +62,6 @@ export class UsersComponent implements OnInit {
     this.file = event.files[0];
   }
 
-  Upload() {
-    this.allAssociates = [];
-    this.allEvents = [];
-    this.enrollments = [];
-    // this.file.forEach(file => {
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      this.arrayBuffer = fileReader.result;
-      var data = new Uint8Array(this.arrayBuffer);
-      var arr = new Array();
-      for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-      var bstr = arr.join("");
-      var workbook = XLSX.read(bstr, { type: "binary" });
-      var first_sheet_name = workbook.SheetNames[0];
-      var worksheet = workbook.Sheets[first_sheet_name];
-      console.log(XLSX.utils.sheet_to_json(worksheet, { raw: true }));
-      let dataContent = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      if (dataContent.length > 0) {
-        let rowNumber = 1;
-        dataContent.forEach(row => {
-          this.validateExcelData(rowNumber, row);
-          rowNumber++;
-        })
-        this.saveExcelDataToDb();
-      }
-    }
-    fileReader.readAsArrayBuffer(this.file);
-    //});
-
-
-  }
   uploadedFiles: any[] = [];
   onUpload(event) {
     for (let file of event.files) {
@@ -108,145 +76,56 @@ export class UsersComponent implements OnInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
         let dataContent = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-        console.log(dataContent);
+        this.userList = [];
+        this.pocList = [];
         if (dataContent.length > 0) {
-          //let rowNumber = 1;
-          // dataContent.forEach(row => {
-          //   //this.validateExcelData(rowNumber, row);
-          //   rowNumber++;
-          // })
-          //this.saveExcelDataToDb();
+
+          dataContent.forEach(row => {
+            let rowNumber = 1;
+            this.createModelFromExcel(rowNumber, row);
+            rowNumber++;
+          });
+          this.saveApplicationUsers(this.userList);
+          this.savePocUsers(this.pocList);
         }
       }
       fileReader.readAsArrayBuffer(file);
     }
-
-  }
-  saveExcelDataToDb() {
-    if (this.allAssociates.length > 0) {
-      this.userService.saveAssociates(this.allAssociates)
-        .subscribe(data => {
-          console.log(data)
-          this.showSuccessToast();
-        });
-    }
-    if (this.allEvents.length > 0) {
-      this.userService.saveEvents(this.allEvents)
-        .subscribe(data => {
-          console.log(data)
-          this.showSuccessToast();
-        });
-    }
-    if (this.enrollments.length > 0) {
-      this.userService.saveEnrollments(this.enrollments)
-        .subscribe(data => {
-          console.log(data)
-          this.showSuccessToast();
-        });
-    }
   }
 
-  validateExcelData(rowNumber, rowData) {
-    let associateId = rowData["Associate ID"];
-    let eventId = rowData["Event ID"];
-    let employeeId = rowData["Employee ID"];
-
-    if (!eventId && !employeeId && associateId && /^\d+$/.test(associateId.toString()) && associateId.toString().length == 6)
-      this.createAssociateModelFromExcel(rowNumber, rowData);
-    if (eventId && !associateId && !employeeId)
-      this.createEventModelFromExcel(rowNumber, rowData);
-    if (eventId && employeeId && /^\d+$/.test(employeeId.toString()) && employeeId.toString().length == 6)
-      this.createEnrollmentModelFromExcel(rowNumber, rowData);
-  }
-
-  validateAssociateDataFromExcel(rowNumber, rowData) {
-    let id = rowData["Associate ID"];
-    if (id && /^\d+$/.test(id.toString()) && id.toString().length == 6)
-      this.createAssociateModelFromExcel(rowNumber, rowData);
-  }
-
-  createAssociateModelFromExcel(rowNumber, rowData) {
-    let associate = new Associate();
-    associate.id = rowData["Associate ID"];
-    associate.name = rowData["Name"];
-    associate.designation = rowData["Designation"];
-    associate.baseLocation = rowData["Location"];
-    associate.businessUnit = rowData["BU"];
-    associate.createdBy = 'senthil';
-    this.allAssociates.push(associate);
-  }
-
-  validateEventDataFromExcel(rowNumber, rowData) {
-    let id = rowData["Event ID"];
-    if (id)
-      this.createEventModelFromExcel(rowNumber, rowData);
-  }
-
-  createEventModelFromExcel(rowNumber, rowData) {
-    let event = new Event();
-    event.id = rowData["Event ID"];
-    event.name = rowData["Event Name"];
-    event.description = rowData["Event Description"];
-    event.date = rowData["Event Date (DD-MM-YY)"];
-    event.baseLocation = rowData["Base Location"]
-    event.address = rowData["Venue Address"];
-    if (event.address) {
-      let _address = event.address.split(',');
-      if (_address.length > 0) {
-        if (_address.length - 4 >= 0)
-          event.address = _address[_address.length - 4];
-        if (_address.length - 3 > 0)
-          event.city = _address[_address.length - 3];
-        if (_address.length - 2 > 0)
-          event.state = _address[_address.length - 2];
-        if (_address.length - 1 > 0) {
-          if (_address[_address.length - 1].length > 0) {
-            let _pincode = _address[_address.length - 1].split('-');
-            if (_pincode.length > 0)
-              event.country = _pincode[0];
-
-            if (_pincode.length > 0)
-              event.pincode = _pincode[1];
-          }
-        }
+  createModelFromExcel(rowNumber, rowData) {
+    let userModel = new UserModel();
+    userModel.associateId = rowData["Associate ID"];
+    userModel.firstName = rowData["First Name"];
+    userModel.lastName = rowData["Last Name"];
+    userModel.email = rowData["Email"];
+    let role = rowData["Role(Admin or PMO or POC)"];
+    let roleid = 0;
+    if (role == 'Admin')
+      roleid = 1;
+    else if (role == 'PMO')
+      roleid = 2;
+    else if (role == 'POC')
+    roleid = 3;
+    userModel.roleID = roleid;
+    if (roleid == 3) {
+      let eventIds = rowData["Event ID for POC role(seperated by comma if many)"];
+      if (eventIds) {
+        userModel.eventIds = eventIds;
       }
     }
-    event.beneficiary = rowData["Beneficiary Name"];
-    event.councilName = rowData["Council Name"];
-    event.project = rowData["Project"];
-    event.category = rowData["Category"];
-    event.livesImpacted = rowData["Lives Impacted"];
-    event.activityType = rowData["Activity Type"];
-    event.status = rowData["Status"];
-    this.allEvents.push(event);
+    if (roleid == 3)
+      this.pocList.push(userModel);
+    else
+    this.userList.push(userModel);
   }
 
-  validateEnrollmentDataFromExcel(rowNumber, rowData) {
-    let eventId = rowData["Event ID"];
-    let associateId = rowData["Employee ID"];
-    if (eventId && associateId && /^\d+$/.test(associateId.toString()) && associateId.toString().length == 6)
-      this.createEnrollmentModelFromExcel(rowNumber, rowData);
+  downloadExcelTemplate() {
+    this.userService.downloadExcelTemplate().subscribe(blob => {
+      let file: any = new Blob([blob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(file, 'ApplicationUsers.xlsx');
+    })
   }
-
-  createEnrollmentModelFromExcel(rowNumber, rowData) {
-    let enrollment = new Enrollment();
-    enrollment.eventID = rowData["Event ID"];
-    enrollment.associateID = rowData["Employee ID"];
-    enrollment.volunteerHours = rowData["Volunteer Hours"];
-    enrollment.travelHours = rowData["Travel Hours"];
-    enrollment.status = rowData["Status"];
-    enrollment.iiepCategory = rowData["IIEP Category"];
-    this.enrollments.push(enrollment);
-  }
-
-
-     downloadExcelTemplate(){
-       this.userService.downloadExcelTemplate().subscribe(excel =>
-       {
-   //let file: any = new Blob([excel], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-   //saveAs(file,'test.xlsx');   
-   })
-     }
 
   onUserSave() {
     let formData: UserModel = new UserModel();
@@ -255,9 +134,36 @@ export class UsersComponent implements OnInit {
     formData.email = this.userForm.get('email').value;
     formData.associateId = this.userForm.get('associateId').value;
     formData.roleID = this.userForm.get('roleId').value;
-    let postData: UserModel[] = [];
-    postData.push(formData);
-    this.userService.saveUser(postData)
+    if (formData.roleID == 3) {
+      let events = this.userForm.get('event').value;
+      if (events && events.length > 0) {
+        formData.eventIds = events.join();
+      }
+      let pocData: UserModel[] = [];
+      pocData.push(formData);
+      this.savePocUsers(pocData);
+    }
+    else {
+      let userData: UserModel[] = [];
+      userData.push(formData);
+      this.saveApplicationUsers(userData);
+    }
+  }
+
+  saveApplicationUsers(userList: UserModel[]) {
+    if (userList.length == 0)
+      return false;
+    this.userService.saveUser(userList)
+      .subscribe(data => {
+        console.log(data)
+        this.showSuccessToast();
+      });
+  }
+
+  savePocUsers(pocList: UserModel[]) {
+    if (pocList.length == 0)
+      return false;
+    this.userService.savePOC(pocList)
       .subscribe(data => {
         console.log(data)
         this.showSuccessToast();
@@ -266,7 +172,6 @@ export class UsersComponent implements OnInit {
 
   onFormClear() {
     this.userForm.reset();
-    console.log('clear button clicked');
   }
   getRoles() {
     this.userService.getRoles()
@@ -283,8 +188,8 @@ export class UsersComponent implements OnInit {
         console.log('events');
         console.log(data);
 
-          if (data)
-            data.forEach(x => this.events.push({ label: x.id, value: x.id }));
+        if (data)
+          data.forEach(x => this.events.push({ label: x.id, value: x.id }));
       });
   }
 

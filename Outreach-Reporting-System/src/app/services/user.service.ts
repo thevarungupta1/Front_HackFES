@@ -94,38 +94,42 @@ export class UserService {
       }
 
   downloadExcelTemplate(): Observable<any>{
-    return this.http.get<any>(`${config.apiUrl}/Enrollment/ExcelExport`)
+   
+    const headers = new HttpHeaders();
+    return this.http.get<any>('../../assets/files/ApplicationUsersTemplate.xlsx', {
+      headers: headers,
+      responseType: 'blob' as 'json'
+    })
       .pipe(
         tap(data => {
           console.log(JSON.stringify(data))
         }),
         catchError(error => {
-          const message = `Retrieval error: ${error}`;
+          const message = `Retrieval error: ${JSON.stringify(error)}`;
           console.error(message);
           return of({ product: null, error: message });
         })
       );
-        //  let templatePath = '../../assets/files/Associate Details.xlsx';
-        //  let options =new RequestOptions({responseType: ResponseContentType.Blob});
-
-        //  return this.xmlHttp.get(templatePath, options)
-        ////   .map(response => {
-        ////        return <Blob>response.blob();
-        ////   });
-        //  .pipe(
-        //    tap(data => <Blob>data.blob() ),
-        //    catchError(error => {
-        //                const message = `Retrieval error: ${error}`;
-        //                console.error(message);
-        //                return of({ product: null, error: message });
-        //              })
-        //  ); 
   }
 
   saveUser(body: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
     return this.http.post<any>(`${config.apiUrl}/User`, body, { headers: headers })
+      .pipe(
+        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        catchError(error => {
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          return of({ product: null, error: message });
+        })
+      );
+  }
+
+  savePOC(body: any): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let bodyString = JSON.stringify(body);
+    return this.http.post<any>(`${config.apiUrl}/User/SavePOC`, body, { headers: headers })
       .pipe(
         tap(data => console.log('createProduct: ' + JSON.stringify(data))),
         catchError(error => {
