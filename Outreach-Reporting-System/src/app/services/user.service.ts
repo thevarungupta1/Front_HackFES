@@ -24,7 +24,7 @@ export class UserService {
       ); 
   }
   getRoles(): Observable<any> {
-    return this.http.get<any>(`${config.apiUrl}/User/GetRoles`)
+    return this.http.get<any>(`${config.apiUrl}/User/Roles`)
       .pipe(
         tap(data => {
           console.log(JSON.stringify(data))

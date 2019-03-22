@@ -32,10 +32,7 @@ export class AuthService {
       .pipe(
       tap(tokens => { this.doLoginUser(associateId, tokens); console.log(tokens);}),
         mapTo(true),
-        catchError(error => {
-          console.log(error.error);
-          return of(false);
-        }));
+      catchError(this.handleError<any>('login')));
   }
 
   logout() {
@@ -44,10 +41,7 @@ export class AuthService {
     }).pipe(
       tap(() => this.doLogoutUser()),
       mapTo(true),
-      catchError(error => {
-        alert(error.error);
-        return of(false);
-      }));
+      catchError(this.handleError<any>('logout')));
   }
 
   isLoggedIn() {
@@ -62,10 +56,7 @@ export class AuthService {
       .pipe(
       tap(tokens => this.doLoginUser(parseInt(associateId), tokens)),
         mapTo(true),
-        catchError(error => {
-          console.log(error.error);
-          return of(false);
-        }));
+      catchError(this.handleError<any>('refreshToken')));
   }
 
   getJwtToken() {
@@ -114,5 +105,19 @@ export class AuthService {
   removeTokens() {
     localStorage.removeItem(this.JWT_TOKEN);
     localStorage.removeItem(this.REFRESH_TOKEN);
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      console.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }

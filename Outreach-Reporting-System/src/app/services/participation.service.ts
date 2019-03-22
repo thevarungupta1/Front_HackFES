@@ -13,53 +13,13 @@ export class ParticipationService {
 
   constructor(private http: HttpClient) { }
 
-  getBusinessUnits(): Observable<any> {
-    return this.http.get<any[]>(`${config.apiUrl}/Enrollment/getBusinessUnits`)
-      .pipe(
-        tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
-  GetBaseLocations(): Observable<any> {
-    return this.http.get<any[]>(`${config.apiUrl}/Enrollment/GetBaseLocations`)
-      .pipe(
-        tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
-  GetFocusAreas(): Observable<any> {
-    return this.http.get<any[]>(`${config.apiUrl}/Event/GetAllFocusArea`)
-      .pipe(
-        tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
-
   getEnrollmentsByFilter(body: ReportFilter): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(body);
     return this.http.post<any[]>(`${config.apiUrl}/Enrollment/GetEnrollmentsByFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
 
@@ -69,11 +29,7 @@ export class ParticipationService {
     return this.http.post<any>(`${config.apiUrl}/ReportFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
 
@@ -81,11 +37,7 @@ export class ParticipationService {
     return this.http.get<any>(`${config.apiUrl}/Associate`)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
 
@@ -93,11 +45,7 @@ export class ParticipationService {
     return this.http.get<any>(`${config.apiUrl}/Event`)
       .pipe(
         tap(data => JSON.stringify(data)),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
 
@@ -108,11 +56,7 @@ export class ParticipationService {
           let test = data;
           console.log(JSON.stringify(data))
         }),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
 
@@ -123,53 +67,21 @@ export class ParticipationService {
           let test = data;
           console.log(JSON.stringify(data))
         }),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+      catchError(this.handleError<any>('getSavedFilters'))
       );
   }
+  
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
 
-  saveAssociates(body: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Associate`, body, { headers: headers })
-      .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
 
-  saveEvents(body: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Event`, body, { headers: headers })
-      .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
-  }
+      // TODO: better job of transforming error for user consumption
+      console.log(`${operation} failed: ${error.message}`);
 
-  saveEnrollments(body: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(body);
-    return this.http.post<any>(`${config.apiUrl}/Enrollment`, body, { headers: headers })
-      .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
-      );
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }

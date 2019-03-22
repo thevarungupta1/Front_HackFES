@@ -31,7 +31,10 @@
               </div>
               <div class="form-group">
                 <label for="email">Associate Email</label>
-                <input type="text" formControlName="email" class="form-control form-control-lg" id="email" placeholder="email">
+                <input type="text" formControlName="email" class="form-control form-control-lg" id="email" placeholder="Email">
+              </div> <div class="form-group">
+                       <label for="contactNumber">Contact Number</label>
+                <input type="text" formControlName="contactNumber" class="form-control form-control-lg" id="contactNumber" placeholder="Contact number">
               </div>
               <div class="form-group">
                 <label for="role">Select Role</label>
@@ -48,11 +51,14 @@
               </div>
             </form>
           </div>
-          <div class="card-footer">
-            <button type="button" (click)="onUserSave()" [disabled]="!userForm.valid" class="btn btn-lg btn-primary">
-              <i class="fa fa-dot-circle-o"></i> Submit</button>
-            <button type="reset" (click)="onFormClear()" class="btn btn-lg btn-danger">
-              <i class="fa fa-ban"></i> Reset</button>
+          <div class="card-footer"><div class="pull-right">
+  <button type="button" (click)="onUserSave()" [disabled]="!userForm.valid" class="btn btn-lg btn-primary">
+    <i class="fa fa-dot-circle-o"></i> Submit
+  </button>
+  <button type="reset" (click)="onFormClear()" class="btn btn-lg btn-danger">
+    <i class="fa fa-ban"></i> Reset
+  </button>
+</div>
           </div>
         </div>
 
@@ -82,7 +88,7 @@
                     </ul>
                   </ng-template>
                 </p-fileUpload>
-                <small id="emailHelp" class="form-text text-danger">Please download excel template and update all user details as given in template.</small>
+                <small id="emailHelp" class="form-text text-danger">Please download excel template and update application user details as given in template.</small>
               </div>
               <div>
 

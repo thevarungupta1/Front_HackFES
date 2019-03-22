@@ -39,8 +39,8 @@ export class ParticipationComponent implements OnInit {
   totalVolunteersCount: number;
   uniqueVolunteersCount: number;
 
-  coverage: string;
-  averageFreqVolunteer: string;
+  coverage: number;
+  averageFreqVolunteer: number;
   avgHourAssociate: number;
   avgHourVolunteer: number;
   totalEvents: number;
@@ -90,17 +90,7 @@ export class ParticipationComponent implements OnInit {
     this.participationService.getAllAssociates().subscribe(data => {     
       this.allAssociates = data;
       this.totalAssociatesCount = data.length;
-      this.metricCalculate();
-      this.getDesignationWiseAssociates();
-      this.getDesignationWiseVolunteers();
-      this.getBUWiseAssociates();
-      this.getBUWiseVolunteers();
-      this.getBaseLocationWiseAssociates();
-      this.getBaseLocationWiseVolunteers();
-    
-      this.showCharts();
-      
-      
+      this.getAllEvents();
     });
   }
   ngAfterViewInit() {
@@ -134,12 +124,20 @@ export class ParticipationComponent implements OnInit {
   //    this.getAllEvents();
   //  });
   //}
-  //getAllEvents() {
-  //  this.participationService.getAllEvents().subscribe(data => {
-  //    this.allEvents = data;
-  //    this.getEnrollments();
-  //  });
-  //}
+  getAllEvents() {
+    this.participationService.getAllEvents().subscribe(data => {
+      this.allEvents = data;
+      this.metricCalculate();
+      this.getDesignationWiseAssociates();
+      this.getDesignationWiseVolunteers();
+      this.getBUWiseAssociates();
+      this.getBUWiseVolunteers();
+      this.getBaseLocationWiseAssociates();
+      this.getBaseLocationWiseVolunteers();
+
+      this.showCharts();
+    });
+  }
   //getEnrollments() {
   //  this.participationService.getEnrollments().subscribe(data => {
   //    this.allEnrollments = data;
@@ -251,7 +249,7 @@ export class ParticipationComponent implements OnInit {
   filterAssociatesFromEnrollments() {
     this.allVolunteers = this.allEnrollments.map(m => m.associates)
     this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
-    this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
+   // this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
   }
 
   metricCalculate() {
@@ -260,54 +258,60 @@ export class ParticipationComponent implements OnInit {
     this.totalVolunteersCount = this.allEnrollments.length;
     this.uniqueVolunteersCount = this.allUniqueVolunteers.length;
 
-    let total: number = 0;
-    let total1: number = 0;
-    let totalVolunteers: number = 0;
     this.totalTravelHours = 0;
     this.totalVolunteerHours = 0;
+    
+    this.allEnrollments.forEach(enrollment => {
+      this.totalTravelHours = this.totalTravelHours + enrollment.travelHours;
+      this.totalVolunteerHours = this.totalVolunteerHours + enrollment.volunteerHours;
+   
+    });
+
+    this.totalVolunteeringHours = this.totalTravelHours + this.totalVolunteerHours;
+    
+    this.coverage  = Math.round((this.uniqueVolunteersCount / this.totalAssociatesCount) * 100) / 100;
+    this.averageFreqVolunteer = Math.round((this.uniqueVolunteersCount / this.totalVolunteersCount) * 100) / 100;
+
+    this.avgHourAssociate = Math.round((this.totalVolunteeringHours / this.totalAssociatesCount) * 100) / 100;
+    this.avgHourVolunteer = Math.round((this.totalVolunteeringHours / this.uniqueVolunteersCount) * 100) / 100;
+    this.totalEvents = this.allEvents.length;
+
     let weekdayHours = 0;
     let weekendHours = 0;
     let weekdayCount = 0;
     let weekendCount = 0;
+    let total: number = 0;
+    let eventTotalVolunteers = 0;
+    let eventTotalVolunteeringHrs = 0;
 
-    this.allEnrollments.forEach(enrollment => {
-
-      this.totalTravelHours = this.totalTravelHours + enrollment.events.totalTravelHours;
-      this.totalVolunteerHours = this.totalVolunteerHours + enrollment.events.totalVolunteerHours;
-      total = total + enrollment.events.totalTravelHours + enrollment.events.totalVolunteerHours;
-      total1 = 0;
-      let d = new Date(enrollment.eventDate);
+    let avgHours = 0;
+    let tmpavgHours = 0;
+    this.allEvents.forEach(event => {
+      total = 0;
+      tmpavgHours = 0;
+      eventTotalVolunteers = eventTotalVolunteers + event.totalVolunteers;
+      let d = new Date(event.date);
       let n = d.getDay();
       if (n == 0 || n == 6) {
-        total1 = this.totalTravelHours + enrollment.events.totalTravelHours;
-        weekendHours = weekendHours + total1;
+        total = event.totalVolunteerHours + event.totalTravelHours;
+        weekendHours = weekendHours + total;
         weekendCount++;
       } else {
-        total1 = this.totalTravelHours + enrollment.events.totalTravelHours;
-        weekdayHours = weekdayHours + total1;
+        total = event.totalVolunteerHours + event.totalTravelHours;
+        weekdayHours = weekdayHours + total;
         weekdayCount++;
       }
+      tmpavgHours = event.totalVolunteerHours / event.totalVolunteers;
+      avgHours = avgHours + tmpavgHours;
+      eventTotalVolunteeringHrs = event.totalVolunteerHours + eventTotalVolunteeringHrs;
     });
-
-    this.totalVolunteeringHours = total;
     
-    let cover = this.uniqueVolunteersCount / this.totalAssociatesCount
-    this.coverage = cover.toFixed(2);
-    let avgFreq = this.uniqueVolunteersCount / this.totalVolunteersCount;
-    this.averageFreqVolunteer = avgFreq.toFixed(2);
+    this.avgHoursPerEventWeekday = Math.round((weekdayHours / weekdayCount) * 100) / 100;
+    this.avgHoursPerEventWeekend = Math.round((weekendHours / weekendCount) * 100) / 100;
 
-    this.avgHourAssociate = Math.floor(this.totalVolunteeringHours / this.totalAssociatesCount);
-    this.avgHourVolunteer = Math.floor(this.totalVolunteeringHours / this.uniqueVolunteersCount);
-    this.totalEvents = this.allEvents.length;
+    this.avgVolunteersEvent = Math.round((eventTotalVolunteers / this.totalEvents) * 100) / 100;
 
-    let avgVolunteeredHours = 0;
-
-    this.avgHoursPerEventWeekday = weekdayHours / weekdayCount;
-    this.avgHoursPerEventWeekend = weekendHours / weekendCount;
-
-    this.avgVolunteersEvent = this.totalVolunteersCount / this.totalEvents;
-
-    this.avgHourVolunteerEvent = Math.floor(avgVolunteeredHours / this.totalEvents);
+    this.avgHourVolunteerEvent = Math.round((avgHours / this.totalEvents) * 100) / 100;
   }
 
 

@@ -13,47 +13,25 @@ export class FileuploadService {
 
     constructor(private http: HttpClient) { }
         
-    // getValues() : Observable<any> {
-    //     return this.http.get<any>(this.baseUrl+'Values')
-    //   .pipe(
-    //     tap(data => console.log(JSON.stringify(data))),
-    //     catchError(error => {
-    //                 const message = `Retrieval error: ${error}`;
-    //                 console.error(message);
-    //                 return of({ product: null, error: message });
-    //               })
-    //   ); 
-    // }
 
     saveAssociates(body: any): Observable<any> {
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       let bodyString = JSON.stringify(body);
       return this.http.post<any>(`${config.apiUrl}/Associate`, body, { headers: headers })
         .pipe(
-          tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-          catchError(error => {
-            const message = `Retrieval error: ${error}`;
-            console.error(message);
-            return of({ product: null, error: message });
-          })
+          tap(data => JSON.stringify(data)),
+        catchError(this.handleError<any>('saveAssociates'))
         );
     }
 
   saveEvents(body: any): Observable<any> {
-    console.log('body');
-    console.log(body);
-
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         let bodyString = JSON.stringify(body);
         console.log(bodyString);
       return this.http.post<any>(`${config.apiUrl}/Event`, body, { headers: headers })
           .pipe(
-            tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-            catchError(error => {
-              const message = `Retrieval error: ${error}`;
-              console.error(message);
-              return of({ product: null, error: message });
-            })
+            tap(data => JSON.stringify(data)),
+        catchError(this.handleError<any>('saveEvents'))
           );
       }
 
@@ -62,12 +40,8 @@ export class FileuploadService {
         let bodyString = JSON.stringify(body);
         return this.http.post<any>(`${config.apiUrl}/Enrollment`, body, { headers: headers })
           .pipe(
-            tap(data => console.log('createProduct: ' + JSON.stringify(data))),
-            catchError(error => {
-              const message = `Retrieval error: ${error}`;
-              console.error(message);
-              return of({ product: null, error: message });
-            })
+            tap(data => JSON.stringify(data)),
+          catchError(this.handleError<any>('saveEnrollments'))
           );
       }
 
@@ -76,12 +50,23 @@ export class FileuploadService {
     let bodyString = JSON.stringify(body);
     return this.http.post<any>(`${config.apiUrl}/File`, body, { headers: headers })
       .pipe(
-        tap(data => console.log('file added: ' + JSON.stringify(data))),
-        catchError(error => {
-          const message = `Retrieval error: ${error}`;
-          console.error(message);
-          return of({ product: null, error: message });
-        })
+        tap(data => JSON.stringify(data)),
+      catchError(this.handleError<any>('saveFileInfo'))
       );
+  }
+
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      console.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }

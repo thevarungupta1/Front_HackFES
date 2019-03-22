@@ -25,22 +25,22 @@ export const navItems: NavData[] = [
       {
         name: 'Participation',
         url: '/reports/participation',
-        icon: 'fa fa-pie-chart'
+        icon: 'fa fa-bar-chart'
       }, 
       {
         name: 'Engagement',
-        url: '/reports/engagement',
-        icon: 'fa fa-area-chart'
+        url: '/reports/engagement',        
+         icon: 'fa fa-pie-chart'
       },
       {
         name: 'Retention',
         url: '/reports/retention',
-        icon: 'fa fa-bar-chart'
+        icon: 'fa fa-signal'
       },
       {
         name: 'Acquisition',
         url: '/reports/acquisition',
-        icon: 'fa fa-signal'
+         icon: 'fa fa-area-chart'       
       },
       {
         name: 'General',

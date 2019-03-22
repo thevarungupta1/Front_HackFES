@@ -21,7 +21,7 @@
                         </ul>
                       </ng-template>
                     </p-fileUpload>
-                    <small id="emailHelp" class="form-text text-danger">Please choose/upload event summary file before event information file.</small>
+                    <small id="emailHelp" class="form-text text-danger">Please upload Associate & event summary file before event information file.</small>
                   </div>
                   <div>
           
@@ -38,14 +38,13 @@
       </div>
     
       <p-toast [style]="{marginTop: '80px'}"></p-toast>
-      <button type="button" (click)="showSuccessToast()" class="btn btn-primary">Show Toast</button>
     </div>
   </div>
 
 </div>
 <br>
 
-<div *ngIf="associateErrorMsgs">
+<!--<div *ngIf="associateErrorMsgs">
   <ul>
     <li *ngFor="let rows of associateErrorMsgs">Row number: {{rows.row}}
         <ul>
@@ -55,4 +54,4 @@
           </ul>
     </li>
   </ul>
-  </div>
+  </div>-->

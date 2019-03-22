@@ -45,6 +45,7 @@ export class UsersComponent implements OnInit {
       lastName: ['', Validators.required],
       associateId: ['', Validators.required],
       email: ['', Validators.required],
+      contactNumber: ['', Validators.required],
       roleId: ['', Validators.required],
       event: ['']
     });

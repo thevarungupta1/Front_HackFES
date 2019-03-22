@@ -281,7 +281,7 @@ export class FileUploadComponent implements OnInit {
             if (_pincode.length > 0)
               event.country = _pincode[0];
 
-            if (_pincode.length > 0)
+            if (_pincode.length > 1)
               event.pincode = _pincode[1];
           }
         }

@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
   topData: any[];
   allNewVolunteers = [];
   dateWiseVolunteers = [];
-
+  recentEvents: Event[];
   constructor(private zone: NgZone, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
@@ -45,6 +45,7 @@ export class DashboardComponent implements OnInit {
     this.getDateWiseVolunteers();   
     this.getTopData();
     this.getTopVolunteers();
+    this.getRecentEvents();
    // this.getYearlyVolunteers();
     //this.getYearlyBuVolunteers();
    
@@ -126,7 +127,7 @@ export class DashboardComponent implements OnInit {
 
   getTopVolunteers() {
     this.topVolunteers = [];
-    this.dashboardService.getTopVolunteers(5).subscribe(data => {
+    this.dashboardService.getTopVolunteers(10).subscribe(data => {
       let groupedData = this.groupBy(data, function (item) {
         return [item.id];
       });
@@ -135,6 +136,13 @@ export class DashboardComponent implements OnInit {
       console.log(this.topVolunteers);
     });
   }
+
+  getRecentEvents() {
+    this.dashboardService.getAllEvents().subscribe(data => {
+      this.recentEvents = data;
+    });
+  }
+
   getEventData(){
     this.dashboardService.getAllEvents().subscribe(data => {
       console.log(data);      
@@ -217,8 +225,6 @@ export class DashboardComponent implements OnInit {
         }
       }
       this.lineGraph(this.dateWiseVolunteers);
-
-      //this.dateBasedChart();
       this.doubleLineChart();
     });
     
@@ -259,36 +265,32 @@ chart.cursor.xAxis = dateAxis;
 chart.scrollbarX = new am4core.Scrollbar();
 
   }
-  joinRecords() {
-    this.top10Volunteers = [];
-    this.allVolunteers = [];
-    this.allEnrollments.map((enrollment) => {
-      let associate = this.allAssociates.find((en) => enrollment.associateID === en.id);
-      let event = this.allEvents.find((ev) => enrollment.eventID === ev.id);
-      if (associate)
-        this.allVolunteers.push(Object.assign(enrollment, associate, event));
+  //joinRecords() {
+  //  this.top10Volunteers = [];
+  //  this.allVolunteers = [];
+  //  this.allEnrollments.map((enrollment) => {
+  //    let associate = this.allAssociates.find((en) => enrollment.associateID === en.id);
+  //    let event = this.allEvents.find((ev) => enrollment.eventID === ev.id);
+  //    if (associate)
+  //      this.allVolunteers.push(Object.assign(enrollment, associate, event));
 
+  //  });
 
-      //Object.assign(a,obj2);
-      //return a;
-    });
+  //  let groupedData = this.groupBy(this.allVolunteers, function (item) {
+  //    return [item.associateID];
+  //  });
+  //  let arr = [];
+  //  groupedData.forEach(x => {
+  //    arr.push({ 'associate': x[0], count: x.length });
+  //  });
+  //  console.log('arr');
+  //  console.log(arr);
+  //  this.top10Volunteers.push();
 
-    let groupedData = this.groupBy(this.allVolunteers, function (item) {
-      return [item.associateID];
-    });
-    let arr = [];
-    groupedData.forEach(x => {
-      arr.push({ 'associate': x[0], count: x.length });
-    });
-    console.log('arr');
-    console.log(arr);
-    this.top10Volunteers.push();
-
-    this.lineChart();
-  }
+  //  this.lineChart();
+  //}
 
   lineChart() {
-    console.log('linechart');
 
     let chart = am4core.create("chartdiv", am4charts.XYChart);
     chart.paddingRight = 20;
@@ -313,8 +315,6 @@ chart.scrollbarX = new am4core.Scrollbar();
       data.push({ date: v.date, volunteers: volunteers })
       previousValue = volunteers;
     });
-    console.log('data');
-    console.log(data);
     chart.data = data;
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -333,7 +333,7 @@ chart.scrollbarX = new am4core.Scrollbar();
     series.dataFields.valueY = "volunteers";
     series.strokeWidth = 2;
     series.tooltipText = "Volunteers: {valueY}";
-    //series.tooltipText = "value: {valueY}, day change: {valueY.previousChange}";
+    series.tooltipText = "value: {valueY}, day change: {valueY.previousChange}";
 
     // set stroke property field
     series.propertyFields.stroke = "color";
@@ -721,7 +721,7 @@ chart.scrollbarX = new am4core.Scrollbar();
 
     // Add scrollbar
     chart.scrollbarX = new am4charts.XYChartScrollbar();
-    //chart.scrollbarX.series.push(series);
+    chart.scrollbarX.series.push(series);
 
     // Add cursor
     chart.cursor = new am4charts.XYCursor();

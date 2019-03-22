@@ -5,6 +5,7 @@ import { AcquisitionService } from 'src/app/services/acquisition.service';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { Enrollment } from 'src/app/models/enrollment.model';
 am4core.useTheme(am4themes_animated);
 
 @Component({
@@ -14,46 +15,80 @@ export class AcquisitionComponent implements OnInit {
 
 
   constructor(private zone: NgZone, private acquisitionService: AcquisitionService) { }
-  month = [];
+  months = [];
   monthlyNewVolunteers = [];
   currentYear: number = new Date().getFullYear();
-  ngOnInit(): void {
-   
-    this.month[0] = "January";
-    this.month[1] = "February";
-    this.month[2] = "March";
-    this.month[3] = "April";
-    this.month[4] = "May";
-    this.month[5] = "June";
-    this.month[6] = "July";
-    this.month[7] = "August";
-    this.month[8] = "September";
-    this.month[9] = "October";
-    this.month[10] = "November";
-    this.month[11] = "December";
+  years: string[] = [];
+  selectedYear: number;
+  selectedMonth: number;
+  showReport: boolean;
+  avgConsecutiveCount: number;
 
-    this.getAllNewVolunteers();
+  ngOnInit(): void {
+
+    this.months.push({id:0, month:"January"})
+    this.months.push({ id: 1, month:"February"})
+    this.months.push({ id: 2, month:"March"})
+    this.months.push({ id: 3, month:"April"})
+    this.months.push({ id: 4, month:"May"})
+    this.months.push({ id: 5, month:"June"})
+    this.months.push({ id: 6, month:"July"})
+    this.months.push({ id: 7, month:"August"})
+    this.months.push({ id: 8, month:"September"})
+    this.months.push({ id: 9, month:"October"})
+    this.months.push({ id: 10, month:"November"})
+    this.months.push({ id: 11, month:"December"})
+
+    let i;
+    for (i = this.currentYear; i >= 1990; i--) {
+      this.years.push(i);
+    }
   }
-  
+
+  getData() {
+    this.showReport = true;
+    this.getAllNewVolunteers();
+
+  }
+
   getAllNewVolunteers() {
     this.acquisitionService.GetAllNewVolunteers().subscribe(data => {
+      let newVolunteers:Enrollment[] = [];
+      data.forEach(enrollment => {
+        let found = newVolunteers.find(f => f.associateID == enrollment.associateID);
+        if (!found)
+          newVolunteers.push(enrollment);
+      });
 
-      console.log('GetAllNewVolunteers');
-      console.log(data);
+      let currentYearData = newVolunteers.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
+      let currentYearAllData = data.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
 
-      let currentYearData = data.filter(f => new Date(f.eventDate).getFullYear() == this.currentYear);
+      let prevMonthData:Enrollment[] = [];
+      if (this.selectedMonth > 0) {
+        let prevMonth = this.selectedMonth - 1;
+        prevMonthData = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == prevMonth);
+      }
+      else {
+        let prevMonth = 11;
+        let prevYear = this.selectedYear - 1;
+        prevMonthData = data.filter(f => new Date(f.eventDate).getFullYear() == prevYear && new Date(f.eventDate).getMonth() == prevMonth);
+      }
+      let selectedMonthData: Enrollment[] = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == this.selectedMonth);
 
+      let consecutiveCount = 0;
+      selectedMonthData.forEach(data => {
+        let exist = prevMonthData.find(x => x.associateID == data.associateID);
+        if (exist)
+          consecutiveCount++;
+      });
+      this.avgConsecutiveCount = Math.round((consecutiveCount / selectedMonthData.length) * 100) / 100;
       var i;
       let monthData=[];
       for (i = 0; i < 12; i++) {
         monthData = currentYearData.filter(f => new Date(f.eventDate).getMonth() == i);
-        this.monthlyNewVolunteers.push({ month: this.month[i], volunteers: monthData.length });
+        this.monthlyNewVolunteers.push({ month: this.months[i].month, volunteers: monthData.length });
       }
       this.monthlyNewVolunteersChart();
-      //this.allNewVolunteers = groupedData;
-      console.log('monthlyNewVolunteersChart');
-      console.log(this.monthlyNewVolunteers);
-
       ////this.lineGraph();
       //this.getDateWiseVolunteers();
     });
@@ -101,7 +136,7 @@ export class AcquisitionComponent implements OnInit {
     series.dataFields.valueY = "volunteers";
     series.dataFields.categoryX = "month";
     series.name = "New Volunteers";
-    series.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series.tooltipText = "New Volunteers: [bold]{valueY}[/]";
     series.columns.template.fillOpacity = .8;
 
     let columnTemplate = series.columns.template;

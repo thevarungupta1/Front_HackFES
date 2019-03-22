@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 
       return next.handle(request).pipe(catchError(error => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          return this.router.navigate(['/login']);//this.handle401Error(request, next);
+          return this.handle401Error(request, next);
         } else {
           return throwError(error);
         }
@@ -37,6 +37,8 @@ import { Router } from '@angular/router';
    }
 
    private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+     //this.router.navigate(['/login']);
+     //return false;
      if (!this.isRefreshing) {
        this.isRefreshing = true;
        this.refreshTokenSubject.next(null);
@@ -45,6 +47,8 @@ import { Router } from '@angular/router';
          switchMap((token: any) => {
            this.isRefreshing = false;
            this.refreshTokenSubject.next(token.jwt);
+           console.log('token.jwt');
+           console.log(token.jwt);
            return next.handle(this.addToken(request, token.jwt));
          }));
 

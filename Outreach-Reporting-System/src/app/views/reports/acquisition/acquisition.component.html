@@ -1,24 +1,84 @@
+
+
 <div class="container-fluid animated fadeIn px-0">
   <!-- row start -->
   <div class="row">
     <!-- column start -->
     <div class="col-md-12 p-2">
       <div class="card">
+        <div class="card-header">
+          Select Month & Year:
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="month">Select Month</label>
+              <select id="month" class="form-control form-control-lg ml-2" [(ngModel)]="selectedMonth" placeholder="month">
+                <option *ngFor="let month of months" [value]="month.id">{{month.month}}</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="year">Select Year</label>
+              <select id="year" class="form-control form-control-lg ml-2" [(ngModel)]="selectedYear">
+                <option *ngFor="let year of years" [value]="year">{{year}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="button" (click)="getData()" class="btn btn-lg btn-primary pull-right">
+              <i class="fa fa-dot-circle-o"></i> Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+
+  </div>
+  <!-- row end -->
+</div>
+<!-- container end -->
+
+<div class="container-fluid animated fadeIn px-0" *ngIf="showReport">
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
         <div class="card-header bg-primary">
-          New Volunteers in {{currentYear}}:
+          Volunteers participated in both selected month & previous month:
+        </div>
+
+        <div class="card-body">
+          {{avgConsecutiveCount}}%
+        </div>
+      </div>
+    </div>
+    <!-- column end -->
+
+  </div>
+  <!-- row end -->
+  <!-- row start -->
+  <div class="row">
+    <!-- column start -->
+    <div class="col-md-12 p-2">
+      <div class="card">
+        <div class="card-header bg-primary">
+          New Volunteers in {{selectedYear}}:
           <!--<div class="card-header-actions">
-              <div class="dropdown">
-                  <button class="dropbtn"><i class="icon-list"></i></button>
-                  <div class="dropdown-content">
-                    <span (click)="pieChart('volunteersFreqChart')">Pie Chart</span>
-                    <span (click)="columnChart('volunteersFreqChart')">Column Chart</span>
-                    <span (click)="columnChart3d('volunteersFreqChart')">3D Column chart</span>
-                    <span (click)="doughnut('volunteersFreqChart')">Doughnut chart</span>
-                    <span (click)="pyramid('volunteersFreqChart')">Pyramid chart</span>
-                    <span (click)="showDesignationData = true">View Data</span>
-                  </div>
+            <div class="dropdown">
+                <button class="dropbtn"><i class="icon-list"></i></button>
+                <div class="dropdown-content">
+                  <span (click)="pieChart('volunteersFreqChart')">Pie Chart</span>
+                  <span (click)="columnChart('volunteersFreqChart')">Column Chart</span>
+                  <span (click)="columnChart3d('volunteersFreqChart')">3D Column chart</span>
+                  <span (click)="doughnut('volunteersFreqChart')">Doughnut chart</span>
+                  <span (click)="pyramid('volunteersFreqChart')">Pyramid chart</span>
+                  <span (click)="showDesignationData = true">View Data</span>
                 </div>
-            </div>-->
+              </div>
+          </div>-->
         </div>
 
         <div class="card-body">
