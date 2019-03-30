@@ -10,6 +10,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { Tokens } from '../models/tokens';
 import { config } from '../config';
 import { HttpHeaders } from '@angular/common/http';
+import { ErrorsService } from './errors.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,20 +18,19 @@ import { HttpHeaders } from '@angular/common/http';
 export class AuthService {
   private readonly JWT_TOKEN = 'JWT_TOKEN';
   private readonly REFRESH_TOKEN = 'REFRESH_TOKEN';
-  private readonly USER_ID = 'USER_ID';
   private readonly USER_ROLE = 'USER_ROLE';
   private loggedUser: number;
 
-    constructor(private messageService: MessageService, private http: HttpClient) { }
+  constructor(private messageService: MessageService, private http: HttpClient, private errorService: ErrorsService) { }
     currentUser: User;
   redirectUrl: string;
 
-  login(associateId: number): Observable<boolean> {
+  login(associateId: number, email: string): Observable<boolean> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let bodyString = JSON.stringify(associateId);
-    return this.http.post<any>(`${config.apiUrl}/Auth`, bodyString, { headers: headers })
+    return this.http.post<any>(`${config.apiUrl}/Auth?id=${associateId}&email=${email}`, { headers: headers })
       .pipe(
-      tap(tokens => { this.doLoginUser(associateId, tokens); console.log(tokens);}),
+      tap(tokens => { this.doLoginUser(associateId, tokens);}),
         mapTo(true),
       catchError(this.handleError<any>('login')));
   }
@@ -48,16 +48,15 @@ export class AuthService {
     return !!this.getJwtToken();
   }
 
-  refreshToken() {
-    let associateId = localStorage.getItem(this.USER_ID);
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let bodyString = JSON.stringify(associateId);
-    return this.http.post<any>(`${config.apiUrl}/Auth`, bodyString, { headers: headers })
-      .pipe(
-      tap(tokens => this.doLoginUser(parseInt(associateId), tokens)),
-        mapTo(true),
-      catchError(this.handleError<any>('refreshToken')));
-  }
+  //refreshToken() {
+  //  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //  let bodyString = JSON.stringify(associateId);
+  //  return this.http.post<any>(`${config.apiUrl}/Auth`, bodyString, { headers: headers })
+  //    .pipe(
+  //    tap(tokens => this.doLoginUser(parseInt(associateId), tokens)),
+  //      mapTo(true),
+  //    catchError(this.handleError<any>('refreshToken')));
+  //}
 
   getJwtToken() {
     return localStorage.getItem(this.JWT_TOKEN);
@@ -65,11 +64,8 @@ export class AuthService {
 
   private doLoginUser(associateId: number, tokens) {
     this.loggedUser = associateId;
-    console.log('tokens1');
-    console.log(tokens);
     if (tokens !== undefined || tokens !== null) {
      
-      localStorage.setItem(this.USER_ID, associateId.toString());
       localStorage.setItem(this.USER_ROLE, tokens.role);
       this.storeJwtToken(tokens.token);
     }
@@ -99,22 +95,18 @@ export class AuthService {
 
   clearLocalStorage() {
     localStorage.removeItem(this.JWT_TOKEN);
-    localStorage.removeItem(this.USER_ID);
     localStorage.removeItem(this.USER_ROLE);
   }
   removeTokens() {
     localStorage.removeItem(this.JWT_TOKEN);
     localStorage.removeItem(this.REFRESH_TOKEN);
+    localStorage.removeItem(this.USER_ROLE);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      console.log(`${operation} failed: ${error.message}`);
+      this.errorService.logError(error);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

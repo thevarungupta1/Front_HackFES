@@ -8,20 +8,20 @@ import { Associate } from '../models/associate.model';
 import { Enrollment } from '../models/enrollment.model';
 import { Event } from '../models/event.model';
 import { config } from './../config';
+import { ErrorsService } from './errors.service';
 
 @Injectable({
     providedIn: 'root'
   })
 export class AcquisitionService {
 
-    constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorService: ErrorsService) { }
 
   GetAllNewVolunteers(): Observable<any> {
     return this.http.get<any>(`${config.apiUrl}/Enrollment`)
         .pipe(
           tap(data => {
-            let test = data;
-            console.log(JSON.stringify(data))
+          JSON.stringify(data);
           }),
       catchError(this.handleError<any>('GetAllNewVolunteers'))
         );
@@ -30,11 +30,7 @@ export class AcquisitionService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      console.log(`${operation} failed: ${error.message}`);
+      this.errorService.logError(error);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

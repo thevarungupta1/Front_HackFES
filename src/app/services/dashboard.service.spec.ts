@@ -1,9 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DashboardService } from './dashboard.service';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('DashboardService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({
+    providers: [
+      DashboardService
+    ],
+    imports: [HttpClientModule]
+  }));
 
   it('should be created', () => {
     const service: DashboardService = TestBed.get(DashboardService);

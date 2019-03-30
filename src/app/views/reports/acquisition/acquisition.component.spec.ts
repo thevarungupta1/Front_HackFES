@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AcquisitionComponent } from './acquisition.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('AcquisitionComponent', () => {
   let component: AcquisitionComponent;
@@ -8,7 +10,10 @@ describe('AcquisitionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AcquisitionComponent]
+      declarations: [AcquisitionComponent],
+      imports: [HttpClientModule],
+      providers: [],
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
   }));

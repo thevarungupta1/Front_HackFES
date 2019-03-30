@@ -115,6 +115,11 @@ export class AcquisitionComponent implements OnInit {
     // Add data
     chart.data = this.monthlyNewVolunteers;
 
+    //enable responsive
+    chart.responsive.enabled = true;
+    chart.responsive.useDefault = false
+    chart.responsive.enabled = true;
+
     // Create axes
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = "month";

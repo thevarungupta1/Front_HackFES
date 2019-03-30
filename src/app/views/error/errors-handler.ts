@@ -29,7 +29,7 @@ export class ErrorsHandler implements ErrorHandler {
       console.log('http error occurred');
       // Http Error
       // Send the error to the server
-      errorsService.log(error).subscribe();
+      errorsService.logError(error).subscribe();
       // Show notification to the user
       console.log(`${error.status} - ${error.message}`);
      // return notificationService.notify(`${error.status} - ${error.message}`);

@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { getStyle, rgbToHex } from '@coreui/coreui/dist/js/coreui-utilities';
 
 import * as XLSX from 'xlsx';
 
@@ -15,7 +14,6 @@ import { ToastService } from '../shared/toastmessages';
 import { saveAs } from 'file-saver';
 
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { array } from '@amcharts/amcharts4/core';
 import { UserModel } from 'src/app/models/user.model';
 
 @Component({
@@ -30,13 +28,7 @@ export class UsersComponent implements OnInit {
   roles: Array<UserRoles>;
   events: any[];
   showEvents: boolean = false;
-  showSuccessToast() {
-    this.messageService.success('Success', 'Saved successfully');
-    this.messageService.info('Information', 'please select');
-    this.messageService.warn('Warning', 'dont click');
-    this.messageService.error('Error', 'Error occurred');
-  }
-
+  
   userForm: FormGroup;
 
   ngOnInit(): void {
@@ -157,7 +149,7 @@ export class UsersComponent implements OnInit {
     this.userService.saveUser(userList)
       .subscribe(data => {
         console.log(data)
-        this.showSuccessToast();
+        this.messageService.success('Success', 'Saved successfully');
       });
   }
 
@@ -167,7 +159,7 @@ export class UsersComponent implements OnInit {
     this.userService.savePOC(pocList)
       .subscribe(data => {
         console.log(data)
-        this.showSuccessToast();
+        this.messageService.success('Success', 'Saved successfully');
       });
   }
 

@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { UsersComponent } from './users.component';
@@ -15,7 +14,7 @@ import { FileUploadModule as fileup } from 'primeng/fileupload';
 import {ToastModule} from 'primeng/toast';
 import { MessageService } from 'primeng/components/common/messageservice';
 
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 // Angular

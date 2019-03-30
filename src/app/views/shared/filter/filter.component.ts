@@ -64,13 +64,13 @@ export class FilterComponent implements OnInit {
     this.isLoading = true;
     let formData: ReportFilter = new ReportFilter();
     let businessUnit = this.filterForm.get('businessUnit').value;
-    if (businessUnit)
+    if (businessUnit && businessUnit != '') 
       formData.businessUnits = businessUnit.join();
     let baseLocation = this.filterForm.get('baseLocation').value;
-    if (baseLocation)
+    if (baseLocation && baseLocation != '')
       formData.baseLocations = baseLocation.join();
     let focusArea = this.filterForm.get('focusArea').value;
-    if (focusArea)
+    if (focusArea && focusArea != '')
       formData.focusAreas = focusArea.join();
     formData.fromDate = this.filterForm.get('fromDate').value;
     formData.toDate = this.filterForm.get('toDate').value;
@@ -118,7 +118,6 @@ export class FilterComponent implements OnInit {
   onFilter(filterId: number) {
     this.showSavedFilters = false;
     this.isLoading = true;
-    console.log(filterId);
     this.filterService.getEnrollmentsByFilterId(filterId).subscribe(data => {     
       this.filteredData.emit(data);
       this.isLoading = false;

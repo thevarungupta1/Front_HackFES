@@ -37,6 +37,14 @@ export class DashboardComponent implements OnInit {
   allNewVolunteers = [];
   dateWiseVolunteers = [];
   recentEvents: Event[];
+  showAssociatesModal: boolean = false;
+  showVolunteersModal: boolean = false;
+  showEventsModal: boolean = false;
+  associateColumns: any[];
+  volunteerColumns: any[];
+  eventColumns: any[];
+  volunteersData: any[];
+
   constructor(private zone: NgZone, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
@@ -48,7 +56,7 @@ export class DashboardComponent implements OnInit {
     this.getRecentEvents();
    // this.getYearlyVolunteers();
     //this.getYearlyBuVolunteers();
-   
+  
   }
 
   getUnique(arr, comp) {
@@ -119,21 +127,20 @@ export class DashboardComponent implements OnInit {
     });
   }
   //getAllVolunteers() {
-  //  console.log(this.allEnrollments);
   //  this.allVolunteers = this.allEnrollments.map(e => e.associates);
-  //  console.log('allvolunters');
-  //  console.log(this.allVolunteers);
   //}
 
   getTopVolunteers() {
     this.topVolunteers = [];
     this.dashboardService.getTopVolunteers(10).subscribe(data => {
-      let groupedData = this.groupBy(data, function (item) {
-        return [item.id];
-      });
+      if (data) {
+        //let associates = data.map(e => e.associates);
+        let groupedData = this.groupBy(data, function (item) {
+          return [item.id];
+        });
 
-      groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g.length }));
-      console.log(this.topVolunteers);
+        groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g.length }));
+      }
     });
   }
 
@@ -145,34 +152,15 @@ export class DashboardComponent implements OnInit {
 
   getEventData(){
     this.dashboardService.getAllEvents().subscribe(data => {
-      console.log(data);      
-      data.forEach(element => {
-        let value = element.date.split('T');
-        let value2 = value[0].split('-');
-        element.date = value2[2]+'-'+value2[1]+'-'+value2[0];
-      });
+      //data.forEach(element => {
+      //  let value = element.date.split('T');
+      //  let value2 = value[0].split('-');
+      //  element.date = value2[2] + '-' + value2[1] + '-' + value2[0];
+      //});
       this.eventGridData = data;
     });    
   }
 
-  //getYearlyVolunteers() {
-  //  this.yearlyNewRepeatVolunteers = [];
-  //  this.dashboardService.getYearlyVolunteers(5).subscribe(data => {
-      
-  //    this.yearlyNewRepeatVolunteers = data;
-  //    //this.barChart();
-  //    //this.columnLineMix();
-  //    //this.stackedChart(data);
-  //  });
-    
-  //}
-  //getYearlyBuVolunteers() {
-
-  //  this.dashboardService.getYearlyBuVolunteers(5).subscribe(data => {
-  //    this.stackedChart(data);
-  //  });
-
-  //}
   getDateWiseVolunteersCount() {
     this.topVolunteers = [];
     this.dashboardService.getTopVolunteers(5).subscribe(data => {
@@ -181,26 +169,8 @@ export class DashboardComponent implements OnInit {
       });
 
       groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g.length }));
-      console.log(this.topVolunteers);
     });
   }
-
-
-  //getAllNewVolunteers() {
-  //  this.dashboardService.GetAllNewVolunteers().subscribe(data => {
-     
-  //    let groupedData = this.groupBy(data, function (item) {
-  //      return [item.eventDate];
-  //    });
-  //    this.allNewVolunteers= groupedData;
-  //    console.log('GetAllNewVolunteers');
-  //    console.log(groupedData);
-      
-  //    //this.lineGraph();
-  //    this.getDateWiseVolunteers();
-  //  });
-    
-  //}
 
   getTopData() {
     this.dashboardService.GetTopData().subscribe(data => {
@@ -265,30 +235,6 @@ chart.cursor.xAxis = dateAxis;
 chart.scrollbarX = new am4core.Scrollbar();
 
   }
-  //joinRecords() {
-  //  this.top10Volunteers = [];
-  //  this.allVolunteers = [];
-  //  this.allEnrollments.map((enrollment) => {
-  //    let associate = this.allAssociates.find((en) => enrollment.associateID === en.id);
-  //    let event = this.allEvents.find((ev) => enrollment.eventID === ev.id);
-  //    if (associate)
-  //      this.allVolunteers.push(Object.assign(enrollment, associate, event));
-
-  //  });
-
-  //  let groupedData = this.groupBy(this.allVolunteers, function (item) {
-  //    return [item.associateID];
-  //  });
-  //  let arr = [];
-  //  groupedData.forEach(x => {
-  //    arr.push({ 'associate': x[0], count: x.length });
-  //  });
-  //  console.log('arr');
-  //  console.log(arr);
-  //  this.top10Volunteers.push();
-
-  //  this.lineChart();
-  //}
 
   lineChart() {
 
@@ -377,8 +323,6 @@ chart.scrollbarX = new am4core.Scrollbar();
       data.push({ date: v.date, volunteers: volunteers })
       previousValue = volunteers;
     });
-    console.log('data');
-    console.log(data);
     chart.data = data;
 
     // Set input format for the dates
@@ -446,6 +390,10 @@ chart.scrollbarX = new am4core.Scrollbar();
     // Add data
     chart.data = this.dateWiseVolunteers;
 
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = "New Vs Repeat volunteers graph";
+
     // Create axes
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.minGridDistance = 50;
@@ -504,195 +452,7 @@ chart.scrollbarX = new am4core.Scrollbar();
   valueAxis.renderer.opposite = opposite;
   valueAxis.renderer.grid.template.disabled = true;
   }
-
-  //stackedChart(data:any[]) {
-
-  //  let chart = am4core.create("chartdiv1", am4charts.XYChart);
-  //  chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
-  //  chart.data = data;
-
-  //  chart.colors.step = 2;
-  //  chart.padding(30, 30, 10, 30);
-  //  chart.legend = new am4charts.Legend();
-
-  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-  //  categoryAxis.dataFields.category = "year";
-  //  categoryAxis.renderer.grid.template.location = 0;
-
-  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  //  valueAxis.min = 0;
-  //  valueAxis.max = 100;
-  //  valueAxis.strictMinMax = true;
-  //  valueAxis.calculateTotals = true;
-  //  valueAxis.renderer.minWidth = 50;
-
-  //  //enable responsive
-  //  chart.responsive.enabled = true;
-  //  chart.responsive.useDefault = false
-  //  chart.responsive.enabled = true;
-
-  //  chart.responsive.rules.push({
-  //    relevant: function (target) {
-  //      if (target.pixelWidth <= 400) { return true; }
-  //      return false;
-  //    },
-  //    state: function (target, stateId) {
-  //      if (target instanceof am4charts.Chart) {
-  //        var state = target.states.create(stateId);
-  //        state.properties.paddingTop = 5;
-  //        state.properties.paddingRight = 15;
-  //        state.properties.paddingBottom = 5;
-  //        state.properties.paddingLeft = 0;
-  //        return state;
-  //      }
-  //      return null;
-  //    }
-  //  });
-
-  //  let firstObject = data[0];
-  //  let keys = Object.keys(firstObject);
-  //  let i = 0;
-  //  keys.forEach(key => {
-  //    if (i > 0) {
-  //      let series1 = chart.series.push(new am4charts.ColumnSeries());
-  //      series1.columns.template.width = am4core.percent(80);
-  //      series1.columns.template.tooltipText =
-  //        "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-  //      series1.name = key;
-  //      series1.dataFields.categoryX = "year";
-  //      series1.dataFields.valueY = key;
-  //      series1.dataFields.valueYShow = "totalPercent";
-  //      series1.dataItems.template.locations.categoryX = 0.5;
-  //      series1.stacked = true;
-  //      series1.tooltip.pointerOrientation = "vertical";
-
-  //      let bullet1 = series1.bullets.push(new am4charts.LabelBullet());
-  //      bullet1.interactionsEnabled = false;
-  //      bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-  //      bullet1.label.fill = am4core.color("#ffffff");
-  //      bullet1.locationY = 0.5;
-  //    }
-  //    i++;
-  //  });
-    
-
-  //  //let series2 = chart.series.push(new am4charts.ColumnSeries());
-  //  //series2.columns.template.width = am4core.percent(80);
-  //  //series2.columns.template.tooltipText =
-  //  //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-  //  //series2.name = "Series 2";
-  //  //series2.dataFields.categoryX = "category";
-  //  //series2.dataFields.valueY = "value2";
-  //  //series2.dataFields.valueYShow = "totalPercent";
-  //  //series2.dataItems.template.locations.categoryX = 0.5;
-  //  //series2.stacked = true;
-  //  //series2.tooltip.pointerOrientation = "vertical";
-
-  //  //let bullet2 = series2.bullets.push(new am4charts.LabelBullet());
-  //  //bullet2.interactionsEnabled = false;
-  //  //bullet2.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-  //  //bullet2.locationY = 0.5;
-  //  //bullet2.label.fill = am4core.color("#ffffff");
-
-  //  //let series3 = chart.series.push(new am4charts.ColumnSeries());
-  //  //series3.columns.template.width = am4core.percent(80);
-  //  //series3.columns.template.tooltipText =
-  //  //  "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
-  //  //series3.name = "Series 3";
-  //  //series3.dataFields.categoryX = "category";
-  //  //series3.dataFields.valueY = "value3";
-  //  //series3.dataFields.valueYShow = "totalPercent";
-  //  //series3.dataItems.template.locations.categoryX = 0.5;
-  //  //series3.stacked = true;
-  //  //series3.tooltip.pointerOrientation = "vertical";
-
-  //  //let bullet3 = series3.bullets.push(new am4charts.LabelBullet());
-  //  //bullet3.interactionsEnabled = false;
-  //  //bullet3.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-  //  //bullet3.locationY = 0.5;
-  //  //bullet3.label.fill = am4core.color("#ffffff");
-
-  //  chart.scrollbarX = new am4core.Scrollbar();
-
-  //}
-
-  //barChart() {
-  //  // Create chart instance
-  //  this.chart = am4core.create("barChart", am4charts.XYChart);
-
-  //  // Add data
-  //  this.chart.data = this.yearlyNewRepeatVolunteers;
-
-  //  // Create axes
-  //  let categoryAxis = this.chart.yAxes.push(new am4charts.CategoryAxis());
-  //  categoryAxis.dataFields.category = "year";
-  //  categoryAxis.numberFormatter.numberFormat = "#";
-  //  categoryAxis.renderer.inversed = true;
-  //  categoryAxis.renderer.grid.template.location = 0;
-  //  categoryAxis.renderer.cellStartLocation = 0.1;
-  //  categoryAxis.renderer.cellEndLocation = 0.9;
-
-  //  let valueAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
-  //  valueAxis.renderer.opposite = true;
-
-
-  //  this.createSeries("newVolunteers", "New Volunteers");
-  //  this.createSeries("repeatedVolunteers", "Recurring Volunteers");
-  //}
-
-  //columnLineMix() {
-
-  //  // Create chart instance
-  //  let chart = am4core.create("columnLineMix", am4charts.XYChart);
-
-  //  // Export
-  //  chart.exporting.menu = new am4core.ExportMenu();
-
-  //  // Data for both series
-  //  let data = this.yearlyNewRepeatVolunteers;
-
-  //  /* Create axes */
-  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-  //  categoryAxis.dataFields.category = "year";
-  //  categoryAxis.renderer.minGridDistance = 30;
-
-  //  /* Create value axis */
-  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-  //  /* Create series */
-  //  let columnSeries = chart.series.push(new am4charts.ColumnSeries());
-  //  columnSeries.name = "Recurring Volunteers";
-  //  columnSeries.dataFields.valueY = "repeatedVolunteers";
-  //  columnSeries.dataFields.categoryX = "year";
-
-  //  columnSeries.columns.template.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
-  //  columnSeries.columns.template.propertyFields.fillOpacity = "fillOpacity";
-  //  columnSeries.columns.template.propertyFields.stroke = "stroke";
-  //  columnSeries.columns.template.propertyFields.strokeWidth = "strokeWidth";
-  //  columnSeries.columns.template.propertyFields.strokeDasharray = "columnDash";
-  //  columnSeries.tooltip.label.textAlign = "middle";
-
-  //  let lineSeries = chart.series.push(new am4charts.LineSeries());
-  //  lineSeries.name = "New Volunteers";
-  //  lineSeries.dataFields.valueY = "newVolunteers";
-  //  lineSeries.dataFields.categoryX = "year";
-
-  //  lineSeries.stroke = am4core.color("#fdd400");
-  //  lineSeries.strokeWidth = 3;
-  //  lineSeries.propertyFields.strokeDasharray = "lineDash";
-  //  lineSeries.tooltip.label.textAlign = "middle";
-
-  //  let bullet = lineSeries.bullets.push(new am4charts.Bullet());
-  //  bullet.fill = am4core.color("#fdd400"); // tooltips grab fill from parent by default
-  //  bullet.tooltipText = "[#fff font-size: 15px]{name} in {categoryX}:\n[/][#fff font-size: 20px]{valueY}[/] [#fff]{additional}[/]"
-  //  let circle = bullet.createChild(am4core.Circle);
-  //  circle.radius = 4;
-  //  circle.fill = am4core.color("#fff");
-  //  circle.strokeWidth = 3;
-
-  //  chart.data = data;
-  //}
-
+  
   lineGraph(chartData) {
 
     // Create chart instance
@@ -700,6 +460,10 @@ chart.scrollbarX = new am4core.Scrollbar();
 
     // Add data
     chart.data = chartData.reverse();
+
+    // Enable export
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.filePrefix = "New volunteers graph";
 
     // Create axes
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -728,44 +492,6 @@ chart.scrollbarX = new am4core.Scrollbar();
     chart.cursor.xAxis = dateAxis;
     chart.cursor.snapToSeries = series;
   }
-  lineGraph1(chartData:any[]){
-    let chart = am4core.create("volunteersGraph", am4charts.XYChart);
-
-// let data = [];
-// let value = 50;
-// for(let i = 0; i < 300; i++){
-//   let date = new Date();
-//   date.setHours(0,0,0,0);
-//   date.setDate(i);
-//   value -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
-//   data.push({date:date, value: value});
-// }
-//let data = [];
-//this.allNewVolunteers.forEach(g => data.push({ date: g[0].eventDate, value: g.length }));
-    chart.data = chartData.reverse();
-
-// Create axes
-let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-dateAxis.renderer.minGridDistance = 60;
-
-let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-// Create series
-let series = chart.series.push(new am4charts.LineSeries());
-series.dataFields.valueY = "new";
-series.dataFields.dateX = "date";
-series.tooltipText = "{newVolunteer}"
-
-series.tooltip.pointerOrientation = "vertical";
-
-chart.cursor = new am4charts.XYCursor();
-chart.cursor.snapToSeries = series;
-chart.cursor.xAxis = dateAxis;
-
-//chart.scrollbarY = new am4core.Scrollbar();
-chart.scrollbarX = new am4core.Scrollbar();
-
-  }
 
   // Create series
   createSeries(field, name) {
@@ -793,415 +519,64 @@ chart.scrollbarX = new am4core.Scrollbar();
     categoryLabel.label.truncate = false;
   }
 
-  //columnChart() {
+  showAssociateModal() {
+    this.associateColumns = [
+      { field: 'id', header: 'Associate Id' },
+      { field: 'name', header: 'Name' },
+      { field: 'designation', header: 'Designation' },
+      { field: 'baseLocation', header: 'Base Location' },
+      { field: 'businessUnit', header: 'Business Unit' }
+    ];
+    this.showAssociatesModal = true;
+  }
 
-  //  // Create chart instance
-  //  let chart = am4core.create("columnChart", am4charts.XYChart);
+  showVolunteerModal() {
+    this.volunteerColumns = [
+      { field: 'id', header: 'Associate Id' },
+      { field: 'name', header: 'Name' },
+      { field: 'designation', header: 'Designation' },
+      { field: 'baseLocation', header: 'Base Location' },
+      { field: 'businessUnit', header: 'Business Unit' },
+      { field: 'events', header: 'Volunteered Events' },
+      { field: 'volunteerHrs', header: 'Volunteered Hrs' }
+    ];
+   
+    if (this.allEnrollments) {
+      let groupedData = this.groupBy(this.allEnrollments, function (item) {
+        return [item.associateID];
+      });
+      let hrs: number = 0;
+      this.volunteersData = [];
+      let associate
+      groupedData.forEach(g => {
+        hrs = 0;
+        g.forEach(h => hrs = hrs + h.volunteerHours);
+        associate = g[0].associates;
+        this.volunteersData.push({
+          id: associate.id, name: associate.name, designation: associate.designation, baseLocation: associate.baseLocation,
+          businessUnit: associate.businessUnit, events: g.length, volunteerHrs: hrs
+        });
+      });
+      console.log(this.volunteersData);
+      }
 
-  //  // Add percent sign to all numbers
-  //  chart.numberFormatter.numberFormat = "#.3'%'";
+    this.showVolunteersModal = true;
+  }
 
-  //  // Add data
-  //  chart.data = [];//this.yearlyData.reverse();
-
-  //  // Create axes
-  //  let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-  //  categoryAxis.dataFields.category = "year";
-  //  categoryAxis.renderer.grid.template.location = 0;
-  //  categoryAxis.renderer.minGridDistance = 30;
-
-  //  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  //  valueAxis.title.text = "GDP growth rate";
-  //  //valueAxis.title.fontWeight = 800;
-
-  //  // Create series
-  //  let series = chart.series.push(new am4charts.ColumnSeries());
-  //  series.dataFields.valueY = "newVolunteer";
-  //  series.dataFields.categoryX = "year";
-  //  series.clustered = false;
-  //  series.tooltipText = "GDP grow in {categoryX} (2004): [bold]{valueY}[/]";
-
-  //  let series2 = chart.series.push(new am4charts.ColumnSeries());
-  //  series2.dataFields.valueY = "recurVolunteer";
-  //  series2.dataFields.categoryX = "year";
-  //  series2.clustered = false;
-  //  series2.columns.template.width = am4core.percent(50);
-  //  series2.tooltipText = "GDP grow in {categoryX} (2005): [bold]{valueY}[/]";
-
-  //  chart.cursor = new am4charts.XYCursor();
-  //  chart.cursor.lineX.disabled = true;
-  //  chart.cursor.lineY.disabled = true;
-
-  //}
-  //radioModel: string = 'Month';
-
-  //// lineChart1
-  //public lineChart1Data: Array<any> = [
-  //  {
-  //    data: [65, 59, 84, 84, 51, 55, 40],
-  //    label: 'Series A'
-  //  }
-  //];
-  //public lineChart1Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  //public lineChart1Options: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips
-  //  },
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      gridLines: {
-  //        color: 'transparent',
-  //        zeroLineColor: 'transparent'
-  //      },
-  //      ticks: {
-  //        fontSize: 2,
-  //        fontColor: 'transparent',
-  //      }
-
-  //    }],
-  //    yAxes: [{
-  //      display: false,
-  //      ticks: {
-  //        display: false,
-  //        min: 40 - 5,
-  //        max: 84 + 5,
-  //      }
-  //    }],
-  //  },
-  //  elements: {
-  //    line: {
-  //      borderWidth: 1
-  //    },
-  //    point: {
-  //      radius: 4,
-  //      hitRadius: 10,
-  //      hoverRadius: 4,
-  //    },
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public lineChart1Colours: Array<any> = [
-  //  {
-  //    backgroundColor: getStyle('--primary'),
-  //    borderColor: 'rgba(255,255,255,.55)'
-  //  }
-  //];
-  //public lineChart1Legend = false;
-  //public lineChart1Type = 'line';
-
-  //// lineChart2
-  //public lineChart2Data: Array<any> = [
-  //  {
-  //    data: [1, 18, 9, 17, 34, 22, 11],
-  //    label: 'Series A'
-  //  }
-  //];
-  //public lineChart2Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  //public lineChart2Options: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips
-  //  },
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      gridLines: {
-  //        color: 'transparent',
-  //        zeroLineColor: 'transparent'
-  //      },
-  //      ticks: {
-  //        fontSize: 2,
-  //        fontColor: 'transparent',
-  //      }
-
-  //    }],
-  //    yAxes: [{
-  //      display: false,
-  //      ticks: {
-  //        display: false,
-  //        min: 1 - 5,
-  //        max: 34 + 5,
-  //      }
-  //    }],
-  //  },
-  //  elements: {
-  //    line: {
-  //      tension: 0.00001,
-  //      borderWidth: 1
-  //    },
-  //    point: {
-  //      radius: 4,
-  //      hitRadius: 10,
-  //      hoverRadius: 4,
-  //    },
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public lineChart2Colours: Array<any> = [
-  //  { // grey
-  //    backgroundColor: getStyle('--info'),
-  //    borderColor: 'rgba(255,255,255,.55)'
-  //  }
-  //];
-  //public lineChart2Legend = false;
-  //public lineChart2Type = 'line';
-
-
-  //// lineChart3
-  //public lineChart3Data: Array<any> = [
-  //  {
-  //    data: [78, 81, 80, 45, 34, 12, 40],
-  //    label: 'Series A'
-  //  }
-  //];
-  //public lineChart3Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  //public lineChart3Options: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips
-  //  },
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      display: false
-  //    }],
-  //    yAxes: [{
-  //      display: false
-  //    }]
-  //  },
-  //  elements: {
-  //    line: {
-  //      borderWidth: 2
-  //    },
-  //    point: {
-  //      radius: 0,
-  //      hitRadius: 10,
-  //      hoverRadius: 4,
-  //    },
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public lineChart3Colours: Array<any> = [
-  //  {
-  //    backgroundColor: 'rgba(255,255,255,.2)',
-  //    borderColor: 'rgba(255,255,255,.55)',
-  //  }
-  //];
-  //public lineChart3Legend = false;
-  //public lineChart3Type = 'line';
-
-
-  //// barChart1
-  //public barChart1Data: Array<any> = [
-  //  {
-  //    data: [78, 81, 80, 45, 34, 12, 40, 78, 81, 80, 45, 34, 12, 40, 12, 40],
-  //    label: 'Series A'
-  //  }
-  //];
-  //public barChart1Labels: Array<any> = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'];
-  //public barChart1Options: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips
-  //  },
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      display: false,
-  //      barPercentage: 0.6,
-  //    }],
-  //    yAxes: [{
-  //      display: false
-  //    }]
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public barChart1Colours: Array<any> = [
-  //  {
-  //    backgroundColor: 'rgba(255,255,255,.3)',
-  //    borderWidth: 0
-  //  }
-  //];
-  //public barChart1Legend = false;
-  //public barChart1Type = 'bar';
-
-  // mainChart
-
-  //public mainChartElements = 27;
-  //public mainChartData1: Array<number> = [];
-  //public mainChartData2: Array<number> = [];
-  //public mainChartData3: Array<number> = [];
-
-  //public mainChartData: Array<any> = [
-  //  {
-  //    data: this.mainChartData1,
-  //    label: 'Current'
-  //  },
-  //  {
-  //    data: this.mainChartData2,
-  //    label: 'Previous'
-  //  },
-  //  {
-  //    data: this.mainChartData3,
-  //    label: 'BEP'
-  //  }
-  //];
-  ///* tslint:disable:max-line-length */
-  //public mainChartLabels: Array<any> = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Thursday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  ///* tslint:enable:max-line-length */
-  //public mainChartOptions: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips,
-  //    intersect: true,
-  //    mode: 'index',
-  //    position: 'nearest',
-  //    callbacks: {
-  //      labelColor: function (tooltipItem, chart) {
-  //        return { backgroundColor: chart.data.datasets[tooltipItem.datasetIndex].borderColor };
-  //      }
-  //    }
-  //  },
-  //  responsive: true,
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      gridLines: {
-  //        drawOnChartArea: false,
-  //      },
-  //      ticks: {
-  //        callback: function (value: any) {
-  //          return value.charAt(0);
-  //        }
-  //      }
-  //    }],
-  //    yAxes: [{
-  //      ticks: {
-  //        beginAtZero: true,
-  //        maxTicksLimit: 5,
-  //        stepSize: Math.ceil(250 / 5),
-  //        max: 250
-  //      }
-  //    }]
-  //  },
-  //  elements: {
-  //    line: {
-  //      borderWidth: 2
-  //    },
-  //    point: {
-  //      radius: 0,
-  //      hitRadius: 10,
-  //      hoverRadius: 4,
-  //      hoverBorderWidth: 3,
-  //    }
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public mainChartColours: Array<any> = [
-  //  { // brandInfo
-  //    backgroundColor: hexToRgba(getStyle('--info'), 10),
-  //    borderColor: getStyle('--info'),
-  //    pointHoverBackgroundColor: '#fff'
-  //  },
-  //  { // brandSuccess
-  //    backgroundColor: 'transparent',
-  //    borderColor: getStyle('--success'),
-  //    pointHoverBackgroundColor: '#fff'
-  //  },
-  //  { // brandDanger
-  //    backgroundColor: 'transparent',
-  //    borderColor: getStyle('--danger'),
-  //    pointHoverBackgroundColor: '#fff',
-  //    borderWidth: 1,
-  //    borderDash: [8, 5]
-  //  }
-  //];
-  //public mainChartLegend = false;
-  //public mainChartType = 'line';
-
-  //// social box charts
-
-  //public brandBoxChartData1: Array<any> = [
-  //  {
-  //    data: [65, 59, 84, 84, 51, 55, 40],
-  //    label: 'Facebook'
-  //  }
-  //];
-  //public brandBoxChartData2: Array<any> = [
-  //  {
-  //    data: [1, 13, 9, 17, 34, 41, 38],
-  //    label: 'Twitter'
-  //  }
-  //];
-  //public brandBoxChartData3: Array<any> = [
-  //  {
-  //    data: [78, 81, 80, 45, 34, 12, 40],
-  //    label: 'LinkedIn'
-  //  }
-  //];
-  //public brandBoxChartData4: Array<any> = [
-  //  {
-  //    data: [35, 23, 56, 22, 97, 23, 64],
-  //    label: 'Google+'
-  //  }
-  //];
-
-  //public brandBoxChartLabels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  //public brandBoxChartOptions: any = {
-  //  tooltips: {
-  //    enabled: false,
-  //    custom: CustomTooltips
-  //  },
-  //  responsive: true,
-  //  maintainAspectRatio: false,
-  //  scales: {
-  //    xAxes: [{
-  //      display: false,
-  //    }],
-  //    yAxes: [{
-  //      display: false,
-  //    }]
-  //  },
-  //  elements: {
-  //    line: {
-  //      borderWidth: 2
-  //    },
-  //    point: {
-  //      radius: 0,
-  //      hitRadius: 10,
-  //      hoverRadius: 4,
-  //      hoverBorderWidth: 3,
-  //    }
-  //  },
-  //  legend: {
-  //    display: false
-  //  }
-  //};
-  //public brandBoxChartColours: Array<any> = [
-  //  {
-  //    backgroundColor: 'rgba(255,255,255,.1)',
-  //    borderColor: 'rgba(255,255,255,.55)',
-  //    pointHoverBackgroundColor: '#fff'
-  //  }
-  //];
-  //public brandBoxChartLegend = false;
-  //public brandBoxChartType = 'line';
-
-  //public random(min: number, max: number) {
-  //  return Math.floor(Math.random() * (max - min + 1) + min);
-  //}
-
+  showEventModal() {
+    this.eventColumns = [
+      { field: 'id', header: 'Event Id' },
+      { field: 'name', header: 'Name' },
+      { field: 'date', header: 'Date' },
+      { field: 'baseLocation', header: 'Base Location' },
+      { field: 'project', header: 'project' },
+      { field: 'category', header: 'Category' },
+      { field: 'livesImpacted', header: 'Lives Impacted' },
+      { field: 'totalVolunteers', header: 'Total Volunteers' },
+      { field: 'totalTravelHours', header: 'Total Travel Hrs' },
+      { field: 'totalVolunteerHours', header: 'Total Volunteer Hrs' }
+    ];
+    this.showEventsModal = true;
+  }
 
 }

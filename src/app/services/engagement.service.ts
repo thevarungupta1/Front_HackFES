@@ -5,13 +5,14 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
 import { config } from './../config';
 import { ReportFilter } from '../models/reportFilter.model';
+import { ErrorsService } from './errors.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngagementService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorService: ErrorsService) { }
   
   getEnrollmentsByFilter(body: ReportFilter): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -54,11 +55,7 @@ export class EngagementService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      console.log(`${operation} failed: ${error.message}`);
+     this.errorService.logError(error);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

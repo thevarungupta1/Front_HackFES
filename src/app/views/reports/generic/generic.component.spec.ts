@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GenericComponent } from './generic.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('GenericComponent', () => {
   let component: GenericComponent;
@@ -8,7 +10,10 @@ describe('GenericComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GenericComponent]
+      declarations: [GenericComponent],
+      imports: [HttpClientModule],
+      providers: [],
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
   }));

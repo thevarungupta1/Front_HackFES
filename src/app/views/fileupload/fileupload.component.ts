@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { getStyle, rgbToHex } from '@coreui/coreui/dist/js/coreui-utilities';
 
 import * as XLSX from 'xlsx';
 
@@ -12,22 +11,19 @@ import { FileuploadService } from '../../services/fileupload.service';
 
 //import { MessageService } from 'primeng/components/common/messageservice';
 import { ToastService } from '../shared/toastmessages';
-import{FormGroup,FormBuilder ,ReactiveFormsModule,FormControl } from '@angular/forms';
-import { isNaN } from '@amcharts/amcharts4/core';
 @Component({
   templateUrl: 'fileupload.component.html',
   providers: [ToastService]
 })
 export class FileUploadComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private _document: any, private fileuploadService: FileuploadService,
-    private messageService: ToastService,private formBulider:FormBuilder) { }
-    associateErrorMsgs=[];
-    eventErrorMsgs=[];
-    enrollErrorMsgs=[];
+    private messageService: ToastService) { }
+  associateErrorMsgs = [];
+  eventErrorMsgs = [];
+  enrollErrorMsgs = [];
   allAssociates: Array<Associate>;
   allEvents: Array<Event>;
   enrollments: Array<Enrollment>;
-  registerForm: FormGroup;
   fileInformation: FileModel[];
   isIgnoreInalidData: boolean = true;
   sixDigitRegex: any = /^\d+$/;
@@ -62,7 +58,7 @@ export class FileUploadComponent implements OnInit {
     this.associateErrorMsgs = [];
     this.eventErrorMsgs = [];
     this.enrollErrorMsgs = [];
-    for(let file of event.files) {
+    for (let file of event.files) {
       let fileReader = new FileReader();
       fileReader.onload = (e) => {
         this.fileInformation = [];
@@ -75,18 +71,18 @@ export class FileUploadComponent implements OnInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
         let dataContent = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-        
-        if (dataContent.length > 0) {          
-          let rowNumber = 1;         
+
+        if (dataContent.length > 0) {
+          let rowNumber = 1;
           dataContent.forEach(row => {
             rowNumber++;
-            this.validateExcelData(rowNumber, row);           
+            this.validateExcelData(rowNumber, row);
           })
           this.saveExcelDataToDb(file.name);
         }
       }
       fileReader.readAsArrayBuffer(file);
-    }    
+    }
   }
 
   addFileInfo(fileName: string) {
@@ -97,9 +93,8 @@ export class FileUploadComponent implements OnInit {
       let associateData = this.allAssociates;
       this.allAssociates = [];
       this.fileuploadService.saveAssociates(associateData)
-        .subscribe(data => {         
-          console.log(data)
-          this.showSuccessToast();
+        .subscribe(data => {
+          this.messageService.success('Success', 'Saved successfully');
           this.addFileInfo(fileName);//save file details
         });
     }
@@ -108,8 +103,7 @@ export class FileUploadComponent implements OnInit {
       this.allEvents = [];
       this.fileuploadService.saveEvents(eventData)
         .subscribe(data => {
-          console.log(data)
-          this.showSuccessToast();
+          this.messageService.success('Success', 'Saved successfully');
           this.addFileInfo(fileName);
         });
     }
@@ -118,8 +112,7 @@ export class FileUploadComponent implements OnInit {
       this.enrollments = [];
       this.fileuploadService.saveEnrollments(enrollData)
         .subscribe(data => {
-          console.log(data)
-          this.showSuccessToast();
+          this.messageService.success('Success', 'Saved successfully');
           this.addFileInfo(fileName);
         });
     }
@@ -129,10 +122,10 @@ export class FileUploadComponent implements OnInit {
     let associateId = rowData["Associate ID"];
     let eventId = rowData["Event ID"];
     let employeeId = rowData["Employee ID"];
-   
+
     if (!eventId && !employeeId && associateId && this.sixDigitRegex.test(associateId.toString()) && associateId.toString().length == 6)
-      this.validateAssociateExcel(rowNumber, rowData);      
-    
+      this.validateAssociateExcel(rowNumber, rowData);
+
     if (eventId && !associateId && !employeeId)
       this.validateEventDataFromExcel(rowNumber, rowData);
 
@@ -147,41 +140,36 @@ export class FileUploadComponent implements OnInit {
       this.createAssociateModelFromExcel(rowNumber, rowData);
   }
 
-  validateAssociateExcel(rowNumber, rowData){
-      //let associate = new Associate();
-      
-      let error =[];
-      let id = rowData["Associate ID"];
-      if(id == undefined || (!this.sixDigitRegex.test(id.toString())  && id.toString().length != 6))
-      {
-        error.push('Invalid associate id');        
-      }
-      let name = rowData["Name"];
-      if(name == undefined)
-      {
-        error.push('Invalid associate name');        
-      }
-      let designation = rowData["Designation"];
-      if(designation == undefined)
-      {
-        error.push('Invalid designation');        
-      }   
-      let baseLocation = rowData["Location"];
-      if(baseLocation == undefined)
-      {
-        error.push('Invalid location');        
-      }
-      let businessUnit = rowData["BU"];
-      if(businessUnit == undefined)
-      {
-        error.push('Invalid business unit');        
-      }  
-      let createdBy = 'senthil';
-      if(error.length > 0)
-        this.associateErrorMsgs.push({ row: rowNumber, errorMsg: error });
-    else 
-    this.createAssociateModelFromExcel(rowNumber, rowData);
-      //this.allAssociates.push(associate);
+  validateAssociateExcel(rowNumber, rowData) {
+    //let associate = new Associate();
+
+    let error = [];
+    let id = rowData["Associate ID"];
+    if (id == undefined || (!this.sixDigitRegex.test(id.toString()) && id.toString().length != 6)) {
+      error.push('Invalid associate id');
+    }
+    let name = rowData["Name"];
+    if (name == undefined) {
+      error.push('Invalid associate name');
+    }
+    let designation = rowData["Designation"];
+    if (designation == undefined) {
+      error.push('Invalid designation');
+    }
+    let baseLocation = rowData["Location"];
+    if (baseLocation == undefined) {
+      error.push('Invalid location');
+    }
+    let businessUnit = rowData["BU"];
+    if (businessUnit == undefined) {
+      error.push('Invalid business unit');
+    }
+    let createdBy = 'senthil';
+    if (error.length > 0)
+      this.associateErrorMsgs.push({ row: rowNumber, errorMsg: error });
+    else
+      this.createAssociateModelFromExcel(rowNumber, rowData);
+    //this.allAssociates.push(associate);
   }
 
   createAssociateModelFromExcel(rowNumber, rowData) {
@@ -201,19 +189,17 @@ export class FileUploadComponent implements OnInit {
     //if (id)
     //  this.createEventModelFromExcel(rowNumber, rowData);
 
-      if (id == undefined || id.length > 20)
-      {
-        errors.push('Invalid event id');
-      }
+    if (id == undefined || id.length > 20) {
+      errors.push('Invalid event id');
+    }
     let name = rowData["Event Name"];
-    if (name == undefined)
-      {
-        errors.push('Invalid event name');
-      }
-     let date = rowData["Event Date (DD-MM-YY)"];
-     if(!date){
-       errors.push('Invalid event date');
-     }    
+    if (name == undefined) {
+      errors.push('Invalid event name');
+    }
+    let date = rowData["Event Date (DD-MM-YY)"];
+    if (!date) {
+      errors.push('Invalid event date');
+    }
     let baseLocation = rowData["Base Location"]
     if (baseLocation == undefined)
       errors.push('Invalid base location');
@@ -247,10 +233,10 @@ export class FileUploadComponent implements OnInit {
       this.createEventModelFromExcel(rowNumber, rowData);
   }
 
-  getValidDateFormat(date: string){      
-      let numberArray = date.split("-");
-      numberArray[0] = (parseInt(numberArray[0])+1).toString();
-      numberArray.splice(1, 0, numberArray.splice(0, 1)[0]);
+  getValidDateFormat(date: string) {
+    let numberArray = date.split("-");
+    numberArray[0] = (parseInt(numberArray[0]) + 1).toString();
+    numberArray.splice(1, 0, numberArray.splice(0, 1)[0]);
     return new Date(Date.parse(numberArray.join('-'))).toUTCString();
   }
 
@@ -260,9 +246,9 @@ export class FileUploadComponent implements OnInit {
     event.name = rowData["Event Name"];
     event.description = rowData["Event Description"];
     let date = rowData["Event Date (DD-MM-YY)"];
-    if(date){
+    if (date) {
       event.date = this.getValidDateFormat(date);
-    }    
+    }
     event.baseLocation = rowData["Base Location"]
     event.address = rowData["Venue Address"];
     event.createdBy = 'senthil';
@@ -322,9 +308,9 @@ export class FileUploadComponent implements OnInit {
       let name;
       let contact;
       let i;
-      for (i = 0; i < ids.length; i++) {     
+      for (i = 0; i < ids.length; i++) {
         id = ids[i];
-        
+
         if (this.sixDigitRegex.test(id.toString())) {
           if (i < names.length)
             name = names[i];
@@ -334,7 +320,7 @@ export class FileUploadComponent implements OnInit {
             contact = contacts[i];
           else contact = null;
 
-          pocs.push({ id: 0, associateId: id, name: name, contactNumber: contact, createdBy: 0, modifiedBy:0 });
+          pocs.push({ id: 0, associateId: id, name: name, contactNumber: contact, createdBy: 0, modifiedBy: 0 });
         }
       }
     }
@@ -381,9 +367,9 @@ export class FileUploadComponent implements OnInit {
     let enrollment = new Enrollment();
     enrollment.eventID = rowData["Event ID"];
     let date = rowData["Event Date (DD-MM-YY)"];
-    if(date){
+    if (date) {
       enrollment.eventDate = this.getValidDateFormat(date);
-    }    
+    }
     enrollment.associateID = rowData["Employee ID"];
     enrollment.volunteerHours = rowData["Volunteer Hours"];
     enrollment.travelHours = rowData["Travel Hours"];
@@ -399,7 +385,7 @@ export class FileUploadComponent implements OnInit {
     if (this.fileInformation.length > 0) {
       this.fileuploadService.saveFileInfo(this.fileInformation)
         .subscribe(data => {
-          
+
         });
     }
   }

@@ -1,38 +1,38 @@
 // Angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ParticipationComponent } from './participation/participation.component';
 
 import { GenericComponent } from './generic/generic.component';
 
 // Tabs Component
-import { TabsModule } from 'ngx-bootstrap/tabs';
+//import { TabsModule } from 'ngx-bootstrap/tabs';
 
 // Carousel Component
-import { CarouselModule } from 'ngx-bootstrap/carousel';
+//import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 // Collapse Component
-import { CollapseModule } from 'ngx-bootstrap/collapse';
+//import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 // Dropdowns Component
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 // Pagination Component
-import { PaginationModule } from 'ngx-bootstrap/pagination';
+//import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { RetentionComponent } from './retention/retention.component';
 
 // Popover Component
-import { PopoverModule } from 'ngx-bootstrap/popover';
+//import { PopoverModule } from 'ngx-bootstrap/popover';
 import { EngagementComponent } from './engagement/engagement.component';
 
 // Progress Component
-import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
+//import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { AcquisitionComponent } from './acquisition/acquisition.component';
 
 // Tooltip Component
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+//import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -56,13 +56,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     FormsModule,
     ReportsRoutingModule,
     BsDropdownModule.forRoot(),
-    TabsModule,
-    CarouselModule.forRoot(),
-    CollapseModule.forRoot(),
-    PaginationModule.forRoot(),
-    PopoverModule.forRoot(),
-    ProgressbarModule.forRoot(),
-    TooltipModule.forRoot(),
     TableModule,
     DialogModule,
     MultiSelectModule,
@@ -81,9 +74,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     AcquisitionComponent,
     FilterComponent
   ],
-  providers: [MessageService],
-  schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
-  ]
+  providers: [MessageService]
 })
 export class ReportsModule { }

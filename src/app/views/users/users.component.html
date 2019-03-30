@@ -70,18 +70,19 @@
       <div class="animated fadeIn">
         <div class="card">
           <div class="card-header bg-primary">
-            <i class="fa fa-upload"></i> Excel upload
+            <i class="fa fa-upload"></i> Bulk user upload
           </div>
           <div class="card-body">
+            <a class="color-anchorblue" (click)="downloadExcelTemplate()"><i class="fa fa-download"></i> download excel template</a><br />
             <form>
               <div class="form-group">
-                <a style="color:deepskyblue;" (click)="downloadExcelTemplate()" ><i class="fa fa-download"></i> download excel template</a><br/>
+
                 <!--<label for="exampleFormControlFile1">Associates detail input</label>-->
                 <p-fileUpload name="demo[]" customUpload="true" (onSelect)="incomingfile($event)" (uploadHandler)="onUpload($event)" multiple="multiple"
                               accept=".xlsx" maxFileSize="1000000">
                   <!-- <ng-template pTemplate="toolbar">
-        <div>Please uploaded Associates or Event information or Event Summary files</div>
-      </ng-template> -->
+          <div>Please uploaded Associates or Event information or Event Summary files</div>
+        </ng-template> -->
                   <ng-template pTemplate="content">
                     <ul *ngIf="uploadedFiles.length">
                       <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
@@ -91,11 +92,10 @@
                 <small id="emailHelp" class="form-text text-danger">Please download excel template and update application user details as given in template.</small>
               </div>
               <div>
-
               </div>
             </form>
             <p-toast [style]="{marginTop: '80px'}"></p-toast>
-           
+
           </div>
         </div>
 

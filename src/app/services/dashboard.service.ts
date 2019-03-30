@@ -8,18 +8,19 @@ import { Associate } from '../models/associate.model';
 import { Enrollment } from '../models/enrollment.model';
 import { Event } from '../models/event.model';
 import { config } from './../config';
+import { ErrorsService } from './errors.service';
 
 @Injectable({
     providedIn: 'root'
   })
 export class DashboardService {
 
-    constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorService: ErrorsService) { }
      
     getAllAssociates(): Observable<any> {
       return this.http.get<any>(`${config.apiUrl}/Associate`)
         .pipe(
-          tap(data => console.log(JSON.stringify(data))),
+          tap(data => JSON.stringify(data)),
         catchError(this.handleError<any>('getAllAssociates'))
         );
     }
@@ -27,7 +28,7 @@ export class DashboardService {
     getAllEvents(): Observable<Event[]> {
       return this.http.get<any>(`${config.apiUrl}/Event`)
         .pipe(
-          tap(data => console.log(JSON.stringify(data))),
+          tap(data => JSON.stringify(data)),
         catchError(this.handleError<any>('getAllEvents'))
         );
   }
@@ -35,7 +36,7 @@ export class DashboardService {
   getRecentEvents(recentCount:number): Observable<Event[]> {
     return this.http.get<any>(`${config.apiUrl}/Event/RecentEvents/${recentCount}`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getRecentEvents'))
       );
   }
@@ -45,7 +46,7 @@ export class DashboardService {
         .pipe(
           tap(data => {
             let test = data;
-            console.log(JSON.stringify(data))
+            JSON.stringify(data)
           }),
         catchError(this.handleError<any>('getAllEnrollments'))
         );
@@ -55,7 +56,7 @@ export class DashboardService {
       return this.http.get<any>(`${config.apiUrl}/Enrollment/GetTopFrequentVolunteers?count=${count}`)
         .pipe(
         tap(response => {
-          console.log(JSON.stringify(response));
+          JSON.stringify(response);
           }),
         catchError(this.handleError<any>('getTopVolunteers'))
         );
@@ -66,7 +67,7 @@ export class DashboardService {
         .pipe(
           tap(data => {
             let test = data;
-            console.log(JSON.stringify(data))
+            JSON.stringify(data)
           }),
         catchError(this.handleError<any>('getYearlyVolunteers'))
         );
@@ -77,7 +78,7 @@ export class DashboardService {
       .pipe(
         tap(data => {
           let test = data;
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('getYearlyBuVolunteers'))
       );
@@ -88,7 +89,7 @@ export class DashboardService {
         .pipe(
           tap(data => {
             let test = data;
-            console.log(JSON.stringify(data))
+            JSON.stringify(data)
           }),
         catchError(this.handleError<any>('GetAllNewVolunteers'))
         );
@@ -98,8 +99,7 @@ export class DashboardService {
       return this.http.get<any>(`${config.apiUrl}/Enrollment/GetDateWiseVolunteersCount`)
         .pipe(
           tap(data => {
-            console.log('GetDateWiseVolunteersCount')
-            console.log(JSON.stringify(data))
+            JSON.stringify(data)
           }),
         catchError(this.handleError<any>('GetDateWiseVolunteers'))
         );
@@ -109,8 +109,7 @@ export class DashboardService {
     return this.http.get<any>(`${config.apiUrl}/Enrollment/GetTopVolunteerData`)
       .pipe(
         tap(data => {
-        console.log('GetTopVolunteerData')
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('GetTopData'))
       );
@@ -119,11 +118,7 @@ export class DashboardService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      console.log(`${operation} failed: ${error.message}`);
+      this.errorService.logError(error);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

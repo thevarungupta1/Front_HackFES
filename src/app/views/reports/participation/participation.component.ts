@@ -68,7 +68,7 @@ export class ParticipationComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  getScreenSize(event?) {
+  private getScreenSize(event?) {
     this.innerWidth = window.innerWidth;
   }
   ngOnInit(): void {
@@ -86,7 +86,7 @@ export class ParticipationComponent implements OnInit {
     
   }
 
-  getAssociates() {
+  private getAssociates() {
     this.participationService.getAllAssociates().subscribe(data => {     
       this.allAssociates = data;
       this.totalAssociatesCount = data.length;
@@ -105,7 +105,7 @@ export class ParticipationComponent implements OnInit {
     });
   }
 
-  groupBy(array, f) {
+  private groupBy(array, f) {
     var groups = {};
     array.forEach(function (o) {
       var group = JSON.stringify(f(o));
@@ -124,7 +124,7 @@ export class ParticipationComponent implements OnInit {
   //    this.getAllEvents();
   //  });
   //}
-  getAllEvents() {
+  private getAllEvents() {
     this.participationService.getAllEvents().subscribe(data => {
       this.allEvents = data;
       this.metricCalculate();
@@ -138,51 +138,6 @@ export class ParticipationComponent implements OnInit {
       this.showCharts();
     });
   }
-  //getEnrollments() {
-  //  this.participationService.getEnrollments().subscribe(data => {
-  //    this.allEnrollments = data;
-
-  //    this.getVolunteers();
-  //  });
-  //}
-
-  //getVolunteers() {
-  //  this.participationService.getUniqueVolunteers().subscribe(data => {
-  //    this.allUniqueVolunteers = data;
-
-  //    this.metricCalculate();
-  //    this.getAllChartData();
-  //  });
-  //}
-  
-  //joinRecords(){
-  //  this.allVolunteers =[];
-  //this.allEnrollments.map((enrollment)=>{
-  //  let associate = this.allAssociates.find((en)=> enrollment.associateID === en.id);
-  //  //let event = this.allEvents.find((ev)=> enrollment.eventID === ev.id);
-  //  if(associate)
-  //  this.allVolunteers.push(Object.assign(enrollment, associate));
-  //   //Object.assign(a,obj2);
-  //  //return a;
-  // });
-  // console.log('combinedResult');
-  // console.log(this.allVolunteers);
-  //  this.metricCalculate();
-  //    this.getAllChartData();
-  //}
-
-  //getAllChartData(){
-  //  this.getDesignationWiseAssociates();
-  //  this.getDesignationWiseVolunteers();
-  //  this.getBUWiseAssociates();
-  //  this.getBUWiseVolunteers();
-  //  this.getBaseLocationWiseAssociates();
-  //  this.getBaseLocationWiseVolunteers();
-  // // this.getCountryWiseAssociates();
-  //  //this.getCountryWiseVolunteers();
-  //  this.showCharts();
-  //}
-
   showCharts() {
     this.pieChart('DesignationWiseReport');
     //this.stacked3dChart();
@@ -192,47 +147,38 @@ export class ParticipationComponent implements OnInit {
     this.columnChart3d('BuWiseReport');
     this.doughnut('LocationWiseReport');
   }
-  getDesignationWiseAssociates() {
+  private getDesignationWiseAssociates() {
     this.designationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.designation];
     });
   }
-  getDesignationWiseVolunteers() {
+  private getDesignationWiseVolunteers() {
     this.designationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.designation];
     });
   }
-  getBUWiseAssociates() {
+  private getBUWiseAssociates() {
     this.buWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.businessUnit];
     });
   }
-  getBUWiseVolunteers() {
+  private getBUWiseVolunteers() {
     this.buWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.businessUnit];
     });
   }
-  getBaseLocationWiseAssociates() {
+  private getBaseLocationWiseAssociates() {
     this.locationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
       return [item.baseLocation];
     });
   }
-  getBaseLocationWiseVolunteers() {
+  private getBaseLocationWiseVolunteers() {
     this.locationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
       return [item.baseLocation];
     });
   }
-  //getCountryWiseAssociates() {
-  //  this.countryWiseAssociates = this.groupBy(this.allAssociates, function (item) {
-  //    return [item.country];
-  //  });
-  //}
-  //getCountryWiseVolunteers() {
-  //  this.countryWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
-  //    return [item.country];
-  //  });
-  //}
-  getUnique(arr, comp) {
+
+  private getUnique(arr, comp) {
 
   const unique = arr
     .map(e => e[comp])
@@ -252,7 +198,7 @@ export class ParticipationComponent implements OnInit {
    // this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
   }
 
-  metricCalculate() {
+  private metricCalculate() {
     this.filterAssociatesFromEnrollments();
     this.totalAssociatesCount = this.allAssociates.length;
     this.totalVolunteersCount = this.allEnrollments.length;
@@ -314,27 +260,26 @@ export class ParticipationComponent implements OnInit {
     this.avgHourVolunteerEvent = Math.round((avgHours / this.totalEvents) * 100) / 100;
   }
 
-
-  getSum(total, arr) {
+  private getSum(total, arr) {
     let prev: number = isNaN(total.volunteerHours) ? 0 : total.volunteerHours;
     let cur: number = isNaN(arr.volunteerHours) ? 0 : arr.volunteerHours;
     return prev + cur;
   }
 
-  getDesignationWiseAssociatesData(): any {
+  private getDesignationWiseAssociatesData(): any {
     let data = [];
     this.designationWiseAssociates.forEach(associates =>
       data.push({ designation: associates[0].designation, associates: associates.length }));
     return data;
   }
-  getDesignationWiseVolunteersData(): any {
+  private getDesignationWiseVolunteersData(): any {
     let data = [];
     this.designationWiseVolunteers.forEach(volunteers =>
       data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }));
       console.log(data);
     return data;
   }
-  getDesignationWiseVolunteerVsAssociate(): any {
+  private getDesignationWiseVolunteerVsAssociate(): any {
     let data = [];
     this.designationWiseVolunteers.forEach(volunteers => {
       let associates = this.allAssociates.filter(f => f.designation == volunteers[0].designation);
@@ -343,19 +288,19 @@ export class ParticipationComponent implements OnInit {
     console.log(data);
     return data;
   }
-  getBUWiseAssociatesData(): any {
+  private getBUWiseAssociatesData(): any {
     let data = [];
     this.buWiseAssociates.forEach(associates =>
       data.push({ businessUnit: associates[0].businessUnit, associates: associates.length }));
     return data;
   }
-  getBUWiseVolunteersData(): any {
+  private getBUWiseVolunteersData(): any {
     let data = [];
     this.buWiseVolunteers.forEach(volunteers =>
       data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers.length }));
     return data;
   }
-  getBuWiseVolunteerVsAssociate(): any {
+  private getBuWiseVolunteerVsAssociate(): any {
     let data = [];
     this.buWiseVolunteers.forEach(volunteers => {
       let associates = this.allAssociates.filter(f => f.businessUnit == volunteers[0].businessUnit);
@@ -364,19 +309,19 @@ export class ParticipationComponent implements OnInit {
     console.log(data);
     return data;
   }
-  getLocationWiseAssociatesData(): any {
+  private getLocationWiseAssociatesData(): any {
     let data = [];
     this.locationWiseAssociates.forEach(associates =>
       data.push({ baseLocation: associates[0].baseLocation, associates: associates.length }));
     return data;
   }
-  getLocationWiseVolunteersData(): any {
+  private getLocationWiseVolunteersData(): any {
     let data = [];
     this.locationWiseVolunteers.forEach(volunteers =>
       data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers.length }));
     return data;
   }
-  getLocationWiseVolunteerVsAssociate(): any {
+  private getLocationWiseVolunteerVsAssociate(): any {
     let data = [];
     this.locationWiseVolunteers.forEach(volunteers => {
       let associates = this.allAssociates.filter(f => f.baseLocation == volunteers[0].baseLocation);
@@ -386,7 +331,7 @@ export class ParticipationComponent implements OnInit {
     return data;
   }
 
-  getChartData(chartType: string): any {
+  private getChartData(chartType: string): any {
     console.log(this.designationWiseVolunteers);
     if (chartType == 'DesignationWiseReport') {
       return this.getDesignationWiseVolunteersData();
@@ -399,7 +344,7 @@ export class ParticipationComponent implements OnInit {
     else return null;
   }
 
-  pieChart(chartContainer: string) {
+  private pieChart(chartContainer: string) {
     this.zone.runOutsideAngular(() => {
       let chart = am4core.create(chartContainer, am4charts.PieChart);
 
@@ -475,7 +420,7 @@ export class ParticipationComponent implements OnInit {
     });
   }
 
-  columnChart(chartContainer: string) {
+  private columnChart(chartContainer: string) {
     // Create chart instance
     let chart = am4core.create(chartContainer, am4charts.XYChart);
 
@@ -582,7 +527,7 @@ export class ParticipationComponent implements OnInit {
     series.hiddenState.properties.opacity = 1;
   }
 
-  columnChart3d(chartContainer: string) {
+  private columnChart3d(chartContainer: string) {
     // Create chart instance
     let chart = am4core.create(chartContainer, am4charts.XYChart3D);
 
@@ -702,7 +647,7 @@ export class ParticipationComponent implements OnInit {
 
   }
 
-  doughnut(chartContainer: string) {
+  private doughnut(chartContainer: string) {
     let chart = am4core.create(chartContainer, am4charts.PieChart);
 
     // Set inner radius
@@ -749,12 +694,6 @@ export class ParticipationComponent implements OnInit {
         chart.legend = new am4charts.Legend();
         if (this.innerWidth <= 600)
           chart.legend.position = "bottom";
-        // //remove label
-        // series.ticks.template.disabled = true;
-        // series.alignLabels = false;
-        // series.labels.template.text = "{value.percent.formatNumber('#.0')}%";
-        // series.labels.template.radius = am4core.percent(-40);
-        // series.labels.template.fill = am4core.color("white");
       }
     let category: string;
     if (chartContainer == 'DesignationWiseReport') {
@@ -780,7 +719,7 @@ export class ParticipationComponent implements OnInit {
 
   }
 
-  pyramid(chartContainer: string) {
+  private pyramid(chartContainer: string) {
     let chart = am4core.create(chartContainer, am4charts.SlicedChart);
     chart.paddingBottom = 30;
 
@@ -850,7 +789,7 @@ export class ParticipationComponent implements OnInit {
     series.valueIs = "height";
 
   }
-  xyChart() {
+  private xyChart() {
     this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
 
@@ -887,7 +826,7 @@ export class ParticipationComponent implements OnInit {
     });
   }
 
-  pictorialChart() {
+  private pictorialChart() {
     let iconPath = "M421.976,136.204h-23.409l-0.012,0.008c-0.19-20.728-1.405-41.457-3.643-61.704l-1.476-13.352H5.159L3.682,74.507 C1.239,96.601,0,119.273,0,141.895c0,65.221,7.788,126.69,22.52,177.761c7.67,26.588,17.259,50.661,28.5,71.548  c11.793,21.915,25.534,40.556,40.839,55.406l4.364,4.234h206.148l4.364-4.234c15.306-14.85,29.046-33.491,40.839-55.406  c11.241-20.888,20.829-44.96,28.5-71.548c0.325-1.127,0.643-2.266,0.961-3.404h44.94c49.639,0,90.024-40.385,90.024-90.024  C512,176.588,471.615,136.204,421.976,136.204z M421.976,256.252h-32c3.061-19.239,5.329-39.333,6.766-60.048h25.234  c16.582,0,30.024,13.442,30.024,30.024C452,242.81,438.558,256.252,421.976,256.252z"
 
     let chart = am4core.create("chartdiv2", am4charts.SlicedChart);
@@ -951,47 +890,8 @@ export class ParticipationComponent implements OnInit {
     //marker.cornerRadius(20,20,20,20);
 
   }
-
-
-  stacked3dChart() {
-
-    // Create chart instance
-    let chart = am4core.create("DesignationWiseVolunteersVsAssociates", am4charts.XYChart3D);
-
-    // Add data
-    chart.data = this.getDesignationWiseVolunteerVsAssociate();
-
-    // Create axes
-    let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "designation";
-    categoryAxis.renderer.grid.template.location = 0;
-    categoryAxis.renderer.minGridDistance = 30;
-
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.title.text = "Designation wise comparison";
-    valueAxis.renderer.labels.template.adapter.add("text", function (text) {
-      return text + "%";
-    });
-
-    // Create series
-    let series = chart.series.push(new am4charts.ColumnSeries3D());
-    series.dataFields.valueY = "volunteers";
-    series.dataFields.categoryX = "designation";
-    series.name = "Volunteers";
-    series.clustered = false;
-    series.columns.template.tooltipText = "Volunteers in {category}: [bold]{valueY}[/]";
-    series.columns.template.fillOpacity = 0.9;
-
-    let series2 = chart.series.push(new am4charts.ColumnSeries3D());
-    series2.dataFields.valueY = "associates";
-    series2.dataFields.categoryX = "designation";
-    series2.name = "Associates";
-    series2.clustered = false;
-    series2.columns.template.tooltipText = "Associates in {category}: [bold]{valueY}[/]";
-
-  }
-
-  layeredColumnChart(chartContainer: string) {
+  
+  private layeredColumnChart(chartContainer: string) {
 
     // Create chart instance
     let chart = am4core.create(chartContainer, am4charts.XYChart);

@@ -16,41 +16,39 @@ export class ErrorsService {
     private router: Router,
   ) {
     // Subscribe to the NavigationError
-    this.router
-          .events  
-          .subscribe((event: Event) => { 
-            if (event instanceof NavigationError) {
-                // Redirect to the ErrorComponent
-                this.log(event.error)
-                        .subscribe((errorWithContext) => { 
-                          this.router.navigate(['/error'], { queryParams: errorWithContext })
-                        });                
-            }
-          });
+    //this.router
+    //      .events  
+    //      .subscribe((event: Event) => { 
+    //        if (event instanceof NavigationError) {
+    //            // Redirect to the ErrorComponent
+    //            this.log(event.error)
+    //                    .subscribe((errorWithContext) => { 
+    //                      this.router.navigate(['/error'], { queryParams: errorWithContext })
+    //                    });                
+    //        }
+    //      });
   }
-
-  log(error) {
-    // Log the error to the console
-    console.error(error);
+  
+  logError(error) {
     // Send error to server
     const errorToSend = this.addContextInfo(error);
+    console.log(errorToSend);
     return fakeHttpService.post(errorToSend);
   }
 
   addContextInfo(error) {
     // You can include context details here (usually coming from other services: UserService...)
     const name = error.name || null;
-    const appId = 'shthppnsApp';
-    const user = 'ShthppnsUser';
+    const appId = 'reportingSystem';
     const time = new Date().getTime();
-    const id = `${appId}-${user}-${time}`;
+    const id = `${appId}-${time}`;
     const location = this.injector.get(LocationStrategy);
     const url = location instanceof PathLocationStrategy ? location.path() : '';
     const status = error.status || null;
     const message = error.message || error.toString();
     const stack = error instanceof HttpErrorResponse ? null : StackTraceParser.parse(error);
 
-    const errorWithContext = {name, appId, user, time, id, url, status, message, stack};
+    const errorWithContext = {name, appId, time, id, url, status, message, stack};
     return errorWithContext;
   }
 

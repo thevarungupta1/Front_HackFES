@@ -56,15 +56,14 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
-     // let user:User = { id:0, email: 'test@test.com', role: null };
-      return this.authService.refreshToken().pipe(
-        switchMap((token: any) => {
-          this.isRefreshing = false;
-          console.log('token.jwt');
-          console.log(token.jwt);
-          this.refreshTokenSubject.next(token.jwt);
-          return next.handle(this.addToken(request, token.jwt));
-        }));
+      //return this.authService.refreshToken().pipe(
+      //  switchMap((token: any) => {
+      //    this.isRefreshing = false;
+      //    console.log('token.jwt');
+      //    console.log(token.jwt);
+      //    this.refreshTokenSubject.next(token.jwt);
+      //    return next.handle(this.addToken(request, token.jwt));
+      //  }));
 
     } else {
       return this.refreshTokenSubject.pipe(

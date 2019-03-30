@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -21,7 +21,6 @@ import { DefaultLayoutComponent } from './containers';
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/auth/login.component';
-import { RegisterComponent } from './views/register/register.component';
 
 const APP_CONTAINERS = [
   DefaultLayoutComponent
@@ -72,8 +71,7 @@ import { HttpModule } from '@angular/http';
     ...APP_CONTAINERS,
     P404Component,
     P500Component,
-    LoginComponent,
-    RegisterComponent
+    LoginComponent
   ],
   providers: [{
     provide: LocationStrategy,

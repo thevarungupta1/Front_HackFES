@@ -13,14 +13,14 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   pageTitle = 'Log In';
   loginForm: FormGroup;
-
+  mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   constructor(private authService: AuthService,
     private router: Router, private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       associateId: ['', Validators.required],
-      email: ['', Validators.required]
+      email: ['', [Validators.pattern(this.mailformat)]]
     });
     this.authService.clearLocalStorage();
   }
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
 
     let user: User = { id: associateId, email: email, role: null };
       //this.authService.login(user);
-      this.authService.login(associateId)
+      this.authService.login(associateId, email)
       .subscribe(success => {
         if (success) {
           if (this.authService.redirectUrl) {

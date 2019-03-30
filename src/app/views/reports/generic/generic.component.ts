@@ -9,24 +9,84 @@ import { GenericService } from 'src/app/services/generic.service';
   templateUrl: 'generic.component.html'
 })
 export class GenericComponent {
-  uniqVolunteers: Enrollment[] = [];
-  weekday: boolean = false;
-  weekend: boolean = false;
+  uniqVolunteers: any[] = [];
+  weekday: number = 0;
   fromDate: any;
   toDate: any;
+  showReport: boolean = false;
   constructor(private genericService: GenericService) { }
 
   ngOnInit() {
-    this.getUniqVolunteers();
+    //this.getUniqVolunteers();
   }
 
   getUniqVolunteers() {
-    this.genericService.getUniqVolunteers().subscribe(data => {
-      this.uniqVolunteers = data;
+    let fromDate = this.fromDate != undefined ? this.fromDate : '';
+    let toDate = this.toDate != undefined ? this.toDate : '';
+    this.genericService.getUniqVolunteers(fromDate, toDate).subscribe(data => {
+      //let resultData = [];
+      this.uniqVolunteers = [];
+      if (data) {
+        let groupedData = this.groupBy(data, function (item) {
+          return [item.associateID];
+        });
+        let volunteerHrs: number = 0;
+        groupedData.forEach(enroll => {
+          volunteerHrs = 0;
+          enroll.forEach(associate => {
+            volunteerHrs = volunteerHrs + associate.volunteerHours;
+          })
+          //enroll[0].volunteerHours = volunteerHrs;
+          let d = new Date(enroll[0].eventDate);
+          let n = d.getDay();
+          if (this.weekday == 1) {
+            if (n > 0 && n < 6) {
+              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+            }
+          } else if (this.weekday == 2) {
+            if (n == 0 || n == 6) {
+              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+            }
+          } else
+            this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+        });       
+      }
+      //this.uniqVolunteers = resultData;//this.getUnique(resultData, 'associateID');
+      this.showReport = true;
     });
+
+  }
+  groupBy(array, f) {
+    var groups = {};
+    array.forEach(function (o) {
+      var group = JSON.stringify(f(o));
+      groups[group] = groups[group] || [];
+      groups[group].push(o);
+    });
+    return Object.keys(groups).map(function (group) {
+      return groups[group];
+    })
+  }
+
+  getUnique(arr, comp) {
+
+    const unique = arr
+      .map(e => e[comp])
+
+      // store the keys of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+
+      // eliminate the dead keys & store unique objects
+      .filter(e => arr[e]).map(e => arr[e]);
+
+    return unique;
   }
   
-
+  reset() {
+    this.weekday = 0;
+    this.fromDate = undefined;
+    this.toDate = undefined;
+  }
   //getData() {
   //  let d = new Date(event.date);
   //  let n = d.getDay();
