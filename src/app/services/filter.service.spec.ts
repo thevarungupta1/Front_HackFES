@@ -60,13 +60,15 @@ import { TestBed } from '@angular/core/testing';
 
 import { FilterService } from './filter.service';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorsService } from './errors.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('FilterService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      FilterService
+      FilterService, ErrorsService
     ],
-    imports: [HttpClientModule]
+    imports: [HttpClientModule, RouterTestingModule]
   }));
 
   it('should be created', () => {

@@ -7,6 +7,8 @@ import { MessageService } from 'primeng/components/common/messageservice';
 import { ToastModule } from 'primeng/toast';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ErrorsService } from 'src/app/services/errors.service';
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -15,8 +17,8 @@ describe('UsersComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [UsersComponent],
-      imports: [ToastModule, HttpClientModule, FormsModule, ReactiveFormsModule ],
-      providers: [ MessageService ],
+      imports: [ToastModule, HttpClientModule, FormsModule, ReactiveFormsModule, RouterTestingModule ],
+      providers: [MessageService, ErrorsService ],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();

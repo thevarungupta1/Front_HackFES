@@ -4,6 +4,8 @@ import { EngagementComponent } from './engagement.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { EngagementService } from 'src/app/services/engagement.service';
+import { ErrorsService } from 'src/app/services/errors.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EngagementComponent', () => {
   let component: EngagementComponent;
@@ -12,8 +14,8 @@ describe('EngagementComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EngagementComponent],
-      imports: [HttpClientModule],
-      providers: [ EngagementService],
+      imports: [HttpClientModule, RouterTestingModule],
+      providers: [EngagementService, ErrorsService],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();

@@ -3,6 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ParticipationComponent } from './participation.component';
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorsService } from 'src/app/services/errors.service';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ParticipationComponent', () => {
   let component: ParticipationComponent;
@@ -10,9 +12,9 @@ describe('ParticipationComponent', () => {
   let de: DebugElement;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      imports: [HttpClientModule, RouterTestingModule],
       declarations: [ParticipationComponent],
-      providers: [],
+      providers: [ErrorsService],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();

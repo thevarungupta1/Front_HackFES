@@ -6,6 +6,8 @@ import { ToastService } from '../shared/toastmessages';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/components/common/messageservice';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorsService } from 'src/app/services/errors.service';
+import { RouterTestingModule } from '@angular/router/testing';
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
   let fixture: ComponentFixture<FileUploadComponent>;
@@ -13,8 +15,8 @@ describe('FileUploadComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [FileUploadComponent],
-      imports: [ToastModule, HttpClientModule],
-      providers: [ToastService, MessageService],
+      imports: [ToastModule, HttpClientModule, RouterTestingModule],
+      providers: [ToastService, MessageService, ErrorsService],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();

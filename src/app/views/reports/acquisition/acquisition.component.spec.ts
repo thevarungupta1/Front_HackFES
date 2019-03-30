@@ -3,6 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AcquisitionComponent } from './acquisition.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ErrorsService } from 'src/app/services/errors.service';
 
 describe('AcquisitionComponent', () => {
   let component: AcquisitionComponent;
@@ -11,8 +13,8 @@ describe('AcquisitionComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AcquisitionComponent],
-      imports: [HttpClientModule],
-      providers: [],
+      imports: [HttpClientModule, RouterTestingModule],
+      providers: [ErrorsService],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();

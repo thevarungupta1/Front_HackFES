@@ -4,6 +4,8 @@ import { RetentionComponent } from './retention.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ErrorsService } from 'src/app/services/errors.service';
 
 describe('RetentionComponent', () => {
   let component: RetentionComponent;
@@ -12,8 +14,8 @@ describe('RetentionComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [RetentionComponent],
-      imports: [HttpClientModule, FormsModule, ReactiveFormsModule],
-      providers: [],
+      imports: [HttpClientModule, FormsModule, ReactiveFormsModule, RouterTestingModule],
+      providers: [ErrorsService],
       schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
