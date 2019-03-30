@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
 
       return next.handle(request).pipe(catchError(error => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
+          this.authService.removeTokens();
           this.router.navigate(['/login']);
           return of({});
         } else {
