@@ -49,4 +49,11 @@ export class LoginComponent implements OnInit {
       this.errorMessage = 'Please enter a id and email.';
     }
   }
+
+  submit(event) {
+    if (event.keyCode == 13) {
+      this.login();
+    }
+  }
+
 }
