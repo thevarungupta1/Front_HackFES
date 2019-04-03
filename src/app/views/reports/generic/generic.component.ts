@@ -31,6 +31,7 @@ export class GenericComponent {
           return [item.associateID];
         });
         let volunteerHrs: number = 0;
+        let enrollCount: number = 0;
         groupedData.forEach(enroll => {
           volunteerHrs = 0;
           enroll.forEach(associate => {
@@ -38,17 +39,20 @@ export class GenericComponent {
           })
           //enroll[0].volunteerHours = volunteerHrs;
           let d = new Date(enroll[0].eventDate);
+          if (enroll)
+            enrollCount = enroll.length;
+          else enrollCount = 0;
           let n = d.getDay();
           if (this.weekday == 1) {
             if (n > 0 && n < 6) {
-              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enrollCount });
             }
           } else if (this.weekday == 2) {
             if (n == 0 || n == 6) {
-              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+              this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enrollCount });
             }
           } else
-            this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enroll.length });
+            this.uniqVolunteers.push({ volunteer: enroll[0].associates, volunteerHrs: volunteerHrs, events: enrollCount });
         });       
       }
       //this.uniqVolunteers = resultData;//this.getUnique(resultData, 'associateID');
@@ -58,28 +62,16 @@ export class GenericComponent {
   }
   groupBy(array, f) {
     var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
-  }
-
-  getUnique(arr, comp) {
-
-    const unique = arr
-      .map(e => e[comp])
-
-      // store the keys of the unique objects
-      .map((e, i, final) => final.indexOf(e) === i && i)
-
-      // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e]);
-
-    return unique;
+    if (array && array.lenth > 0) {
+      array.forEach(function (o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function (group) {
+        return groups[group];
+      });
+    }
   }
   
   reset() {

@@ -20,7 +20,7 @@ export class ParticipationService {
     return this.http.post<any[]>(`${config.apiUrl}/Enrollment/GetEnrollmentsByFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('getEnrollmentsByFilter'))
       );
   }
 
@@ -30,7 +30,7 @@ export class ParticipationService {
     return this.http.post<any>(`${config.apiUrl}/ReportFilter`, body, { headers: headers })
       .pipe(
         tap(data => console.log('data: ' + JSON.stringify(data))),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('saveFilter'))
       );
   }
 
@@ -38,7 +38,7 @@ export class ParticipationService {
     return this.http.get<any>(`${config.apiUrl}/Associate`)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('getAllAssociates'))
       );
   }
 
@@ -46,7 +46,7 @@ export class ParticipationService {
     return this.http.get<any>(`${config.apiUrl}/Event`)
       .pipe(
         tap(data => JSON.stringify(data)),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('getAllEvents'))
       );
   }
 
@@ -57,7 +57,7 @@ export class ParticipationService {
           let test = data;
           console.log(JSON.stringify(data))
         }),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('getEnrollments'))
       );
   }
 
@@ -68,7 +68,7 @@ export class ParticipationService {
           let test = data;
           console.log(JSON.stringify(data))
         }),
-      catchError(this.handleError<any>('getSavedFilters'))
+      catchError(this.handleError<any>('getUniqueVolunteers'))
       );
   }
   

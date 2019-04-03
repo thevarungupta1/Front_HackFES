@@ -84,9 +84,11 @@ export class ParticipationComponent implements OnInit {
   }
 
   private getAssociates() {
-    this.participationService.getAllAssociates().subscribe(data => {     
-      this.allAssociates = data;
-      this.totalAssociatesCount = data.length;
+    this.participationService.getAllAssociates().subscribe(data => {
+      if (data) {
+        this.allAssociates = data;
+        this.totalAssociatesCount = data.length;
+      }
       this.getAllEvents();
     });
   }
@@ -104,14 +106,16 @@ export class ParticipationComponent implements OnInit {
 
   private groupBy(array, f) {
     var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
+    if (array && array.lenth > 0) {
+      array.forEach(function (o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function (group) {
+        return groups[group];
+      });
+    }
   }
 
   //getAllAssociates() {
@@ -145,34 +149,46 @@ export class ParticipationComponent implements OnInit {
     this.doughnut('LocationWiseReport');
   }
   private getDesignationWiseAssociates() {
-    this.designationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
-      return [item.designation];
-    });
+    if (this.allAssociates) {
+      this.designationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
+        return [item.designation];
+      });
+    }
   }
   private getDesignationWiseVolunteers() {
-    this.designationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
-      return [item.designation];
-    });
+    if (this.allUniqueVolunteers) {
+      this.designationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
+        return [item.designation];
+      });
+    }
   }
   private getBUWiseAssociates() {
-    this.buWiseAssociates = this.groupBy(this.allAssociates, function (item) {
-      return [item.businessUnit];
-    });
+    if (this.allAssociates) {
+      this.buWiseAssociates = this.groupBy(this.allAssociates, function (item) {
+        return [item.businessUnit];
+      });
+    }
   }
   private getBUWiseVolunteers() {
-    this.buWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
-      return [item.businessUnit];
-    });
+    if (this.allUniqueVolunteers) {
+      this.buWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
+        return [item.businessUnit];
+      });
+    }
   }
   private getBaseLocationWiseAssociates() {
-    this.locationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
-      return [item.baseLocation];
-    });
+    if (this.allAssociates) {
+      this.locationWiseAssociates = this.groupBy(this.allAssociates, function (item) {
+        return [item.baseLocation];
+      });
+    }
   }
   private getBaseLocationWiseVolunteers() {
-    this.locationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
-      return [item.baseLocation];
-    });
+    if (this.allUniqueVolunteers) {
+      this.locationWiseVolunteers = this.groupBy(this.allUniqueVolunteers, function (item) {
+        return [item.baseLocation];
+      });
+    }
   }
 
   private getUnique(arr, comp) {
@@ -190,25 +206,30 @@ export class ParticipationComponent implements OnInit {
   }
 
   filterAssociatesFromEnrollments() {
-    this.allVolunteers = this.allEnrollments.map(m => m.associates)
-    this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+    if (this.allEnrollments) {
+      this.allVolunteers = this.allEnrollments.map(m => m.associates);
+    }
+    if (this.allVolunteers) {
+      this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+    }
    // this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
   }
 
   private metricCalculate() {
     this.filterAssociatesFromEnrollments();
-    this.totalAssociatesCount = this.allAssociates.length;
-    this.totalVolunteersCount = this.allEnrollments.length;
-    this.uniqueVolunteersCount = this.allUniqueVolunteers.length;
+    this.totalAssociatesCount = this.allAssociates ? this.allAssociates.length:0;
+    this.totalVolunteersCount = this.allEnrollments ? this.allEnrollments.length:0;
+    this.uniqueVolunteersCount = this.allUniqueVolunteers ? this.allUniqueVolunteers.length:0;
 
     this.totalTravelHours = 0;
     this.totalVolunteerHours = 0;
-    
-    this.allEnrollments.forEach(enrollment => {
-      this.totalTravelHours = this.totalTravelHours + enrollment.travelHours;
-      this.totalVolunteerHours = this.totalVolunteerHours + enrollment.volunteerHours;
-   
-    });
+    if (this.allEnrollments) {
+      this.allEnrollments.forEach(enrollment => {
+        this.totalTravelHours = this.totalTravelHours + enrollment.travelHours;
+        this.totalVolunteerHours = this.totalVolunteerHours + enrollment.volunteerHours;
+
+      });
+    }
 
     this.totalVolunteeringHours = this.totalTravelHours + this.totalVolunteerHours;
     
@@ -217,7 +238,7 @@ export class ParticipationComponent implements OnInit {
 
     this.avgHourAssociate = Math.round((this.totalVolunteeringHours / this.totalAssociatesCount) * 100) / 100;
     this.avgHourVolunteer = Math.round((this.totalVolunteeringHours / this.uniqueVolunteersCount) * 100) / 100;
-    this.totalEvents = this.allEvents.length;
+    this.totalEvents = this.allEvents ? this.allEvents.length:0;
 
     let weekdayHours = 0;
     let weekendHours = 0;
@@ -229,26 +250,27 @@ export class ParticipationComponent implements OnInit {
 
     let avgHours = 0;
     let tmpavgHours = 0;
-    this.allEvents.forEach(event => {
-      total = 0;
-      tmpavgHours = 0;
-      eventTotalVolunteers = eventTotalVolunteers + event.totalVolunteers;
-      let d = new Date(event.date);
-      let n = d.getDay();
-      if (n == 0 || n == 6) {
-        total = event.totalVolunteerHours + event.totalTravelHours;
-        weekendHours = weekendHours + total;
-        weekendCount++;
-      } else {
-        total = event.totalVolunteerHours + event.totalTravelHours;
-        weekdayHours = weekdayHours + total;
-        weekdayCount++;
-      }
-      tmpavgHours = event.totalVolunteerHours / event.totalVolunteers;
-      avgHours = avgHours + tmpavgHours;
-      eventTotalVolunteeringHrs = event.totalVolunteerHours + eventTotalVolunteeringHrs;
-    });
-    
+    if (this.allEvents) {
+      this.allEvents.forEach(event => {
+        total = 0;
+        tmpavgHours = 0;
+        eventTotalVolunteers = eventTotalVolunteers + event.totalVolunteers;
+        let d = new Date(event.date);
+        let n = d.getDay();
+        if (n == 0 || n == 6) {
+          total = event.totalVolunteerHours + event.totalTravelHours;
+          weekendHours = weekendHours + total;
+          weekendCount++;
+        } else {
+          total = event.totalVolunteerHours + event.totalTravelHours;
+          weekdayHours = weekdayHours + total;
+          weekdayCount++;
+        }
+        tmpavgHours = event.totalVolunteerHours / event.totalVolunteers;
+        avgHours = avgHours + tmpavgHours;
+        eventTotalVolunteeringHrs = event.totalVolunteerHours + eventTotalVolunteeringHrs;
+      });
+    }
     this.avgHoursPerEventWeekday = Math.round((weekdayHours / weekdayCount) * 100) / 100;
     this.avgHoursPerEventWeekend = Math.round((weekendHours / weekendCount) * 100) / 100;
 
@@ -257,79 +279,87 @@ export class ParticipationComponent implements OnInit {
     this.avgHourVolunteerEvent = Math.round((avgHours / this.totalEvents) * 100) / 100;
   }
 
-  private getSum(total, arr) {
-    let prev: number = isNaN(total.volunteerHours) ? 0 : total.volunteerHours;
-    let cur: number = isNaN(arr.volunteerHours) ? 0 : arr.volunteerHours;
-    return prev + cur;
-  }
 
   private getDesignationWiseAssociatesData(): any {
     let data = [];
-    this.designationWiseAssociates.forEach(associates =>
-      data.push({ designation: associates[0].designation, associates: associates.length }));
+    if (this.designationWiseAssociates) {
+      this.designationWiseAssociates.forEach(associates =>
+        data.push({ designation: associates[0].designation, associates: associates ? associates.length : 0 }));
+    }
     return data;
   }
   private getDesignationWiseVolunteersData(): any {
     let data = [];
-    this.designationWiseVolunteers.forEach(volunteers =>
-      data.push({ designation: volunteers[0].designation, volunteers: volunteers.length }));
-      console.log(data);
+    if (this.designationWiseVolunteers) {
+      this.designationWiseVolunteers.forEach(volunteers =>
+        data.push({ designation: volunteers[0].designation, volunteers: volunteers ? volunteers.length : 0 }));
+    }
     return data;
   }
   private getDesignationWiseVolunteerVsAssociate(): any {
     let data = [];
-    this.designationWiseVolunteers.forEach(volunteers => {
-      let associates = this.allAssociates.filter(f => f.designation == volunteers[0].designation);
-      data.push({ designation: volunteers[0].designation, volunteers: volunteers.length, associates: associates.length })
-    });  
-    console.log(data);
+    if (this.designationWiseVolunteers) {
+      this.designationWiseVolunteers.forEach(volunteers => {
+        let associates = this.allAssociates.filter(f => f.designation == volunteers[0].designation);
+        data.push({ designation: volunteers[0].designation, volunteers: volunteers ? volunteers.length : 0, associates: associates ? associates.length : 0 })
+      });
+    }
     return data;
   }
   private getBUWiseAssociatesData(): any {
     let data = [];
-    this.buWiseAssociates.forEach(associates =>
-      data.push({ businessUnit: associates[0].businessUnit, associates: associates.length }));
+    if (this.buWiseAssociates) {
+      this.buWiseAssociates.forEach(associates =>
+        data.push({ businessUnit: associates[0].businessUnit, associates: associates ? associates.length : 0 }));
+    }
     return data;
   }
   private getBUWiseVolunteersData(): any {
     let data = [];
-    this.buWiseVolunteers.forEach(volunteers =>
-      data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers.length }));
+    if (this.buWiseVolunteers) {
+      this.buWiseVolunteers.forEach(volunteers =>
+        data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers ? volunteers.length : 0 }));
+    }
     return data;
   }
   private getBuWiseVolunteerVsAssociate(): any {
     let data = [];
-    this.buWiseVolunteers.forEach(volunteers => {
-      let associates = this.allAssociates.filter(f => f.businessUnit == volunteers[0].businessUnit);
-      data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers.length, associates: associates.length })
-    });
-    console.log(data);
+    if (this.buWiseVolunteers) {
+      this.buWiseVolunteers.forEach(volunteers => {
+        let associates = this.allAssociates.filter(f => f.businessUnit == volunteers[0].businessUnit);
+        data.push({ businessUnit: volunteers[0].businessUnit, volunteers: volunteers ? volunteers.length : 0, associates: associates ? associates.length : 0 })
+      });
+    }
     return data;
   }
   private getLocationWiseAssociatesData(): any {
     let data = [];
-    this.locationWiseAssociates.forEach(associates =>
-      data.push({ baseLocation: associates[0].baseLocation, associates: associates.length }));
+    if (this.locationWiseAssociates) {
+      this.locationWiseAssociates.forEach(associates =>
+        data.push({ baseLocation: associates[0].baseLocation, associates: associates ? associates.length : 0 }));
+    }
     return data;
   }
   private getLocationWiseVolunteersData(): any {
     let data = [];
-    this.locationWiseVolunteers.forEach(volunteers =>
-      data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers.length }));
+    if (this.locationWiseVolunteers) {
+      this.locationWiseVolunteers.forEach(volunteers =>
+        data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers ? volunteers.length : 0 }));
+    }
     return data;
   }
   private getLocationWiseVolunteerVsAssociate(): any {
     let data = [];
-    this.locationWiseVolunteers.forEach(volunteers => {
-      let associates = this.allAssociates.filter(f => f.baseLocation == volunteers[0].baseLocation);
-      data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers.length, associates: associates.length })
-    });
-    console.log(data);
+    if (this.locationWiseVolunteers) {
+      this.locationWiseVolunteers.forEach(volunteers => {
+        let associates = this.allAssociates.filter(f => f.baseLocation == volunteers[0].baseLocation);
+        data.push({ baseLocation: volunteers[0].baseLocation, volunteers: volunteers ? volunteers.length : 0, associates: associates ? associates.length : 0 })
+      });
+    }
     return data;
   }
 
   private getChartData(chartType: string): any {
-    console.log(this.designationWiseVolunteers);
     if (chartType == 'DesignationWiseReport') {
       return this.getDesignationWiseVolunteersData();
     }

@@ -83,12 +83,13 @@ export class AcquisitionComponent implements OnInit {
           if (exist)
             consecutiveCount++;
         });
-        this.avgConsecutiveCount = Math.round((consecutiveCount / selectedMonthData.length) * 100) / 100;
+        let selectedMonthLength = selectedMonthData?selectedMonthData.length:0;
+        this.avgConsecutiveCount = Math.round((consecutiveCount / selectedMonthLength ) * 100) / 100;
         var i;
         let monthData = [];
         for (i = 0; i < 12; i++) {
           monthData = currentYearData.filter(f => new Date(f.eventDate).getMonth() == i);
-          this.monthlyNewVolunteers.push({ month: this.months[i].month, volunteers: monthData.length });
+          this.monthlyNewVolunteers.push({ month: this.months[i].month, volunteers: monthData ? monthData.length:0 });
         }
         this.monthlyNewVolunteersChart();
         ////this.lineGraph();
@@ -96,18 +97,6 @@ export class AcquisitionComponent implements OnInit {
       }
     });
 
-  }
-
-  groupBy(array, f) {
-    var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
   }
 
   monthlyNewVolunteersChart() {

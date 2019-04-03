@@ -64,7 +64,7 @@ public innerWidth: any;
   //}
 
   groupBy(array, f) {
-    if (array) {
+    if (array && array.lenth > 0) {
       var groups = {};
       array.forEach(function (o) {
         var group = JSON.stringify(f(o));
@@ -87,15 +87,16 @@ public innerWidth: any;
       let twoToFiveTimes = 0;
       let fivePlusTimes = 0;
       groupedData.forEach(v => {
-        if (v.length == 1)//one time
-          oneTime++;
-        else if (v.length > 5)//five plus time
-          fivePlusTimes++;
-        else //two to five time
-          twoToFiveTimes++;
-
+        if (v) {
+          if (v.length == 1)//one time
+            oneTime++;
+          else if (v.length > 5)//five plus time
+            fivePlusTimes++;
+          else //two to five time
+            twoToFiveTimes++;
+        }
       });
-      let totalVolunteers = this.allEnrollments.length;
+      let totalVolunteers = this.allEnrollments ? this.allEnrollments.length:0;
       this.volunteersFreq.push({ 'frequency': 'One Time Volunteers', 'countinpercent': oneTime / totalVolunteers });
       this.volunteersFreq.push({ 'frequency': 'Two To Five Time Volunteers', 'countinpercent': twoToFiveTimes / totalVolunteers });
       this.volunteersFreq.push({ 'frequency': 'Five Plus Time Volunteers', 'countinpercent': fivePlusTimes / totalVolunteers });

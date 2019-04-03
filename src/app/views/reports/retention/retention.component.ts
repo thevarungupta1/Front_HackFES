@@ -43,74 +43,82 @@ export class RetentionComponent implements OnInit {
 
   groupBy(array, f) {
     var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
+    if (array && array.lenth >0) {
+      array.forEach(function (o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function (group) {
+        return groups[group];
+      });
+    }
   }
 
   buWiseVolunteers(): any[] {
     let chartData = [];
-    let groupedData = this.groupBy(this.allEnrollments, function (item) {
-      return [item.businessUnit];
-    });
-
-    let currentDate = new Date();
-    let enroll: Enrollment;
-    let daysDiff = 0;
-
-    groupedData.forEach(enrollment => {
-      enroll = enrollment[0];
-      enrollment.forEach((e: Enrollment) => {
-
-        if (enroll.eventDate < e.eventDate) {
-          enroll = e;
-        }
+    if (this.allEnrollments) {
+      let groupedData = this.groupBy(this.allEnrollments, function (item) {
+        return [item.businessUnit];
       });
 
-      var startDate = Date.parse(enroll.eventDate);
-      var endDate = Date.parse(currentDate.toString());
-      var timeDiff = endDate - startDate;
-      daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-      chartData.push({ businessUnit: enrollment[0].businessUnit, sinceLastEvent: daysDiff });
+      let currentDate = new Date();
+      let enroll: Enrollment;
+      let daysDiff = 0;
 
-    });
+      groupedData.forEach(enrollment => {
+        enroll = enrollment[0];
+        enrollment.forEach((e: Enrollment) => {
+
+          if (enroll.eventDate < e.eventDate) {
+            enroll = e;
+          }
+        });
+
+        var startDate = Date.parse(enroll.eventDate);
+        var endDate = Date.parse(currentDate.toString());
+        var timeDiff = endDate - startDate;
+        daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+        chartData.push({ businessUnit: enrollment[0].businessUnit, sinceLastEvent: daysDiff });
+
+      });
+    }
     return chartData;
   }
 
   locationWiseVolunteers() {
 
     let chartData = [];
-    let groupedData = this.groupBy(this.allEnrollments, function (item) {
-      return [item.baseLocation];
-    });
-
-    let currentDate = new Date();
-    let enroll: Enrollment;
-    let daysDiff = 0;
-
-    groupedData.forEach(enrollment => {
-      enroll = enrollment[0];
-      enrollment.forEach((e: Enrollment) => {
-
-        if (enroll.eventDate < e.eventDate) {
-          enroll = e;
-        }
+    if (this.allEnrollments) {
+      let groupedData = this.groupBy(this.allEnrollments, function (item) {
+        return [item.baseLocation];
       });
 
-      var startDate = Date.parse(enroll.eventDate);
-      var endDate = Date.parse(currentDate.toString());
-      var timeDiff = endDate - startDate;
-      daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-      chartData.push({ baseLocation: enrollment[0].baseLocation, sinceLastEvent: daysDiff });
+      let currentDate = new Date();
+      let enroll: Enrollment;
+      let daysDiff = 0;
 
-    });
+      groupedData.forEach(enrollment => {
+        enroll = enrollment[0];
+        enrollment.forEach((e: Enrollment) => {
+
+          if (enroll.eventDate < e.eventDate) {
+            enroll = e;
+          }
+        });
+
+        var startDate = Date.parse(enroll.eventDate);
+        var endDate = Date.parse(currentDate.toString());
+        var timeDiff = endDate - startDate;
+        daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+        chartData.push({ baseLocation: enrollment[0].baseLocation, sinceLastEvent: daysDiff });
+
+      });
+    }
     return chartData;
   }
 

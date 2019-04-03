@@ -74,14 +74,18 @@ export class DashboardComponent implements OnInit {
   filterAssociatesFromEnrollments() {
     if (this.allEnrollments) {
       this.allVolunteers = this.allEnrollments.map(m => m.associates);
-      this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+      if (this.allVolunteers)
+        this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+      if (this.allEnrollments)
       this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
-      this.totalEvents = this.allEvents.length;
-      this.totalVolunteers = this.allUniqueVolunteers.length;
+      this.totalEvents = this.allEvents ? this.allEvents.length: 0;
+      this.totalVolunteers = this.allUniqueVolunteers ? this.allUniqueVolunteers.length:0;
       this.totalVolunteerHours = 0;
-      this.allEvents.forEach(x => {
-        this.totalVolunteerHours = this.totalVolunteerHours + x.totalVolunteerHours;
-      });
+      if (this.allEvents) {
+        this.allEvents.forEach(x => {
+          this.totalVolunteerHours = this.totalVolunteerHours + x.totalVolunteerHours;
+        });
+      }
     }
   }
 
@@ -95,14 +99,16 @@ export class DashboardComponent implements OnInit {
 
   groupBy(array, f) {
     var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
+    if (array && array.lenth > 0) {
+      array.forEach(function (o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function (group) {
+        return groups[group];
+      });
+    }
   }
 
   getAllAssociates() {
@@ -141,8 +147,8 @@ export class DashboardComponent implements OnInit {
         let groupedData = this.groupBy(data, function (item) {
           return [item.id];
         });
-
-        groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g.length }));
+        if (groupedData)
+        groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g?g.length:0 }));
       }
     });
   }
@@ -169,11 +175,13 @@ export class DashboardComponent implements OnInit {
   getDateWiseVolunteersCount() {
     this.topVolunteers = [];
     this.dashboardService.getTopVolunteers(5).subscribe(data => {
-      let groupedData = this.groupBy(data, function (item) {
-        return [item.id];
-      });
-
-      groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g.length }));
+      if (data) {
+        let groupedData = this.groupBy(data, function (item) {
+          return [item.id];
+        });
+        if (groupedData)
+        groupedData.forEach(g => this.topVolunteers.push({ associate: g[0], count: g?g.length:0 }));
+      }
     });
   }
 
@@ -253,23 +261,25 @@ chart.scrollbarX = new am4core.Scrollbar();
     let data = [];
     let volunteers = 0;
     let previousValue;
-    let i=0
-    this.dateWiseVolunteers.forEach(v => {
-      volunteers = v.new + v.recur;
+    let i = 0
+    if (this.dateWiseVolunteers) {
+      this.dateWiseVolunteers.forEach(v => {
+        volunteers = v.new + v.recur;
 
-      if (i > 0) {
-        // add color to previous data item depending on whether current value is less or more than previous value
-        if (previousValue <= volunteers) {
-          data[i - 1].color = chart.colors.getIndex(0);
+        if (i > 0) {
+          // add color to previous data item depending on whether current value is less or more than previous value
+          if (previousValue <= volunteers) {
+            data[i - 1].color = chart.colors.getIndex(0);
+          }
+          else {
+            data[i - 1].color = chart.colors.getIndex(5);
+          }
         }
-        else {
-          data[i - 1].color = chart.colors.getIndex(5);
-        }
-      }
-      i++;
-      data.push({ date: v.date, volunteers: volunteers })
-      previousValue = volunteers;
-    });
+        i++;
+        data.push({ date: v.date, volunteers: volunteers })
+        previousValue = volunteers;
+      });
+    }
     chart.data = data;
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -316,22 +326,24 @@ chart.scrollbarX = new am4core.Scrollbar();
     let volunteers = 0;
     let previousValue;
     let i = 0
-    this.dateWiseVolunteers.forEach(v => {
-      volunteers = v.new + v.recur;
+    if (this.dateWiseVolunteers) {
+      this.dateWiseVolunteers.forEach(v => {
+        volunteers = v.new + v.recur;
 
-      if (i > 0) {
-        // add color to previous data item depending on whether current value is less or more than previous value
-        if (previousValue <= volunteers) {
-          data[i - 1].color = chart.colors.getIndex(0);
+        if (i > 0) {
+          // add color to previous data item depending on whether current value is less or more than previous value
+          if (previousValue <= volunteers) {
+            data[i - 1].color = chart.colors.getIndex(0);
+          }
+          else {
+            data[i - 1].color = chart.colors.getIndex(5);
+          }
         }
-        else {
-          data[i - 1].color = chart.colors.getIndex(5);
-        }
-      }
-      i++;
-      data.push({ date: v.date, volunteers: volunteers })
-      previousValue = volunteers;
-    });
+        i++;
+        data.push({ date: v.date, volunteers: volunteers })
+        previousValue = volunteers;
+      });
+    }
     chart.data = data;
 
     // Set input format for the dates
@@ -557,15 +569,17 @@ chart.scrollbarX = new am4core.Scrollbar();
       let hrs: number = 0;
       this.volunteersData = [];
       let associate
-      groupedData.forEach(g => {
-        hrs = 0;
-        g.forEach(h => hrs = hrs + h.volunteerHours);
-        associate = g[0].associates;
-        this.volunteersData.push({
-          id: associate.id, name: associate.name, designation: associate.designation, baseLocation: associate.baseLocation,
-          businessUnit: associate.businessUnit, events: g.length, volunteerHrs: hrs
+      if (groupedData) {
+        groupedData.forEach(g => {
+          hrs = 0;
+          g.forEach(h => hrs = hrs + h.volunteerHours);
+          associate = g[0].associates;
+          this.volunteersData.push({
+            id: associate.id, name: associate.name, designation: associate.designation, baseLocation: associate.baseLocation,
+            businessUnit: associate.businessUnit, events: g.length, volunteerHrs: hrs
+          });
         });
-      });
+      }
       }
 
     this.showVolunteersModal = true;
