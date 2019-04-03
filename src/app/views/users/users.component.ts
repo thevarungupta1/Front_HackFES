@@ -21,7 +21,7 @@ import { UserModel } from 'src/app/models/user.model';
   providers: [ToastService]
 })
 export class UsersComponent implements OnInit {
-  constructor(@Inject(DOCUMENT) private _document: any, private userService: UserService,
+  constructor(private userService: UserService,
     private messageService: ToastService, private fb: FormBuilder) { }
   userList: Array<UserModel>;
   pocList: Array<UserModel>;
@@ -46,12 +46,10 @@ export class UsersComponent implements OnInit {
   }
   get fc() { return this.userForm.controls; }
   clearSelectedFiles() {
-    console.log("clear button clicked");
   }
   arrayBuffer: any;
   file: File;
   incomingfile(event) {
-    console.log('fileselected' + event);
     this.file = event.files[0];
   }
 
@@ -148,7 +146,6 @@ export class UsersComponent implements OnInit {
       return false;
     this.userService.saveUser(userList)
       .subscribe(data => {
-        console.log(data)
         this.messageService.success('Success', 'Saved successfully');
       });
   }
@@ -158,7 +155,6 @@ export class UsersComponent implements OnInit {
       return false;
     this.userService.savePOC(pocList)
       .subscribe(data => {
-        console.log(data)
         this.messageService.success('Success', 'Saved successfully');
       });
   }
@@ -169,7 +165,6 @@ export class UsersComponent implements OnInit {
   getRoles() {
     this.userService.getRoles()
       .subscribe(data => {
-        console.log(data)
         this.roles = data;
       });
   }
@@ -178,9 +173,6 @@ export class UsersComponent implements OnInit {
     this.events = [];
     this.userService.getEvents()
       .subscribe(data => {
-        console.log('events');
-        console.log(data);
-
         if (data)
           data.forEach(x => this.events.push({ label: x.id, value: x.id }));
       });

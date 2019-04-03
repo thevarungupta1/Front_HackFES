@@ -26,7 +26,7 @@ volunteersFreq: any[];
 totalVolunteers: number;
 public innerWidth: any;
  
-  constructor(private zone: NgZone, private engagementService: EngagementService) { }
+  constructor() { }
 
 
   @HostListener('window:resize', ['$event'])
@@ -35,7 +35,6 @@ public innerWidth: any;
   }
 
   ngOnInit() {
-    this.innerWidth = window.innerWidth;
   }
 
 
@@ -53,51 +52,54 @@ public innerWidth: any;
   //  });
   //}
   
-  joinRecords(){
-    this.allVolunteers =[];
-  this.allEnrollments.map((enrollment)=>{
-    let associate = this.allAssociates.find((en)=> enrollment.associateID === en.id);
-    if(associate)
-    this.allVolunteers.push(Object.assign(enrollment, associate));
-   });
-   this.groupVolunteers();
-   this.pieChart('volunteersFreqChart');
-  }
+  //joinRecords(){
+  //  this.allVolunteers =[];
+  //this.allEnrollments.map((enrollment)=>{
+  //  let associate = this.allAssociates.find((en)=> enrollment.associateID === en.id);
+  //  if(associate)
+  //  this.allVolunteers.push(Object.assign(enrollment, associate));
+  // });
+  // this.groupVolunteers();
+  // this.pieChart('volunteersFreqChart');
+  //}
 
   groupBy(array, f) {
-    var groups = {};
-    array.forEach(function (o) {
-      var group = JSON.stringify(f(o));
-      groups[group] = groups[group] || [];
-      groups[group].push(o);
-    });
-    return Object.keys(groups).map(function (group) {
-      return groups[group];
-    })
+    if (array) {
+      var groups = {};
+      array.forEach(function (o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function (group) {
+        return groups[group];
+      })
+    }
   }
 
   groupVolunteers() {
-    let groupedData = this.groupBy(this.allEnrollments, function (item) {
-      return [item.associateID];
-    });
-this.volunteersFreq = [];
-let oneTime = 0;
-let twoToFiveTimes = 0;
-let fivePlusTimes = 0;
-groupedData.forEach(v => {
-  if(v.length == 1)//one time
-  oneTime++;
-  else if(v.length > 5)//five plus time
-  fivePlusTimes++;
-  else //two to five time
-  twoToFiveTimes++;
+    if (this.allEnrollments) {
+      let groupedData = this.groupBy(this.allEnrollments, function (item) {
+        return [item.associateID];
+      });
+      this.volunteersFreq = [];
+      let oneTime = 0;
+      let twoToFiveTimes = 0;
+      let fivePlusTimes = 0;
+      groupedData.forEach(v => {
+        if (v.length == 1)//one time
+          oneTime++;
+        else if (v.length > 5)//five plus time
+          fivePlusTimes++;
+        else //two to five time
+          twoToFiveTimes++;
 
-});
-let totalVolunteers = this.allEnrollments.length;
-this.volunteersFreq.push({'frequency':'One Time Volunteers', 'countinpercent': oneTime/totalVolunteers});
-this.volunteersFreq.push({'frequency':'Two To Five Time Volunteers', 'countinpercent': twoToFiveTimes/totalVolunteers});
-this.volunteersFreq.push({'frequency':'Five Plus Time Volunteers', 'countinpercent': fivePlusTimes/totalVolunteers});
-
+      });
+      let totalVolunteers = this.allEnrollments.length;
+      this.volunteersFreq.push({ 'frequency': 'One Time Volunteers', 'countinpercent': oneTime / totalVolunteers });
+      this.volunteersFreq.push({ 'frequency': 'Two To Five Time Volunteers', 'countinpercent': twoToFiveTimes / totalVolunteers });
+      this.volunteersFreq.push({ 'frequency': 'Five Plus Time Volunteers', 'countinpercent': fivePlusTimes / totalVolunteers });
+    }
   }
 
   pieChart(chartcontainer: string) {

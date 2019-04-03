@@ -14,10 +14,10 @@ am4core.useTheme(am4themes_animated);
 export class AcquisitionComponent implements OnInit {
 
 
-  constructor(private zone: NgZone, private acquisitionService: AcquisitionService) { }
+  constructor(private acquisitionService: AcquisitionService) { }
   months = [];
   monthlyNewVolunteers = [];
-  currentYear: number = new Date().getFullYear();
+  currentYear: number;
   years: string[] = [];
   selectedYear: number;
   selectedMonth: number;
@@ -25,7 +25,7 @@ export class AcquisitionComponent implements OnInit {
   avgConsecutiveCount: number;
 
   ngOnInit(): void {
-
+    this.months = [];
     this.months.push({id:0, month:"January"})
     this.months.push({ id: 1, month:"February"})
     this.months.push({ id: 2, month:"March"})
@@ -38,7 +38,8 @@ export class AcquisitionComponent implements OnInit {
     this.months.push({ id: 9, month:"October"})
     this.months.push({ id: 10, month:"November"})
     this.months.push({ id: 11, month:"December"})
-
+    this.years = [];
+    this.currentYear = new Date().getFullYear();
     let i;
     for (i = this.currentYear; i >= 1990; i--) {
       this.years.push(i);
@@ -53,44 +54,46 @@ export class AcquisitionComponent implements OnInit {
 
   getAllNewVolunteers() {
     this.acquisitionService.GetAllNewVolunteers().subscribe(data => {
-      let newVolunteers:Enrollment[] = [];
-      data.forEach(enrollment => {
-        let found = newVolunteers.find(f => f.associateID == enrollment.associateID);
-        if (!found)
-          newVolunteers.push(enrollment);
-      });
+      if (data) {
+        let newVolunteers: Enrollment[] = [];
+        data.forEach(enrollment => {
+          let found = newVolunteers.find(f => f.associateID == enrollment.associateID);
+          if (!found)
+            newVolunteers.push(enrollment);
+        });
 
-      let currentYearData = newVolunteers.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
-      let currentYearAllData = data.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
+        let currentYearData = newVolunteers.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
+        let currentYearAllData = data.filter(f => new Date(f.eventDate).getFullYear() == this.selectedYear);
 
-      let prevMonthData:Enrollment[] = [];
-      if (this.selectedMonth > 0) {
-        let prevMonth = this.selectedMonth - 1;
-        prevMonthData = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == prevMonth);
-      }
-      else {
-        let prevMonth = 11;
-        let prevYear = this.selectedYear - 1;
-        prevMonthData = data.filter(f => new Date(f.eventDate).getFullYear() == prevYear && new Date(f.eventDate).getMonth() == prevMonth);
-      }
-      let selectedMonthData: Enrollment[] = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == this.selectedMonth);
+        let prevMonthData: Enrollment[] = [];
+        if (this.selectedMonth > 0) {
+          let prevMonth = this.selectedMonth - 1;
+          prevMonthData = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == prevMonth);
+        }
+        else {
+          let prevMonth = 11;
+          let prevYear = this.selectedYear - 1;
+          prevMonthData = data.filter(f => new Date(f.eventDate).getFullYear() == prevYear && new Date(f.eventDate).getMonth() == prevMonth);
+        }
+        let selectedMonthData: Enrollment[] = currentYearAllData.filter(f => new Date(f.eventDate).getMonth() == this.selectedMonth);
 
-      let consecutiveCount = 0;
-      selectedMonthData.forEach(data => {
-        let exist = prevMonthData.find(x => x.associateID == data.associateID);
-        if (exist)
-          consecutiveCount++;
-      });
-      this.avgConsecutiveCount = Math.round((consecutiveCount / selectedMonthData.length) * 100) / 100;
-      var i;
-      let monthData=[];
-      for (i = 0; i < 12; i++) {
-        monthData = currentYearData.filter(f => new Date(f.eventDate).getMonth() == i);
-        this.monthlyNewVolunteers.push({ month: this.months[i].month, volunteers: monthData.length });
+        let consecutiveCount = 0;
+        selectedMonthData.forEach(data => {
+          let exist = prevMonthData.find(x => x.associateID == data.associateID);
+          if (exist)
+            consecutiveCount++;
+        });
+        this.avgConsecutiveCount = Math.round((consecutiveCount / selectedMonthData.length) * 100) / 100;
+        var i;
+        let monthData = [];
+        for (i = 0; i < 12; i++) {
+          monthData = currentYearData.filter(f => new Date(f.eventDate).getMonth() == i);
+          this.monthlyNewVolunteers.push({ month: this.months[i].month, volunteers: monthData.length });
+        }
+        this.monthlyNewVolunteersChart();
+        ////this.lineGraph();
+        //this.getDateWiseVolunteers();
       }
-      this.monthlyNewVolunteersChart();
-      ////this.lineGraph();
-      //this.getDateWiseVolunteers();
     });
 
   }

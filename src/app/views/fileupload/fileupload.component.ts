@@ -16,7 +16,7 @@ import { ToastService } from '../shared/toastmessages';
   providers: [ToastService]
 })
 export class FileUploadComponent implements OnInit {
-  constructor(@Inject(DOCUMENT) private _document: any, private fileuploadService: FileuploadService,
+  constructor(private fileuploadService: FileuploadService,
     private messageService: ToastService) { }
   associateErrorMsgs = [];
   eventErrorMsgs = [];
@@ -41,7 +41,6 @@ export class FileUploadComponent implements OnInit {
   }
 
   clearSelectedFiles() {
-    console.log("clear button clicked");
   }
   arrayBuffer: any;
   file: File;

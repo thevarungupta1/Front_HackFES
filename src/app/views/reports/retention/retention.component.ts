@@ -20,7 +20,7 @@ export class RetentionComponent implements OnInit {
   filterForm: FormGroup;
   showReport: boolean = false;
   public innerWidth: any;
-  constructor(private zone: NgZone, sanitizer: DomSanitizer, private engagementService: EngagementService, private fb: FormBuilder) {
+  constructor(private engagementService: EngagementService, private fb: FormBuilder) {
     //this.html = sanitizer.sanitize(SecurityContext.HTML, this.html);
   }
   @HostListener('window:resize', ['$event'])

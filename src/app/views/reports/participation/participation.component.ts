@@ -71,12 +71,9 @@ export class ParticipationComponent implements OnInit {
   private getScreenSize(event?) {
     this.innerWidth = window.innerWidth;
   }
-  ngOnInit(): void {
-   
+  ngOnInit(): void {   
     //this.getAllAssociates();
     //this.getEnrollmentsByFilter();
-    this.innerWidth = window.innerWidth;
-
   }
 
   onDataFiltered(data) {    

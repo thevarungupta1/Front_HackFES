@@ -7,7 +7,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase mb-0">Associates</h5>
-              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showAssociateModal()">{{totalAssociates}}</a>
+              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showAssociateModal()" id="associateCount">{{totalAssociates}}</a>
             </div>
             <div class="col-auto">
               <div class="" style="font-size: 3em; min-height: 64px;">
@@ -29,7 +29,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase mb-0">Volunteers</h5>
-              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showVolunteerModal()">{{totalVolunteers}}</a>
+              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showVolunteerModal()" id="volunteersCount">{{totalVolunteers}}</a>
             </div>
             <div class="col-auto">
               <div class="" style="font-size: 3em; min-height: 64px;">
@@ -48,7 +48,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase mb-0">Events</h5>
-              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showEventModal()">{{totalEvents}}</a>
+              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showEventModal()" id="eventCount">{{totalEvents}}</a>
             </div>
             <div class="col-auto">
               <div class="" style="font-size: 3em; min-height: 64px;">
@@ -67,7 +67,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase mb-0">Volunteer Hrs</h5>
-              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showVolunteerModal()">{{totalVolunteerHours}}</a>
+              <a class="h2 font-weight-bold mb-0 color-anchorblue" (click)="showVolunteerModal()" id="volunteerHrs">{{totalVolunteerHours}}</a>
             </div>
             <div class="col-auto">
               <div style="font-size: 3em; min-height: 64px;">

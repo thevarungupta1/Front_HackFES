@@ -52,10 +52,10 @@
             </form>
           </div>
           <div class="card-footer"><div class="pull-right">
-  <button type="button" (click)="onUserSave()" [disabled]="!userForm.valid" class="btn btn-lg btn-primary">
+  <button type="button" (click)="onUserSave()" [disabled]="!userForm.valid" id="btnSubmit" class="btn btn-lg btn-primary">
     <i class="fa fa-dot-circle-o"></i> Submit
   </button>
-  <button type="reset" (click)="onFormClear()" class="btn btn-lg btn-danger">
+  <button type="reset" (click)="onFormClear()" id="btnReset" class="btn btn-lg btn-danger">
     <i class="fa fa-ban"></i> Reset
   </button>
 </div>

@@ -72,15 +72,17 @@ export class DashboardComponent implements OnInit {
   }
 
   filterAssociatesFromEnrollments() {
-    this.allVolunteers = this.allEnrollments.map(m => m.associates);
-    this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
-    this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
-    this.totalEvents = this.allEvents.length;
-    this.totalVolunteers = this.allUniqueVolunteers.length;
-    this.totalVolunteerHours = 0;
-    this.allEvents.forEach(x => {
-      this.totalVolunteerHours = this.totalVolunteerHours + x.totalVolunteerHours;
-  }); 
+    if (this.allEnrollments) {
+      this.allVolunteers = this.allEnrollments.map(m => m.associates);
+      this.allUniqueVolunteers = this.getUnique(this.allVolunteers, 'id');
+      this.allEvents = this.getUnique(this.allEnrollments.map(m => m.events), 'id');
+      this.totalEvents = this.allEvents.length;
+      this.totalVolunteers = this.allUniqueVolunteers.length;
+      this.totalVolunteerHours = 0;
+      this.allEvents.forEach(x => {
+        this.totalVolunteerHours = this.totalVolunteerHours + x.totalVolunteerHours;
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -105,9 +107,10 @@ export class DashboardComponent implements OnInit {
 
   getAllAssociates() {
     this.dashboardService.getAllAssociates().subscribe(data => {
-      this.allAssociates = data;
-      this.totalAssociates = data.length;
-
+      if (data) {
+        this.allAssociates = data;
+        this.totalAssociates = data.length;
+      }
     });
   }
   //getAllEvents() {
@@ -120,10 +123,10 @@ export class DashboardComponent implements OnInit {
 
   getAllEnrollments() {
     this.dashboardService.getAllEnrollments().subscribe(data => {
-
-      this.allEnrollments = data;
-      this.filterAssociatesFromEnrollments();
-     
+      if (data) {
+        this.allEnrollments = data;
+        this.filterAssociatesFromEnrollments();
+      }
     });
   }
   //getAllVolunteers() {
@@ -146,7 +149,9 @@ export class DashboardComponent implements OnInit {
 
   getRecentEvents() {
     this.dashboardService.getAllEvents().subscribe(data => {
-      this.recentEvents = data;
+      if (data) {
+        this.recentEvents = data;
+      }
     });
   }
 
@@ -174,10 +179,12 @@ export class DashboardComponent implements OnInit {
 
   getTopData() {
     this.dashboardService.GetTopData().subscribe(data => {
-      this.topData = [];
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          this.topData.push({ key: key, count: data[key][0], percent: data[key][1] });
+      if (data) {
+        this.topData = [];
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            this.topData.push({ key: key, count: data[key][0], percent: data[key][1] });
+          }
         }
       }
     });
@@ -186,16 +193,18 @@ export class DashboardComponent implements OnInit {
 
   getDateWiseVolunteers() {
     this.dashboardService.GetDateWiseVolunteers().subscribe(data => {
-      let chartData = [];
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          let date = new Date(key);
-           // date = date.setDate(date.getDate() + 1)
-          this.dateWiseVolunteers.push({ date: date, new: data[key][0], recur: data[key][1] });
+      if (data) {
+        let chartData = [];
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            let date = new Date(key);
+            // date = date.setDate(date.getDate() + 1)
+            this.dateWiseVolunteers.push({ date: date, new: data[key][0], recur: data[key][1] });
+          }
         }
+        this.lineGraph(this.dateWiseVolunteers);
+        this.doubleLineChart();
       }
-      this.lineGraph(this.dateWiseVolunteers);
-      this.doubleLineChart();
     });
     
   }
@@ -557,7 +566,6 @@ chart.scrollbarX = new am4core.Scrollbar();
           businessUnit: associate.businessUnit, events: g.length, volunteerHrs: hrs
         });
       });
-      console.log(this.volunteersData);
       }
 
     this.showVolunteersModal = true;
