@@ -39,9 +39,9 @@ describe('ParticipationComponent', () => {
     //fixture.detectChanges();
   });
 
-  //it('should create', () => {
-  //  expect(component).toBeTruthy();
-  //});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   //it('onDataFiltered should be called', () => {
   //  spyOn(serviceSpy, 'getAllAssociates').and.returnValue(of(associates));
@@ -50,12 +50,6 @@ describe('ParticipationComponent', () => {
   //  expect(component.allAssociates).toEqual(associates);
   //});
 
-  it('showReport should be true', () => {
-    spyOn(serviceSpy, 'getAllAssociates').and.returnValue(of({ associates }));
-    component.onDataFiltered(null);
-
-    expect(component.showReport).toBeTruthy();
-  });
 
   //it('allenrollments should be null', () => {
   //  spyOn(serviceSpy, 'getAllAssociates').and.returnValue(of({ associates }));

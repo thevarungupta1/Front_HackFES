@@ -76,11 +76,12 @@ export class ParticipationComponent implements OnInit {
     //this.getEnrollmentsByFilter();
   }
 
-  onDataFiltered(data) {    
-    this.allEnrollments = data;
-    this.showReport = true;
-    this.getAssociates();
-    
+  onDataFiltered(data) {
+    if (data) {
+      this.allEnrollments = data;
+      this.showReport = true;
+      this.getAssociates();
+    }
   }
 
   private getAssociates() {
@@ -919,7 +920,6 @@ export class ParticipationComponent implements OnInit {
   }
   
   private layeredColumnChart(chartContainer: string) {
-
     // Create chart instance
     let chart = am4core.create(chartContainer, am4charts.XYChart);
 
