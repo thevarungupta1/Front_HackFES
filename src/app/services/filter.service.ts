@@ -72,7 +72,7 @@ export class FilterService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.get<any[]>(`${config.apiUrl}/ReportFilter`, { headers: headers })
       .pipe(
-        tap(data => console.log('data: ' + JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getSavedFilters'))
       );
   }

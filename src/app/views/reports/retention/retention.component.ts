@@ -43,7 +43,6 @@ export class RetentionComponent implements OnInit {
 
   groupBy(array, f) {
     var groups = {};
-    if (array && array.lenth >0) {
       array.forEach(function (o) {
         var group = JSON.stringify(f(o));
         groups[group] = groups[group] || [];
@@ -52,7 +51,6 @@ export class RetentionComponent implements OnInit {
       return Object.keys(groups).map(function (group) {
         return groups[group];
       });
-    }
   }
 
   buWiseVolunteers(): any[] {
@@ -123,6 +121,7 @@ export class RetentionComponent implements OnInit {
   }
 
   columnChart3d(chartContainer: string) {
+
     // Create chart instance
     let chart = am4core.create(chartContainer, am4charts.XYChart3D);
 

@@ -19,7 +19,7 @@ export class EngagementService {
     let bodyString = JSON.stringify(body);
     return this.http.post<any[]>(`${config.apiUrl}/Enrollment/GetEnrollmentsByFilter`, body, { headers: headers })
       .pipe(
-        tap(data => console.log('data: ' + JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getEnrollmentsByFilter'))
       );
   }
@@ -27,7 +27,7 @@ export class EngagementService {
   getAllAssociates(): Observable<any> {
     return this.http.get<any>(`${config.apiUrl}/Associate`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getAllAssociates'))
       );
   }
@@ -35,7 +35,7 @@ export class EngagementService {
   getAllEvents(): Observable<any> {
     return this.http.get<any>(`${config.apiUrl}/Event`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getAllEvents'))
       );
   }
@@ -45,7 +45,7 @@ export class EngagementService {
       .pipe(
         tap(data => {
           let test = data;
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('getAllEnrollments'))
       );

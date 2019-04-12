@@ -288,8 +288,6 @@ export class FileUploadComponent implements OnInit {
     let pocContact = rowData["POC Contact Number"];
     let pocs = [];
     if (pocId) {
-      console.log('pocId');
-      console.log(pocId);
 
       let ids = [];
       if (isNaN(pocId))

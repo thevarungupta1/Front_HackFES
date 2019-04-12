@@ -59,20 +59,19 @@ export class AuthService {
   //}
 
   getJwtToken() {
-    return localStorage.getItem(this.JWT_TOKEN);
+    return sessionStorage.getItem(this.JWT_TOKEN);
   }
 
   private doLoginUser(associateId: number, tokens) {
     this.loggedUser = associateId;
     if (tokens !== undefined || tokens !== null) {
-     
-      localStorage.setItem(this.USER_ROLE, tokens.role);
+      sessionStorage.setItem(this.USER_ROLE, tokens.role);
       this.storeJwtToken(tokens.token);
     }
   }
 
   public getUserRole(): string {
-    return localStorage.getItem(this.USER_ROLE);
+    return sessionStorage.getItem(this.USER_ROLE);
   }
 
   private doLogoutUser() {
@@ -81,26 +80,26 @@ export class AuthService {
   }
 
   private getRefreshToken() {
-    return localStorage.getItem(this.REFRESH_TOKEN);
+    return sessionStorage.getItem(this.REFRESH_TOKEN);
   }
 
   private storeJwtToken(jwt: string) {
-    localStorage.setItem(this.JWT_TOKEN, jwt);
+    sessionStorage.setItem(this.JWT_TOKEN, jwt);
   }
 
   private storeTokens(tokens: Tokens) {
-    localStorage.setItem(this.JWT_TOKEN, tokens.jwt);
-    localStorage.setItem(this.REFRESH_TOKEN, tokens.refreshToken);
+    sessionStorage.setItem(this.JWT_TOKEN, tokens.jwt);
+    sessionStorage.setItem(this.REFRESH_TOKEN, tokens.refreshToken);
   }
 
-  clearLocalStorage() {
-    localStorage.removeItem(this.JWT_TOKEN);
-    localStorage.removeItem(this.USER_ROLE);
+  clearsessionStorage() {
+    sessionStorage.removeItem(this.JWT_TOKEN);
+    sessionStorage.removeItem(this.USER_ROLE);
   }
   removeTokens() {
-    localStorage.removeItem(this.JWT_TOKEN);
-    localStorage.removeItem(this.REFRESH_TOKEN);
-    localStorage.removeItem(this.USER_ROLE);
+    sessionStorage.removeItem(this.JWT_TOKEN);
+    sessionStorage.removeItem(this.REFRESH_TOKEN);
+    sessionStorage.removeItem(this.USER_ROLE);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
       associateId: ['', Validators.required],
       email: ['', [Validators.pattern(this.mailformat)]]
     });
-    this.authService.clearLocalStorage();
+    this.authService.clearsessionStorage();
   }
 
   login(){

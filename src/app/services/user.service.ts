@@ -16,7 +16,7 @@ export class UserService {
     getValues() : Observable<any> {
       return this.http.get<any>(`${config.apiUrl}/Values`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
         catchError(this.handleError<any>('getValues'))
       ); 
   }
@@ -24,7 +24,7 @@ export class UserService {
     return this.http.get<any>(`${config.apiUrl}/User/Roles`)
       .pipe(
         tap(data => {
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('getRoles'))
       );
@@ -33,7 +33,7 @@ export class UserService {
     return this.http.get<any>(`${config.apiUrl}/Event`)
       .pipe(
         tap(data => {
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('getEvents'))
       );
@@ -49,7 +49,7 @@ export class UserService {
     })
       .pipe(
         tap(data => {
-          console.log(JSON.stringify(data))
+          JSON.stringify(data)
         }),
       catchError(this.handleError<any>('downloadExcelTemplate'))
       );
@@ -60,7 +60,7 @@ export class UserService {
     let bodyString = JSON.stringify(body);
     return this.http.post<any>(`${config.apiUrl}/User`, body, { headers: headers })
       .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
         catchError(this.handleError<any>('saveUser'))
       );
   }
@@ -70,7 +70,7 @@ export class UserService {
     let bodyString = JSON.stringify(body);
     return this.http.post<any>(`${config.apiUrl}/User/SavePOC`, body, { headers: headers })
       .pipe(
-        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
         catchError(this.handleError<any>('savePOC'))
       );
   }

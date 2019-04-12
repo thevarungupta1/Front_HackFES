@@ -1,5 +1,4 @@
 import { Component, OnInit, NgZone, Output, EventEmitter } from '@angular/core';
-import { EngagementService } from '../../../services/engagement.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ReportFilter } from 'src/app/models/reportFilter.model';
 import { Enrollment } from '../../../models/enrollment.model';
@@ -86,7 +85,6 @@ export class FilterComponent implements OnInit {
   }
 
   onSaveFilter() {
-    console.log(this.filterName);
     let formData: ReportFilter = new ReportFilter();
     formData.name = this.filterName;
     let businessUnit = this.filterForm.get('businessUnit').value;
@@ -110,7 +108,6 @@ export class FilterComponent implements OnInit {
   onShowSavedFilters() {
     
     this.filterService.getSavedFilters().subscribe(data => {
-      console.log(data);
       this.savedFilters = data;
       this.showSavedFilters = true;
     });

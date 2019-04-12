@@ -100,7 +100,6 @@ export class AcquisitionComponent implements OnInit {
   }
 
   monthlyNewVolunteersChart() {
-
     // Create chart instance
     let chart = am4core.create("NewVolunteersChart", am4charts.XYChart3D);
 

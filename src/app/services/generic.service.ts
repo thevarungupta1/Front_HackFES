@@ -18,7 +18,7 @@ export class GenericService {
   getUniqVolunteers(fromDate?: Date, toDate?: Date): Observable<any> {
     return this.http.get<any>(`${config.apiUrl}/Enrollment/UniqueVolunteersByDate?fromDate=${fromDate}&toDate=${toDate}`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => JSON.stringify(data)),
       catchError(this.handleError<any>('getUniqVolunteers'))
       );
   }

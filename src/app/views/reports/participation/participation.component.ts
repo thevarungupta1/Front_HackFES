@@ -107,7 +107,6 @@ export class ParticipationComponent implements OnInit {
 
   private groupBy(array, f) {
     var groups = {};
-    if (array && array.lenth > 0) {
       array.forEach(function (o) {
         var group = JSON.stringify(f(o));
         groups[group] = groups[group] || [];
@@ -116,7 +115,6 @@ export class ParticipationComponent implements OnInit {
       return Object.keys(groups).map(function (group) {
         return groups[group];
       });
-    }
   }
 
   //getAllAssociates() {
@@ -137,7 +135,7 @@ export class ParticipationComponent implements OnInit {
       this.getBaseLocationWiseAssociates();
       this.getBaseLocationWiseVolunteers();
 
-      this.showCharts();
+     this.showCharts();
     });
   }
   showCharts() {

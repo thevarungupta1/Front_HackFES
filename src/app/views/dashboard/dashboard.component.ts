@@ -99,7 +99,6 @@ export class DashboardComponent implements OnInit {
 
   groupBy(array, f) {
     var groups = {};
-    if (array && array.lenth > 0) {
       array.forEach(function (o) {
         var group = JSON.stringify(f(o));
         groups[group] = groups[group] || [];
@@ -108,7 +107,6 @@ export class DashboardComponent implements OnInit {
       return Object.keys(groups).map(function (group) {
         return groups[group];
       });
-    }
   }
 
   getAllAssociates() {
